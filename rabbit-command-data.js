@@ -142,8 +142,13 @@ br get ingress gocron.com -n gocron -o yaml`
   },
   {
     label: '測試gocron路由（✅安全）',
-    value: `echo https://br-gocron.yq-ops.top/\${ns}/#/task
-curl https://br-gocron.yq-ops.top/\${ns}/#/task`,
+    value: `date
+echo \${ns}
+echo https://br-gocron.yq-ops.top/\${ns}/#/task
+echo
+curl https://br-gocron.yq-ops.top/\${ns}/#/task
+echo
+echo`,
     risk: 'safe',
     desc: `改完gocron後訪問新增的未啟動會是503
 啟動的會是任務後台
@@ -722,6 +727,204 @@ LINUX_BASIC_TEMPLATE_CONFIG : [
     value: 'kill -9 ${pid}',
     risk: 'danger'
   }
+],
+
+GIT_BASIC_TEMPLATE_CONFIG :[
+  {
+    label: '查看目前狀態',
+    value: 'git status',
+    risk: 'safe',
+    desc: '查看目前工作目錄與暫存區狀態，最常用的安全指令'
+  },
+  {
+    label: '查看提交紀錄',
+    value: 'git log --oneline --graph --decorate',
+    risk: 'safe',
+    desc: '用精簡方式查看 commit 歷史與分支關係'
+  },
+  {
+    label: '查看遠端倉庫',
+    value: 'git remote -v',
+    risk: 'safe',
+    desc: '列出遠端倉庫名稱與 URL'
+  },
+  {
+    label: '新增檔案到暫存區',
+    value: 'git add .',
+    risk: 'low',
+    desc: '將所有變更加入暫存區，注意可能會加到不想提交的檔案'
+  },
+  {
+    label: '提交變更',
+    value: 'git commit -m "${message}"',
+    risk: 'safe',
+    desc: '將暫存區內容提交成一個 commit'
+  },
+  {
+    label: '查看分支',
+    value: 'git branch',
+    risk: 'safe',
+    desc: '查看本地分支列表'
+  },
+  {
+    label: '切換分支',
+    value: 'git checkout ${branchname}',
+    risk: 'safe',
+    desc: '切換到指定分支（舊寫法）'
+  },
+  {
+    label: '建立並切換分支',
+    value: 'git checkout -b ${branchname}',
+    risk: 'safe',
+    desc: '建立新分支並立即切換'
+  },
+  {
+    label: '切換分支（新版）',
+    value: 'git switch ${branchname}',
+    risk: 'safe',
+    desc: '新版指令，專門用來切換分支，語意更清楚'
+  },
+  {
+    label: '拉取遠端更新',
+    value: 'git pull',
+    risk: 'medium',
+    desc: '拉取並合併遠端變更，可能產生 merge conflict'
+  },
+  {
+    label: '推送到遠端',
+    value: 'git push',
+    risk: 'medium',
+    desc: '將本地 commit 推送到遠端倉庫'
+  },
+  {
+    label: '查看差異',
+    value: 'git diff',
+    risk: 'safe',
+    desc: '查看尚未加入暫存區的檔案差異'
+  },
+  {
+    label: '查看已暫存差異',
+    value: 'git diff --staged',
+    risk: 'safe',
+    desc: '查看已加入暫存區但尚未提交的差異'
+  },
+  {
+    label: '暫存目前修改',
+    value: 'git stash',
+    risk: 'low',
+    desc: '暫時保存目前變更，工作目錄會回到乾淨狀態'
+  },
+  {
+    label: '還原暫存修改',
+    value: 'git stash pop',
+    risk: 'medium',
+    desc: '取回暫存內容並套用，可能發生衝突'
+  },
+  {
+    label: '重置檔案（取消 add）',
+    value: 'git reset HEAD ${file}',
+    risk: 'medium',
+    desc: '將檔案從暫存區移回工作目錄'
+  },
+  {
+    label: '還原檔案內容',
+    value: 'git checkout -- ${file}',
+    risk: 'high',
+    desc: '放棄檔案的所有本地修改，無法復原'
+  },
+  {
+    label: '強制同步遠端分支',
+    value: 'git fetch --all && git reset --hard origin/main',
+    risk: 'high',
+    desc: '完全以遠端狀態覆蓋本地，會遺失本地修改'
+  },
+  
+  {
+    label: '合併指定分支到目前分支',
+    value: 'git merge branch-name',
+    risk: 'medium',
+    desc: '將指定分支合併到目前所在分支，可能產生衝突'
+  },
+  {
+    label: '使用 no-ff 合併（保留分支紀錄）',
+    value: 'git merge --no-ff branch-name',
+    risk: 'medium',
+    desc: '即使可以 fast-forward 也強制建立 merge commit，適合主分支流程'
+  },
+  {
+    label: '中止合併（發生衝突時）',
+    value: 'git merge --abort',
+    risk: 'low',
+    desc: '在 merge 發生衝突時，回到合併前的狀態'
+  },
+  {
+    label: '查看哪些分支已被合併',
+    value: 'git branch --merged',
+    risk: 'safe',
+    desc: '列出已合併進目前分支的本地分支'
+  },
+  {
+    label: '查看哪些分支尚未合併',
+    value: 'git branch --no-merged',
+    risk: 'safe',
+    desc: '列出尚未合併進目前分支的分支'
+  },
+  {
+    label: '刪除已合併的本地分支',
+    value: 'git branch -d branch-name',
+    risk: 'low',
+    desc: '刪除已合併完成的本地分支（安全刪除）'
+  },
+  {
+    label: '強制刪除本地分支',
+    value: 'git branch -D branch-name',
+    risk: 'high',
+    desc: '強制刪除分支，不論是否已合併，可能遺失工作'
+  },
+  {
+    label: '使用 rebase 合併分支',
+    value: 'git rebase branch-name',
+    risk: 'high',
+    desc: '將目前分支的提交接到指定分支後方，會改寫 commit 歷史'
+  },
+  {
+    label: '中止 rebase',
+    value: 'git rebase --abort',
+    risk: 'low',
+    desc: '在 rebase 發生衝突時，回到 rebase 前狀態'
+  },
+  {
+    label: '繼續 rebase（解完衝突）',
+    value: 'git rebase --continue',
+    risk: 'medium',
+    desc: '衝突解決後繼續 rebase 流程'
+  },
+  {
+    label: '將遠端分支合併到本地',
+    value: 'git fetch origin && git merge origin/branch-name',
+    risk: 'medium',
+    desc: '先抓遠端更新，再手動合併指定遠端分支'
+  },
+  {
+    label: '同步主分支後再合併',
+    value: 'git checkout main && git pull && git merge branch-name',
+    risk: 'medium',
+    desc: '確保主分支是最新狀態，再合併其他分支'
+  },
+  {
+    label: '查看合併衝突檔案',
+    value: 'git status',
+    risk: 'safe',
+    desc: '合併衝突時查看哪些檔案需要處理'
+  },
+  {
+    label: '查看衝突內容',
+    value: 'git diff',
+    risk: 'safe',
+    desc: '顯示衝突標記（<<<<<< >>>>>>），用於手動解衝突'
+  }
+
+
 ]
 
 

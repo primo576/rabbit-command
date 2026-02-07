@@ -110,6 +110,7 @@ function copytemplate() {
 }
 
 
+
 /*************************************************
  * Template 套用
  *************************************************/
@@ -268,7 +269,6 @@ groupSelect.addEventListener('change', e => {
 
 /*************************************************
  * 搜尋功能
- * 想加入新功能 可以搜索全部template以及 點擊後等同於點擊applytemple
  *************************************************/
 let rendersearch = ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG'];
 //let rendersearch = ALL_TEMPLATE;
@@ -277,6 +277,7 @@ let rendersearch = ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG'];
 const select = document.getElementById('cmdSelect');
 const search = document.getElementById('search');
 const textarea = document.getElementById('template');
+const commandDesc =document.getElementById('commandDesc')
 
 function render(options) {
   select.innerHTML = '';
@@ -285,40 +286,62 @@ function render(options) {
     opt.value = index;
     opt.textContent = t.label;
     opt.dataset.command = t.value;
+    if (t.desc==undefined) {
+      opt.dataset.desc = '未填寫說明'
+    }else{
+    opt.dataset.desc = t.desc;
+    }
     select.appendChild(opt);
+    
   });
+ 
 }
 
 search.addEventListener('input', e => {
-  const keyword = e.target.value.toLowerCase();
+  searchfilter(e.target.value)
+});
+
+function searchfilter(e){
+    const keyword = e.toLowerCase();
+  localStorage.setItem('searchKeyword', keyword);
+
   render(
     rendersearch.filter(t =>
       t.label.toLowerCase().includes(keyword) ||
-      (t.desc && t.desc.toLowerCase().includes(keyword))
+      (t.desc && t.desc.toLowerCase().includes(keyword))|
+      t.value.toLowerCase().includes(keyword)
     )
   );
-});
+}
 
 select.addEventListener('change', () => {
   const option = select.selectedOptions[0];
   if (option) textarea.value = option.dataset.command;
+  if (option) commandDesc.value = option.dataset.desc
 });
 
 select.addEventListener('dblclick', () => {
   const option = select.selectedOptions[0];
   if (option) textarea.value = option.dataset.command;
+  if (option) commandDesc.value = option.dataset.desc
 });
 
 searchdis=document.getElementsByClassName('hiden')[0]
 
 searchDisploy.addEventListener('click', () => {
-  if (searchdis.className!='t') {
-    searchdis.className='t'
-  }else{
-    searchdis.className='hiden'
-  }
-  
+  chengesearchdis()
 });
+
+function chengesearchdis(){
+  const searchdisstatus = 'display:none';
+  if (searchdiv.getAttribute('style')!=searchdisstatus) {
+    searchdiv.setAttribute('style',searchdisstatus);
+    localStorage.setItem('searchdisstatus', searchdisstatus);
+  }else{
+    searchdiv.removeAttribute('style')
+    localStorage.removeItem('searchdisstatus');
+  }
+}
 
 
 /*************************************************
@@ -416,7 +439,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const lastGroup = localStorage.getItem('lastGroup');
   if (lastGroup && ALL_TEMPLATE[lastGroup]) {
     groupSelect.value = lastGroup;
+    rendersearch = ALL_TEMPLATE[lastGroup];
     renderTemplateOptions(ALL_TEMPLATE[lastGroup]);
+    
   } else {
     renderTemplateOptions(ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG']);
   }
@@ -424,6 +449,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadVars();
   syncVarsFromTemplate();
   renderHistory();
+  init2()
+  //console.log(localStorage);
+  //localStorage.clear()
 });
 
 document.getElementById('template')
@@ -444,6 +472,8 @@ document.getElementById('clearHistoryBtn')
     renderHistory();
   });
 
+function init2(){
+
 document.getElementById('mode')
   .addEventListener('change', e =>
     localStorage.setItem('mode', e.target.value)
@@ -453,3 +483,16 @@ const savedMode = localStorage.getItem('mode');
 if (savedMode) {
   document.getElementById('mode').value = savedMode;
 }
+
+const searchKeyword = localStorage.getItem('searchKeyword');
+if (searchKeyword) {
+  search.value = searchKeyword;
+  searchfilter(searchKeyword)
+}
+
+  if (localStorage.getItem('searchdisstatus')) {
+    chengesearchdis();
+  }
+
+}
+  
