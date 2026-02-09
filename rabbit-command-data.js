@@ -930,4 +930,12 @@ GIT_BASIC_TEMPLATE_CONFIG :[
 
 }
 
+/*
+Object.values(ALL_TEMPLATE).forEach(group => {
+  if (!Array.isArray(group)) return;
 
+  group.forEach((item, index) => {
+    item.index = index;
+  });
+});
+*/

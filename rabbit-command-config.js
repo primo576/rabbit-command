@@ -139,6 +139,7 @@ function applyTemplate() {
     'lastTemplateIndex',
     sel.selectedIndex
   );
+ 
 }
 
 
@@ -234,7 +235,10 @@ function renderTemplateOptions(arr) {
   if (lastIndex !== null && select.options[lastIndex]) {
     select.selectedIndex = lastIndex;
     applyTemplate();
+    
   }
+   
+  
 }
 
 const groupSelect = document.getElementById('templateGroup');
@@ -263,6 +267,7 @@ groupSelect.addEventListener('change', e => {
   if (ALL_TEMPLATE[groupKey]) {
     renderTemplateOptions(ALL_TEMPLATE[groupKey]);
     rendersearch = ALL_TEMPLATE[groupKey];
+    loadsearchkeyword()
   }
 });
 
@@ -299,11 +304,12 @@ function render(options) {
 
 search.addEventListener('input', e => {
   searchfilter(e.target.value)
+  localStorage.setItem('searchKeyword', e.target.value);
 });
 
 function searchfilter(e){
     const keyword = e.toLowerCase();
-  localStorage.setItem('searchKeyword', keyword);
+  
 
   render(
     rendersearch.filter(t =>
@@ -450,6 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
   syncVarsFromTemplate();
   renderHistory();
   init2()
+   loadsearchkeyword()
   //console.log(localStorage);
   //localStorage.clear()
 });
@@ -484,15 +491,18 @@ if (savedMode) {
   document.getElementById('mode').value = savedMode;
 }
 
-const searchKeyword = localStorage.getItem('searchKeyword');
-if (searchKeyword) {
-  search.value = searchKeyword;
-  searchfilter(searchKeyword)
-}
+
 
   if (localStorage.getItem('searchdisstatus')) {
     chengesearchdis();
   }
 
 }
-  
+
+function loadsearchkeyword(){
+  const searchKeyword = localStorage.getItem('searchKeyword');
+if (searchKeyword) {
+  search.value = searchKeyword;
+  searchfilter(searchKeyword)
+}else{searchfilter('')}
+}
