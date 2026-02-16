@@ -161,7 +161,8 @@ function loadVarsFromStorage() {
 
 function getVarsFromTemplate() {
   const template = document.getElementById('template').value || '';
-  const matches = [...template.matchAll(/\$\{(\w+)\}/g)];
+  const matches = [...template.matchAll(/\$\{([\w-]+)\}/g)];  
+  //英文 + 數字 + 底線 + 中線
   return new Set(matches.map(m => m[1]));
 }
 
@@ -324,12 +325,14 @@ select.addEventListener('change', () => {
   const option = select.selectedOptions[0];
   if (option) textarea.value = option.dataset.command;
   if (option) commandDesc.value = option.dataset.desc
+  if (option) syncVarsFromTemplate()
 });
 
 select.addEventListener('dblclick', () => {
   const option = select.selectedOptions[0];
   if (option) textarea.value = option.dataset.command;
   if (option) commandDesc.value = option.dataset.desc
+  if (option) syncVarsFromTemplate()
 });
 
 searchdis=document.getElementsByClassName('hiden')[0]
