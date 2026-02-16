@@ -63,6 +63,15 @@ Pod 是否集中在同一台 node（資源風險）`
     desc: ``
   },
   {
+    label: 'describe pod（✅安全｜細節）',
+    value: 'kubectl describe pod ${pod} -n ${ns} | grep -E -w "Name:|Time:|Image:|Status:"',
+    risk: 'safe',
+    desc: `不接-n 就是集群搜索 也可以接上  "Image:" 看板號
+    Status: 看狀態
+    -w 全字符合
+    `
+  },
+  {
     label: 'describe deployment（✅安全｜細節）',
     value: 'kubectl describe deployment ${deployment} -n ${ns}',
     risk: 'safe'
@@ -140,22 +149,7 @@ br get ingress gocron.com -n gocron -o yaml`
     value: 'kubectl get ingress -A',
     risk: 'safe'
   },
-  {
-    label: '測試gocron路由（✅安全）',
-    value: `date
-echo \${ns}
-echo https://br-gocron.yq-ops.top/\${ns}/#/task
-echo
-curl https://br-gocron.yq-ops.top/\${ns}/#/task
-echo
-echo`,
-    risk: 'safe',
-    desc: `改完gocron後訪問新增的未啟動會是503
-啟動的會是任務後台
-例：
-ph get ingress gocron -n gocron -o yaml
-br get ingress gocron.com -n gocron -o yaml`
-  },
+
 
   // ======================
   // 6. 流程型排障（整套）
@@ -227,13 +221,19 @@ br get ingress gocron.com -n gocron -o yaml`
   },
 
   // ======================
-  // 7. 影響線上（Danger 區）
+  // 7. 影響線上（Danger 區）br scale deployment web --replicas=0 -n 「NS」
   // ======================
   {
     label: '==================7. 影響線上（Danger 區）===============',
     value: '',
     risk: null,
     desc: ``
+  },
+  {
+    label: '調整pod數量（⚠️影響線上）（未驗收站點誤發）',
+    value: 'kubectl scale deployment ${deployment} --replicas=${num} -n ${ns}',
+    risk: 'danger',
+    desc: '會立即調整deploy的pod數量,未上線站點調整為0 replicas'
   },
   {
     label: '重新部署 rollout restart（⚠️影響線上）',
@@ -355,19 +355,48 @@ kubectl edit 本質是：
   // 8. 參考模板
   // ======================
   {
-    label: '==================8. 參考模板========================',
+    label: '==================8. 建站參考模板======================',
     value: '',
     risk: null,
     desc: ``
   },
   {
-    label: '升級腳本用 ns轉array',
-    value: '"${ns}",',
+    label: 'Step1: ns0-9表用',
+    value: `\${ns}0
+\${ns}1
+\${ns}2
+\${ns}3
+\${ns}4
+\${ns}5
+\${ns}6
+\${ns}7
+\${ns}8
+\${ns}9`,
     risk: 'safe',
-    desc: `產出後貼到網址會一排`
+    desc: `表用正序abc`
   },
   {
-    label: 'Ingress backend 區塊（gocron 範例）',
+    label: 'Step2: ns0-9建站腳本用',
+    value: `\${ns}0,\${ns}1,\${ns}2,\${ns}3,\${ns}4,\${ns}5,\${ns}6,\${ns}7,\${ns}8,\${ns}9,`,
+    risk: 'safe',
+    desc: `建站腳本用 要記得刪除最後的,`
+  },
+  /*
+  {
+    label: '(略)升級腳本用 ns轉array',
+    value: '"${ns}",',
+    risk: 'safe',
+    desc: ` 產出後貼到網址會一排`
+  },*/
+  {
+    label: 'Step3: ns9-0升級腳本用',
+    value: `"\${nsre}9","\${nsre}8","\${nsre}7","\${nsre}6","\${nsre}5","\${nsre}4","\${nsre}3","\${nsre}2","\${nsre}1","\${nsre}0",`,
+    risk: 'safe',
+    desc: `abc -> cba
+升級腳本用的順序是倒序 最新的在最上面 和表順序相反`
+  },
+  {
+    label: 'Step4: Ingress backend 區塊（gocron 範例）',
     risk: 'safe',
     value: `      - backend:
           service:
@@ -383,13 +412,30 @@ Ingress rules 片段
 保存在推流程
 kubectl get ingress gocron.com -n gocron -o yaml > ingress.yaml
 vim ingress.yaml
+kubectl diff -f ingress.yaml
 kubectl apply -f ingress.yaml
 如果要看log
 kubectl logs -n ingress-nginx deploy/ingress-nginx-controller | tail -n 50
 即時追
 kubectl logs -f deploy/ingress-nginx-controller -n ingress-nginx
 `
-  }
+  },
+  {
+    label: 'Step5: 測試gocron路由（✅安全）',
+    value: `date
+echo \${ns}
+echo https://br-gocron.yq-ops.top/\${ns}/#/task
+echo
+curl https://br-gocron.yq-ops.top/\${ns}/#/task
+echo
+echo`,
+    risk: 'safe',
+    desc: `改完gocron後訪問新增的未啟動會是503
+啟動的會是任務後台
+例：
+ph get ingress gocron -n gocron -o yaml
+br get ingress gocron.com -n gocron -o yaml`
+  },
 ],
 
 
@@ -630,6 +676,12 @@ LINUX_BASIC_TEMPLATE_CONFIG : [
     risk: 'safe',
     desc: `確認服務是否真的有跑`
   },
+ {
+    label: '查看程序啟動命令（✅安全｜ps）',
+    value: 'ps -ef | grep ${keyword}',
+    risk: 'safe',
+    desc: `確認服務是否真的有跑`
+  },
   {
     label: '即時資源監控（✅安全｜top）',
     value: 'top',
@@ -726,7 +778,223 @@ LINUX_BASIC_TEMPLATE_CONFIG : [
     label: '強制結束程序（⚠️影響線上）',
     value: 'kill -9 ${pid}',
     risk: 'danger'
+  },
+  //tips
+  {
+    label: 'command line紀錄路徑（✅安全｜top）',
+    value: 'pushd;dirs;popd;',
+    risk: 'safe',
+    desc:`pushd。紀錄路徑
+dirs。顯示所有紀錄路徑
+popd。刪除路徑`
   }
+  
+
+
+],
+
+LINUX_SED_TEMPLATE_CONFIG :[
+//sed used
+  
+  {
+    label: '基本替換（單行）',
+    value: "sed 's/\${old}/\${new}/' \${file}",
+    risk: 'safe',
+    desc: `將每一行中第一個出現的 \${old} 替換成 \${new}
+- 只替換「每行第一個」匹配到的字串
+- 不會改變原始檔案，只輸出結果到畫面`
+  },
+  {
+    label: '全域替換（每行全部）',
+    value: "sed 's/\${old}/\${new}/g' \${file}",
+    risk: 'safe',
+    desc: `將每一行中所有出現的 \${old} 全部替換成 \${new}
+- g = global
+- 常見用法：批次改字串`
+  },
+  {
+    label: '忽略大小寫替換',
+    value: "sed 's/\${old}/\${new}/gi' \${file}",
+    risk: 'safe',
+    desc: `忽略大小寫進行替換
+- i = ignore case
+- \${old} / \${old} / \${old} 都會被替換`
+  },
+  {
+    label: '只顯示被替換的行',
+    value: "sed -n 's/\${old}/\${new}/p' \${file}",
+    risk: 'safe',
+    desc: `只輸出「有發生替換」的行
+- -n：關閉預設輸出
+- p：print（搭配 s/// 使用）
+- 常用於 debug 或檢查影響範圍`
+  },
+  {
+    label: '直接修改檔案（in-place）',
+    value: "sed -i 's/\${old}/\${new}/g' \${file}",
+    risk: 'danger',
+    desc: `直接修改原始檔案內容
+⚠️ 有風險，請先備份
+- -i = in-place
+- 建議先用不加 -i 確認結果`
+  },
+  {
+    label: '修改檔案並保留備份',
+    value: "sed -i.bak 's/\${old}/\${new}/g' \${file}",
+    risk: 'safe',
+    desc: `修改檔案並自動產生備份檔
+- 會產生 \${file}.bak
+- 比單純 -i 安全`
+  },
+  {
+    label: '只替換第 N 行',
+    value: "sed '3s/\${old}/\${new}/' \${file}",
+    risk: 'safe',
+    desc: `只替換第 3 行的 \${old}
+- 可用在「只想改特定行數」的情境`
+  },
+  {
+    label: '指定範圍行數替換',
+    value: "sed '3,10s/\${old}/\${new}/g' \${file}",
+    risk: 'safe',
+    desc: `只替換第 3~10 行內的 \${old}
+- 範圍控制非常實用
+- 常見於設定檔修正`
+  },
+  {
+    label: '刪除包含關鍵字的行',
+    value: "sed '/keyword/d' \${file}",
+    risk: 'safe',
+    desc: `刪除包含 keyword 的整行
+- d = delete
+- 常用來過濾 log`
+  },
+  {
+    label: '只顯示包含關鍵字的行',
+    value: "sed -n '/keyword/p' \${file}",
+    risk: 'safe',
+    desc: `只顯示包含 keyword 的行
+- 類似 grep，但用 sed 寫法`
+  },
+  {
+    label: '多個替換規則',
+    value: "sed -e 's/a/b/g' -e 's/c/d/g' \${file}",
+    risk: 'safe',
+    desc: `一次執行多個替換規則
+- 依序執行
+- 複雜轉換時很好用`
+  },
+  {
+    label: '使用正則表達式替換',
+    value: "sed -E 's/[0-9]+/NUM/g' \${file}",
+    risk: 'safe',
+    desc: `使用正則表達式進行替換
+- -E 啟用擴展正則
+- 將所有數字改成 NUM`
+  }
+],
+
+LINUX_Awk_TEMPLATE_CONFIG:[
+  
+  {
+    label: '印出整行（預設行為）',
+    value: "awk '{print $0}' file.txt",
+    risk: 'safe',
+    desc: `印出每一整行內容
+- $0 代表整行
+- 不寫 print 其實也會預設印出整行`
+  },
+  {
+    label: '印出指定欄位（第 1、第 3 欄）',
+    value: "awk '{print $1, $3}' file.txt",
+    risk: 'safe',
+    desc: `印出第 1 欄與第 3 欄
+- 預設以「空白」做欄位切割
+- 常用於 log / 表格資料`
+  },
+  {
+    label: '指定分隔符（用冒號切）',
+    value: "awk -F ':' '{print $1, $3}' /etc/passwd",
+    risk: 'safe',
+    desc: `指定分隔符為冒號 :
+- -F 用來指定欄位分隔符
+- 常見解析 /etc/passwd`
+  },
+  {
+    label: '條件過濾（第 3 欄大於 1000）',
+    value: "awk '$3 > 1000 {print $0}' file.txt",
+    risk: 'safe',
+    desc: `只有當第 3 欄 > 1000 才輸出
+- awk 天生就內建條件判斷
+- 可用於過濾數值`
+  },
+  {
+    label: '關鍵字過濾（包含 error）',
+    value: "awk '/error/ {print $0}' app.log",
+    risk: 'safe',
+    desc: `只輸出包含 error 的行
+- /pattern/ 是正則比對
+- 功能類似 grep，但可同時做欄位處理`
+  },
+  {
+    label: '計算總和（第 2 欄加總）',
+    value: "awk '{sum += $2} END {print sum}' data.txt",
+    risk: 'safe',
+    desc: `將第 2 欄所有數值加總
+- END 區塊代表所有行處理完後才執行
+- 常用於統計`
+  },
+  {
+    label: '顯示行號 + 內容',
+    value: "awk '{print NR, $0}' file.txt",
+    risk: 'safe',
+    desc: `顯示行號 + 原始內容
+- NR = 目前是第幾行
+- 除錯、檢視特定行很方便`
+  },
+  {
+    label: '欄位數量判斷（只印出有 3 欄的行）',
+    value: "awk 'NF == 3 {print $0}' file.txt",
+    risk: 'safe',
+    desc: `只印出欄位數為 3 的行
+- NF = Number of Fields（欄位數）
+- 過濾不完整資料很好用`
+  },
+  {
+    label: '字串替換（sub）',
+    value: "awk '{sub(/old/, \"new\"); print}' file.txt",
+    risk: 'safe',
+    desc: `將每一行第一個 old 替換為 new
+- sub = 只換第一個
+- print 可省略`
+  },
+  {
+    label: '字串全域替換（gsub）',
+    value: "awk '{gsub(/old/, \"new\"); print}' file.txt",
+    risk: 'safe',
+    desc: `將每一行所有 old 全部替換成 new
+- gsub = global substitute
+- 等同 sed 的 g`
+  },
+  {
+    label: 'BEGIN / END 範例（加表頭表尾）',
+    value: "awk 'BEGIN {print \"START\"} {print $0} END {print \"END\"}' file.txt",
+    risk: 'safe',
+    desc: `在輸出前後加上自訂文字
+- BEGIN：處理資料前
+- END：處理資料後
+- 常用於產生報表`
+  },
+  {
+    label: '指定輸出分隔符號',
+    value: "awk -F ',' 'BEGIN {OFS=\"\\t\"} {print $1, $2}' data.csv",
+    risk: 'safe',
+    desc: `輸入用逗號切，輸出用 tab 分隔
+- -F 指定輸入分隔符
+- OFS 指定輸出分隔符`
+  }
+
+
 ],
 
 GIT_BASIC_TEMPLATE_CONFIG :[
@@ -926,6 +1194,8 @@ GIT_BASIC_TEMPLATE_CONFIG :[
 
 
 ]
+
+
 
 
 }
