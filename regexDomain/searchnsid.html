@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>ndid過濾工具</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 8px 14px;
+      background: #2563eb;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .count {
+      margin-top: 6px;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧹 域名過濾工具（從任意文字擷取）</h1>
+
+  <textarea id="input" placeholder="貼上">==== 通知 ====
+商户编号：0000
+站点：AAA</textarea>
+
+  <div class="actions">
+    <button onclick="extractDomains()">過濾域名</button>
+
+  </div>
+
+  <textarea id="output" placeholder="結果會顯示在這裡（一行一個域名）"></textarea>
+
+  <div class="count" id="count"></div>
+
+  <script>
+    function extractDomains() {
+      const text = document.getElementById('input').value;
+      
+
+      // 抓取 domain 的正則（含 URL / 裸域名 / 含 port）
+      const regex = /\b(?:https?:\/\/)?([a-z0-9.-]+\.[a-z]{2,})(?::\d+)?(?:\/[^\s]*)?/gi;
+      const regexns = /站点：.*/gi;
+      const regexid = /商户编号：.*\n.*/gi;
+      
+
+      const set = new Set();
+            
+
+      const str = input.value
+      //const regex = regexns
+
+      let match;
+      const allWords = [];
+      const allset={}
+      // The loop continues as long as exec() returns a non-null result
+      while ((match = regexid.exec(str)) !== null) {
+       // allWords.push(match[0].split('：')[1]);
+        //console.log(`Match found at index ${match.index}: ${match[0]}`);
+        b=match[0].split('\n')[0].split('：')[1]
+        c=match[0].split('\n')[1].split('：')[1]
+        console.log(b,c)
+        allset[b]=c
+      }
+
+      console.log(allWords);
+      console.log(allset);
+      Object.keys(allset).forEach(key => {
+      const value = allset[key];
+      console.log(key, value); // Output: a 5, b 7, c 9
+      allWords.push(key,',',value,',\n')
+      });
+
+  
+      //const result = Array.from(allWords).sort();
+      const result = allWords
+      document.getElementById('output').value = result.join('');
+      document.getElementById('count').innerText = `共找到 ${result.length} 個`;
+    }
+
+    /*
+    Object.keys(obj).forEach(key => {
+  const value = obj[key];
+  console.log(key, value); // Output: a 5, b 7, c 9
+});
+
+    */
+  </script>
+</body>
+<script src="../public/floating-menu.js"></script>
+</html>
