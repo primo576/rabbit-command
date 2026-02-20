@@ -8,7 +8,7 @@
     { label: 'AB表域名比對', url: '../regexDomain/abTableComparison.html' },
     { label: '文字找Domain', url: '../regexDomain/searchDomain.html' },
     { label: 'List 清單刪除 / 保留分行', url: '../regexDomain/listRegex.html' },
-    { label: 'ndid過濾工具', url: '../regexDomain/searchnsid.html' },
+    { label: 'nsid過濾工具', url: '../regexDomain/searchnsid.html' },
     { label: 'cfCurlAPI', url: '../regexDomain/cfCurlAPI.html' },
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },

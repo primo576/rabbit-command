@@ -72,6 +72,8 @@
 
   <div class="actions">
     <button onclick="extractDomains()">過濾域名</button>
+    
+    <button id='paste-button'>貼上</button>
     <button onclick="copy()">複製結果</button>
     <label>
       <input type="checkbox" id="mergeSub" checked />
@@ -116,6 +118,24 @@
       alert('已複製到剪貼簿');
     }
     input.addEventListener('input', extractDomains);
+
+
+    async function getClipboardText() {
+  try {
+    const text = await navigator.clipboard.readText();
+    //console.log('Pasted text: ', text);
+    input.value=text
+    extractDomains();
+    // You can then use the text, for example, to populate a form field:
+    // document.getElementById('my-input').value = text;
+  } catch (err) {
+    console.error('Failed to read clipboard contents: ', err);
+  }
+}
+
+// The function must typically be called in response to a user action, like a button click
+document.getElementById('paste-button').addEventListener('click', getClipboardText);
+
   </script>
 </body>
 <script src="../public/floating-menu.js"></script>
