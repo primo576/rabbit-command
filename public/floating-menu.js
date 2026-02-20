@@ -143,4 +143,19 @@ document.addEventListener('click', e => {
   btn.addEventListener('mouseleave', hide);
   menu.addEventListener('mouseenter', show);
   menu.addEventListener('mouseleave', hide);
+
+(() => {
+  const link = document.createElement('link')
+  link.rel = 'icon'
+  link.type = 'image/x-icon'
+  link.href = '../public/images/favicon.ico'
+
+  // 如果已經有 favicon，先移除避免重複
+  const old = document.querySelector("link[rel~='icon']")
+  if (old) old.remove()
+
+  document.head.appendChild(link)
+})()
+
 })();
+ 
