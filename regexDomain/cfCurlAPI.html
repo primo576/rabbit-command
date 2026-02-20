@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>🛠 工程內部工具｜Curl API 批次檢測</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    h1 { font-size: 20px; margin-bottom: 8px; }
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #334155;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    button {
+      margin: 8px 0;
+      padding: 8px 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #334155;
+      padding: 6px;
+      vertical-align: top;
+      word-break: break-all;
+    }
+    th {
+      background: #020617;
+    }
+    tr.ok { background: rgba(34,197,94,0.1); }
+    tr.fail { background: rgba(239,68,68,0.15); }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      white-space: pre-wrap;
+      max-height: 120px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🛠 Curl API 批次檢測工具</h1>
+
+<textarea id="urls" placeholder="一行一個 URL
+要帶http
+https://example.com
+https://google.com"></textarea>
+
+<button id="run">開始檢測</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>URL</th>
+      <th>Status</th>
+      <th>Headers</th>
+      <th>Body Preview</th>
+    </tr>
+  </thead>
+  <tbody id="result"></tbody>
+</table>
+
+<script>
+(() => {
+  const CF_WORKER_API = "https://cf-curl-api.primo-it.workers.dev" // ← 改這裡
+
+  const $urls = document.getElementById("urls")
+  const $run = document.getElementById("run")
+  const $result = document.getElementById("result")
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, s => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[s]))
+  }
+
+  $run.addEventListener("click", async () => {
+    const list = $urls.value
+      .split("\n")
+      .map(s => s.trim())
+      .filter(Boolean)
+
+    $result.innerHTML = ""
+
+    for (let i = 0; i < list.length; i++) {
+      const url = list[i]
+      const tr = document.createElement("tr")
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td class="mono">${escapeHTML(url)}</td>
+        <td>loading...</td>
+        <td></td>
+        <td></td>
+      `
+      $result.appendChild(tr)
+
+      try {
+        const res = await fetch(`${CF_WORKER_API}?url=${encodeURIComponent(url)}`)
+        const data = await res.json()
+
+        const ok = data.status >= 200 && data.status < 400
+        tr.className = ok ? "ok" : "fail"
+
+        tr.children[2].textContent = `${data.status} ${data.statusText || ""}`
+        tr.children[3].innerHTML = `<div class="mono">${escapeHTML(JSON.stringify(data.headers, null, 2))}</div>`
+        tr.children[4].innerHTML = `<div class="mono">${escapeHTML(data.body || "")}</div>`
+
+      } catch (e) {
+        tr.className = "fail"
+        tr.children[2].textContent = "ERROR"
+        tr.children[4].textContent = e.message
+      }
+    }
+  })
+})()
+
+/*
+cf work api
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url)
+    const target = url.searchParams.get("url")
+
+    if (!target) {
+      return new Response(JSON.stringify({
+        error: "missing url param"
+      }), { status: 400 })
+    }
+
+    try {
+      const res = await fetch(target, {
+        method: "GET",
+        headers: {
+          "User-Agent": "cf-worker-curl/1.0"
+        }
+      })
+
+      const body = await res.text()
+
+      return new Response(JSON.stringify({
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers),
+        body: body.slice(0, 5000) // 避免爆流量
+      }), {
+        headers: {
+          "content-type": "application/json",
+          "access-control-allow-origin": "*"
+        }
+      })
+
+    } catch (e) {
+      return new Response(JSON.stringify({
+        error: e.message
+      }), { status: 500 })
+    }
+  }
+}
+
+*/
+</script>
+
+</body>
+</html>
+
+
+<script src="../public/floating-menu.js"></script>

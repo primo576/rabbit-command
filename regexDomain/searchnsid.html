@@ -66,7 +66,7 @@
   </style>
 </head>
 <body>
-  <h1>🧹 域名過濾工具（從任意文字擷取）</h1>
+  <h1>🧹 NS id 通知過濾</h1>
 
   <textarea id="input" placeholder="貼上">==== 通知 ====
 商户编号：0000
@@ -74,7 +74,9 @@
 
   <div class="actions">
     <button onclick="extractDomains()">過濾域名</button>
-
+<button onclick="copyns()">複製ns結果</button>
+<button onclick="copyid()">複製id結果</button>
+<button onclick="copyall()">複製結果</button>
   </div>
 
   <textarea id="output" placeholder="結果會顯示在這裡（一行一個域名）"></textarea>
@@ -82,9 +84,12 @@
   <div class="count" id="count"></div>
 
   <script>
+    ns=[]
+    id=[]
     function extractDomains() {
       const text = document.getElementById('input').value;
-      
+      ns=[]
+      id=[]
 
       // 抓取 domain 的正則（含 URL / 裸域名 / 含 port）
       const regex = /\b(?:https?:\/\/)?([a-z0-9.-]+\.[a-z]{2,})(?::\d+)?(?:\/[^\s]*)?/gi;
@@ -116,16 +121,31 @@
       Object.keys(allset).forEach(key => {
       const value = allset[key];
       console.log(key, value); // Output: a 5, b 7, c 9
-      allWords.push(key,',',value,',\n')
+      allWords.push(key,',',value,'\n')
+      ns.push(value)
+      id.push(key)
       });
 
   
       //const result = Array.from(allWords).sort();
       const result = allWords
       document.getElementById('output').value = result.join('');
-      document.getElementById('count').innerText = `共找到 ${result.length} 個`;
+      document.getElementById('count').innerText = `共找到 ${id.length} 組`;
     }
 
+      function copyns() {
+      navigator.clipboard.writeText(ns.join(','));
+      alert('已複製到剪貼簿');
+      }
+            function copyid() {
+      navigator.clipboard.writeText(id.join(','));
+      alert('已複製到剪貼簿');
+      }
+            function copyall() {
+      navigator.clipboard.writeText(document.getElementById('output').value );
+      alert('已複製到剪貼簿');
+      }
+      input.addEventListener('input', extractDomains);
     /*
     Object.keys(obj).forEach(key => {
   const value = obj[key];

@@ -72,6 +72,7 @@
 
   <div class="actions">
     <button onclick="extractDomains()">過濾域名</button>
+    <button onclick="copy()">複製結果</button>
     <label>
       <input type="checkbox" id="mergeSub" checked />
       合併子網域為主域名（a.b.com → b.com）
@@ -110,6 +111,11 @@
       document.getElementById('output').value = result.join('\n');
       document.getElementById('count').innerText = `共找到 ${result.length} 個域名`;
     }
+        function copy() {
+      navigator.clipboard.writeText(document.getElementById('output').value);
+      alert('已複製到剪貼簿');
+    }
+    input.addEventListener('input', extractDomains);
   </script>
 </body>
 <script src="../public/floating-menu.js"></script>

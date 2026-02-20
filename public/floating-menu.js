@@ -7,6 +7,12 @@
     { label: 'lookDNS', url: '../regexDomain/lookDNS.html' },
     { label: 'AB表域名比對', url: '../regexDomain/abTableComparison.html' },
     { label: '文字找Domain', url: '../regexDomain/searchDomain.html' },
+    { label: 'List 清單刪除 / 保留分行', url: '../regexDomain/listRegex.html' },
+    { label: 'ndid過濾工具', url: '../regexDomain/searchnsid.html' },
+    { label: 'cfCurlAPI', url: '../regexDomain/cfCurlAPI.html' },
+    { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
+    { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
+    { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
     { label: 'cmd+k開啟清單', url: 'javascript:alert()' }
   ];
 
@@ -92,8 +98,7 @@
     const f = filter.toLowerCase();
     list.innerHTML = LINKS
       .filter(l => l.label.toLowerCase().includes(f))
-      .map(l => `<a href="${l.url}" >${l.label}</a>`)
-      //target="_blank"
+      .map(l => `<a href="${l.url}" ${l.blank ? 'target="_blank"' : ''}>${l.label}</a>`)
       .join('') || '<div style="padding:6px;color:#94a3b8">找不到連結</div>';
   }
 
@@ -127,6 +132,10 @@
     input.focus();
     e.preventDefault();
   }
+});
+
+document.addEventListener('click', e => {
+  if (!wrap.contains(e.target)) menu.style.display = 'none';
 });
 
 

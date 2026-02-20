@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <title>List 清單過濾工具</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 16px; }
+    textarea { width: 100%; min-height: 140px; font-family: monospace; }
+    .row { margin: 12px 0; }
+    label { font-weight: 600; }
+    .hint { color: #666; font-size: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn { padding: 6px 12px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>List 清單刪除 / 保留分行</h2>
+
+  <div class="row">
+    <label>原始清單（可貼入含引號 / 逗號結尾）</label>
+    <textarea id="input" placeholder='"a","b","c",
+"d","e","f"'>"dc9","dc8","dc7","dc6","dc5","dc4","dc3","dc2","dc1","dc0",
+"db9","db8","db7","db6","db5","db4","db3","db2","db1","db0",
+"da9","da8","da7","da6","da5","da4","da3","da2","da1","da0"</textarea>
+  </div>
+
+  <div class="row">
+    <label>要刪除的項目（用逗號分隔）</label>
+    <input id="targets" style="width:100%" placeholder='b,e' />
+    <div class="hint">支援：b,e 或 "b","e"</div>
+  </div>
+
+  <div class="row">
+    <label>
+      <input type="checkbox" id="withQuotes" checked />
+      輸出保留雙引號
+    </label>
+  </div>
+
+  <div class="row">
+    <button class="btn" id="run">執行過濾</button>
+  </div>
+
+  <div class="row grid">
+    <div>
+      <label>輸出結果</label>
+      <textarea id="output" readonly></textarea>
+    </div>
+    <div>
+      <label>解析後的一維 list（debug 用）</label>
+      <textarea id="debug" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    const NEWLINE = '\n';
+
+    function parseToFlatListWithNewline(text) {
+      return text
+        .split('\n')
+        .flatMap((line, idx, arr) => {
+          const items = line
+            .split(',')
+            .map(x => x.trim())
+            .filter(Boolean)
+            .map(x => x.replace(/^"(.*)"$/, '$1')); // 去掉包住的 ""
+
+          return idx < arr.length - 1
+            ? [...items, NEWLINE]
+            : items;
+        });
+    }
+
+    function removeTargets(flatList, targets) {
+      const removeSet = new Set(
+        targets
+          .split(',')
+          .map(x => x.trim())
+          .filter(Boolean)
+          .map(x => x.replace(/^"(.*)"$/, '$1'))
+      );
+
+      return flatList.filter(x => x === NEWLINE || !removeSet.has(x));
+    }
+
+    function flatListToText(flatList, withQuotes = true) {
+      const lines = [];
+      let current = [];
+
+      flatList.forEach(item => {
+        if (item === NEWLINE) {
+          lines.push(current);
+          current = [];
+        } else {
+          current.push(withQuotes ? `"${item}"` : item);
+        }
+      });
+
+      if (current.length) lines.push(current);
+
+      return lines.map(line => line.join(',')).join(',\n');
+    }
+
+    document.getElementById('run').addEventListener('click', () => {
+      const input = document.getElementById('input').value;
+      const targets = document.getElementById('targets').value;
+      const withQuotes = document.getElementById('withQuotes').checked;
+
+      const flat = parseToFlatListWithNewline(input);
+      const filtered = removeTargets(flat, targets);
+      const output = flatListToText(filtered, withQuotes);
+
+      document.getElementById('output').value = output;
+      document.getElementById('debug').value = JSON.stringify(flat, null, 2);
+    });
+  </script>
+</body>
+</html>
+<script src="../public/floating-menu.js"></script>
