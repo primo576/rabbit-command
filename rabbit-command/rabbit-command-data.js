@@ -644,6 +644,12 @@ LINUX_BASIC_TEMPLATE_CONFIG : [
     risk: 'safe',
     desc: `inode / owner / time 全部看得到`
   },
+  {
+    label: '透過pid查看檔案位置（✅安全｜stat）',
+    value: 'ls -l /proc/${pid}/exe',
+    risk: 'safe',
+    desc: ``
+  },
 
   // ======================
   // 2. 磁碟 / 空間（高頻）
