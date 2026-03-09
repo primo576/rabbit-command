@@ -1350,11 +1350,89 @@ http_status_TEMPLATE_CONFIG : [
     "risk": "danger",
     "desc": "代理成功連線 origin，但 origin 回應時間過長。通常是應用處理慢、查詢過大或後端資源不足。"
   },
+ {
+    "label": "499 Client Closed Request",
+    "value": "499",
+    "risk": "warn",
+    "desc": "Nginx 專用狀態碼。表示 client 在 server 回應前主動關閉連線。常見於弱網環境、用戶取消請求、或請求時間過長。問題類型：客戶端 / 網路。"
+  },
   {
-    "label": "— 自訂 —",
-    "value": "",
-    "risk": "custom",
-    "desc": "可輸入自訂 HTTP 狀態碼或排查場景。"
+    "label": "444 No Response",
+    "value": "444",
+    "risk": "warn",
+    "desc": "Nginx 主動關閉連線而不回應任何資料。通常用於封鎖惡意流量或 WAF 規則。問題類型：安全策略 / Web Server 配置。"
+  },
+  {
+    "label": "520 Unknown Error",
+    "value": "520",
+    "risk": "danger",
+    "desc": "CDN 或代理收到 origin 的未知回應。可能是 origin 回應格式錯誤、header 異常、或 connection reset。問題類型：應用或代理問題。"
+  },
+  {
+    "label": "521 Web Server Down",
+    "value": "521",
+    "risk": "danger",
+    "desc": "CDN 無法連接到 origin server。常見原因是 server 未啟動、port 未監聽、或 firewall 阻擋。問題類型：應用服務或網路防火牆。"
+  },
+  {
+    "label": "522 Connection Timed Out",
+    "value": "522",
+    "risk": "danger",
+    "desc": "CDN 可以解析 DNS，但連接 origin 時 TCP 超時。常見原因：server 過載、防火牆封鎖、或網路問題。問題類型：網路或服務資源。"
+  },
+  {
+    "label": "523 Origin Unreachable",
+    "value": "523",
+    "risk": "danger",
+    "desc": "CDN 找不到 origin IP。通常是 DNS 配置錯誤、origin IP 改變、或 routing 問題。問題類型：DNS / 網路。"
+  },
+  {
+    "label": "524 Timeout Occurred",
+    "value": "524",
+    "risk": "danger",
+    "desc": "CDN 成功連線 origin，但 origin 回應時間過長。通常是 backend 處理慢、資料庫查詢過久、或 API timeout。問題類型：應用性能問題。"
+  },
+  {
+    "label": "525 SSL Handshake Failed",
+    "value": "525",
+    "risk": "danger",
+    "desc": "CDN 與 origin 之間 TLS 握手失敗。常見於 SSL 憑證錯誤、TLS 版本不匹配、或 origin SSL 配置問題。問題類型：TLS / 憑證配置。"
+  },
+  {
+    "label": "526 Invalid SSL Certificate",
+    "value": "526",
+    "risk": "danger",
+    "desc": "origin SSL 憑證無效，例如過期、域名不匹配或未被信任 CA 簽署。問題類型：憑證配置問題。"
+  },
+  {
+    "label": "530 Origin DNS Error",
+    "value": "530",
+    "risk": "danger",
+    "desc": "CDN 無法解析 origin DNS。可能是 DNS 記錄錯誤、解析失敗或 DNS server 不可用。問題類型：DNS 配置問題。"
+  },
+  {
+    "label": "Kubernetes 502 Bad Gateway",
+    "value": "k8s-502",
+    "risk": "danger",
+    "desc": "Ingress / Gateway 無法連到 backend service。可能是 service port 錯誤、pod 未 ready、或 endpoint 不存在。問題類型：Kubernetes service 配置。"
+  },
+  {
+    "label": "Kubernetes 503 Service Unavailable",
+    "value": "k8s-503",
+    "risk": "danger",
+    "desc": "Ingress 找不到可用 pod。常見原因是 deployment 沒有 pod、readiness probe fail、或 service selector 不匹配。問題類型：Kubernetes workload。"
+  },
+  {
+    "label": "API Gateway 504 Timeout",
+    "value": "gateway-504",
+    "risk": "danger",
+    "desc": "API Gateway 等待 backend 回應超時。常見於 downstream API 慢、資料庫延遲或網路問題。問題類型：應用或依賴服務。"
+  },
+  {
+    "label": "API Gateway 429 Rate Limit",
+    "value": "gateway-429",
+    "risk": "warn",
+    "desc": "API 請求超過限制。通常由 gateway 或 WAF 設定 rate limit。問題類型：流量控制或安全策略。"
   }
 ],
 
