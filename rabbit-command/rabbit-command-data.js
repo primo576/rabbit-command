@@ -1199,10 +1199,62 @@ GIT_BASIC_TEMPLATE_CONFIG :[
   }
 
 
+],
+nginx_Troubleshooting_process_TEMPLATE_CONFIG : [
+ [
+  {
+    "label": "檢查 nginx 服務狀態",
+    "value": "systemctl status nginx",
+    "risk": "low",
+    "desc": "確認 nginx 是否正常運行。如果服務未啟動或顯示 failed，需要先重新啟動 nginx 或查看錯誤日誌。"
+  },
+  {
+    "label": "搜尋 nginx vhost 配置",
+    "value": "grep -R \"${text}\" /usr/local/nginx/conf/vhosts",
+    "risk": "low",
+    "desc": "在 nginx vhosts 目錄中搜尋指定 domain，確認該域名對應的配置檔案位置。"
+  },
+  {
+    "label": "分析 nginx 轉發設定",
+    "value": "grep -nE \"server_name|proxy_pass|root|upstream\" /usr/local/nginx/conf/vhosts/*",
+    "risk": "low",
+    "desc": "檢查 nginx vhost 配置中的 server_name、proxy_pass、root、upstream 等關鍵設定，確認請求會被轉發到哪個 backend。"
+  },
+  {
+    "label": "確認 backend port 是否監聽",
+    "value": "ss -lntp | grep ${port}",
+    "risk": "low",
+    "desc": "確認 backend 應用是否有在監聽指定 port (例如 13000)。如果沒有監聽，代表後端服務可能未啟動。"
+  },
+  {
+    "label": "檢查 backend HTTP 回應",
+    "value": "curl -I http://127.0.0.1:${port}",
+    "risk": "low",
+    "desc": "使用 HTTP HEAD 請求測試 backend port 是否能回應 HTTP header，快速判斷服務是否正常。"
+  },
+  {
+    "label": "測試 backend 完整回應",
+    "value": "curl -v http://127.0.0.1:${port}",
+    "risk": "low",
+    "desc": "使用 verbose 模式測試 backend 服務完整回應流程，可以看到連線過程與 HTTP 回應細節。"
+  },
+  {
+    "label": "查看佔用 port 的程序",
+    "value": "sudo lsof -i :${port} -n -P",
+    "risk": "low",
+    "desc": "確認目前是哪些程序正在使用該 port。如果不是預期的 backend 程式，可能存在 port 衝突問題。"
+  },
+  {
+    "label": "查找 Node 啟動命令",
+    "value": "ps -ef | grep ${process} | grep -v grep",
+    "risk": "low",
+    "desc": "搜尋目前系統中運行的 Node.js 程序，確認 backend 是否已啟動以及其啟動路徑與參數。"
+  }
 ]
+],
 
-
-
+ 
+Config_TEMPLATE_CONFIG : []
 
 }
 
