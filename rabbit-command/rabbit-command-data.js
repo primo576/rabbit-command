@@ -1253,7 +1253,112 @@ nginx_Troubleshooting_process_TEMPLATE_CONFIG : [
 
 ],
 
- 
+http_status_TEMPLATE_CONFIG : [
+  {
+    "label": "200 OK",
+    "value": "200",
+    "risk": "info",
+    "desc": "請求成功，服務正常回應。通常代表應用與網路都正常。"
+  },
+  {
+    "label": "301 Moved Permanently",
+    "value": "301",
+    "risk": "info",
+    "desc": "永久重定向。通常是網站 URL 重寫或 HTTP→HTTPS 轉跳。屬於應用或 Web server 配置問題。"
+  },
+  {
+    "label": "302 Found",
+    "value": "302",
+    "risk": "info",
+    "desc": "暫時重定向。常見於登入流程或負載導向。通常是應用邏輯或反向代理設定。"
+  },
+  {
+    "label": "400 Bad Request",
+    "value": "400",
+    "risk": "warn",
+    "desc": "請求格式錯誤，例如 header、cookie、URL 參數不合法。通常是應用層解析錯誤或客戶端請求問題。"
+  },
+  {
+    "label": "401 Unauthorized",
+    "value": "401",
+    "risk": "warn",
+    "desc": "需要身份驗證。通常是 token / session / API key 缺失或過期，屬於應用驗證問題。"
+  },
+  {
+    "label": "403 Forbidden",
+    "value": "403",
+    "risk": "warn",
+    "desc": "伺服器拒絕訪問。常見於權限不足、IP 限制、防火牆或 WAF 規則。可能是應用或安全策略問題。"
+  },
+  {
+    "label": "404 Not Found",
+    "value": "404",
+    "risk": "warn",
+    "desc": "請求資源不存在。可能是 URL 錯誤、路由配置錯誤、或 nginx / ingress 未配置對應 path。屬於應用或配置問題。"
+  },
+  {
+    "label": "408 Request Timeout",
+    "value": "408",
+    "risk": "warn",
+    "desc": "客戶端請求超時。可能是網路延遲、弱網環境、或 client 傳輸過慢。通常偏向網路問題。"
+  },
+  {
+    "label": "429 Too Many Requests",
+    "value": "429",
+    "risk": "warn",
+    "desc": "請求過多被限流。常見於 API rate limit、WAF、或 gateway 限流策略。屬於應用或流量控制問題。"
+  },
+  {
+    "label": "500 Internal Server Error",
+    "value": "500",
+    "risk": "danger",
+    "desc": "伺服器內部錯誤。通常是應用程式 exception、程式 bug、依賴服務錯誤。屬於應用問題。"
+  },
+  {
+    "label": "502 Bad Gateway",
+    "value": "502",
+    "risk": "danger",
+    "desc": "網關收到無效回應。常見於 nginx / gateway 連到 backend 失敗、服務 crash、或 upstream 回應格式錯誤。通常是應用或代理層問題。"
+  },
+  {
+    "label": "503 Service Unavailable",
+    "value": "503",
+    "risk": "danger",
+    "desc": "服務暫時不可用。常見於服務過載、維護模式、或 Kubernetes pod 尚未 ready。屬於應用或資源問題。"
+  },
+  {
+    "label": "504 Gateway Timeout",
+    "value": "504",
+    "risk": "danger",
+    "desc": "網關等待 backend 回應超時。可能是應用處理過慢、資料庫卡住、或網路延遲。通常是應用或網路問題。"
+  },
+  {
+    "label": "520 Unknown Error",
+    "value": "520",
+    "risk": "danger",
+    "desc": "常見於 CDN 或代理服務返回未知錯誤，例如 origin 回應格式錯誤或 connection reset。可能是應用或網路問題。"
+  },
+  {
+    "label": "522 Connection Timed Out",
+    "value": "522",
+    "risk": "danger",
+    "desc": "代理伺服器連線到 origin 超時。通常是 origin server 無回應、防火牆阻擋、或網路問題。"
+  },
+  {
+    "label": "524 Timeout Occurred",
+    "value": "524",
+    "risk": "danger",
+    "desc": "代理成功連線 origin，但 origin 回應時間過長。通常是應用處理慢、查詢過大或後端資源不足。"
+  },
+  {
+    "label": "— 自訂 —",
+    "value": "",
+    "risk": "custom",
+    "desc": "可輸入自訂 HTTP 狀態碼或排查場景。"
+  }
+],
+
+
 Config_white_TEMPLATE_CONFIG : []
 
 }
