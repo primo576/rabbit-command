@@ -1201,7 +1201,7 @@ GIT_BASIC_TEMPLATE_CONFIG :[
 
 ],
 nginx_Troubleshooting_process_TEMPLATE_CONFIG : [
- [
+ 
   {
     "label": "檢查 nginx 服務狀態",
     "value": "systemctl status nginx",
@@ -1250,11 +1250,11 @@ nginx_Troubleshooting_process_TEMPLATE_CONFIG : [
     "risk": "low",
     "desc": "搜尋目前系統中運行的 Node.js 程序，確認 backend 是否已啟動以及其啟動路徑與參數。"
   }
-]
+
 ],
 
  
-Config_TEMPLATE_CONFIG : []
+Config_white_TEMPLATE_CONFIG : []
 
 }
 
