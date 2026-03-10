@@ -1201,6 +1201,13 @@ GIT_BASIC_TEMPLATE_CONFIG :[
 
 ],
 nginx_Troubleshooting_process_TEMPLATE_CONFIG : [
+
+   {
+    "label": "nginx path",
+    "value": "cd /usr/local/openresty/nginx/conf/vhost/",
+    "risk": "low",
+    "desc": "nginx 配置預設目錄"
+  },
  
   {
     "label": "檢查 nginx 服務狀態",
