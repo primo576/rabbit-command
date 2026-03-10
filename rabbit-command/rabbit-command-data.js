@@ -650,6 +650,14 @@ LINUX_BASIC_TEMPLATE_CONFIG : [
     risk: 'safe',
     desc: ``
   },
+  {
+    label: 'find找檔案（✅安全｜find）',
+    value: 'find . -type f -name "${fileName}"',
+    risk: 'safe',
+    desc: `從當前路徑開始找檔案
+ -type f 會顯示完整路徑
+ -name 只找檔案名稱 不找內容`
+  },
 
   // ======================
   // 2. 磁碟 / 空間（高頻）
