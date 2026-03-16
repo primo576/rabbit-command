@@ -1452,6 +1452,356 @@ http_status_TEMPLATE_CONFIG : [
 ],
 
 
+linux_vi_TEMPLATE_CONFIG : [
+{
+  label: 'vi 全域替換文字',
+  value: ':%s/old/new/g',
+  risk: 'safe',
+  desc: `在整個檔案中替換文字
+:%s/old/new/g
+% 代表整個檔案
+g 代表該行全部匹配都替換`
+},
+{
+  label: 'vi 單行替換文字',
+  value: ':s/old/new/g',
+  risk: 'safe',
+  desc: `只替換目前所在行
+:s/old/new/g`
+},
+{
+  label: 'vi 指定行數替換',
+  value: ':10,20s/old/new/g',
+  risk: 'safe',
+  desc: `只在指定行數範圍替換
+例：10 到 20 行`
+},
+{
+  label: 'vi 替換前逐一確認',
+  value: ':%s/old/new/gc',
+  risk: 'safe',
+  desc: `每次替換前都詢問確認
+y = 替換
+n = 跳過`
+},
+{
+  label: 'vi 跳到檔案底部',
+  value: 'G',
+  risk: 'safe',
+  desc: `Normal mode 下
+G 可直接跳到檔案最後一行`
+},
+{
+  label: 'vi 跳到檔案開頭',
+  value: 'gg',
+  risk: 'safe',
+  desc: `Normal mode 下
+gg 可跳到第一行`
+},
+{
+  label: 'vi 跳到指定行',
+  value: ':100',
+  risk: 'safe',
+  desc: `跳到指定行
+例如 :100 會跳到第100行`
+},
+{
+  label: 'vi 向下滾動半頁',
+  value: 'Ctrl + d',
+  risk: 'safe',
+  desc: `畫面向下滾動半頁`
+},
+{
+  label: 'vi 向上滾動半頁',
+  value: 'Ctrl + u',
+  risk: 'safe',
+  desc: `畫面向上滾動半頁`
+},
+{
+  label: 'vi 向下滾動一整頁',
+  value: 'Ctrl + f',
+  risk: 'safe',
+  desc: `向下滾動整頁`
+},
+{
+  label: 'vi 向上滾動一整頁',
+  value: 'Ctrl + b',
+  risk: 'safe',
+  desc: `向上滾動整頁`
+},
+{
+  label: 'vi 複製目前行',
+  value: 'yy',
+  risk: 'safe',
+  desc: `複製目前一整行`
+},
+{
+  label: 'vi 複製多行',
+  value: '5yy',
+  risk: 'safe',
+  desc: `複製指定行數
+例如 5yy 代表複製5行`
+},
+{
+  label: 'vi 貼上',
+  value: 'p',
+  risk: 'safe',
+  desc: `在游標下方貼上`
+},
+{
+  label: 'vi 向上貼上',
+  value: 'P',
+  risk: 'safe',
+  desc: `在游標上方貼上`
+},
+{
+  label: 'vi 刪除一行',
+  value: 'dd',
+  risk: 'safe',
+  desc: `刪除目前所在行`
+},
+{
+  label: 'vi 刪除多行',
+  value: '5dd',
+  risk: 'safe',
+  desc: `刪除指定行數
+例如 5dd 會刪除5行`
+},
+{
+  label: 'vi 視覺模式選取',
+  value: 'v',
+  risk: 'safe',
+  desc: `進入 visual mode
+可以用方向鍵選取文字`
+},
+{
+  label: 'vi 行模式選取',
+  value: 'V',
+  risk: 'safe',
+  desc: `以整行為單位選取`
+},
+{
+  label: 'vi 儲存檔案',
+  value: ':w',
+  risk: 'safe',
+  desc: `寫入儲存`
+},
+{
+  label: 'vi 儲存並離開',
+  value: ':wq',
+  risk: 'safe',
+  desc: `儲存並退出`
+},
+{
+  label: 'vi 不儲存離開',
+  value: ':q!',
+  risk: 'safe',
+  desc: `強制離開不儲存`
+},
+{
+  label: 'vi 搜尋文字',
+  value: '/keyword',
+  risk: 'safe',
+  desc: `向下搜尋文字
+輸入 /keyword
+按 Enter 搜尋`
+},
+{
+  label: 'vi 搜尋下一個',
+  value: 'n',
+  risk: 'safe',
+  desc: `搜尋結果往下跳到下一個`
+},
+{
+  label: 'vi 搜尋上一個',
+  value: 'N',
+  risk: 'safe',
+  desc: `搜尋結果往上跳`
+},
+{
+  label: 'vi 顯示行號',
+  value: ':set number',
+  risk: 'safe',
+  desc: `顯示檔案行號
+debug config / log 很常用`
+},
+{
+  label: 'vi 取消行號',
+  value: ':set nonumber',
+  risk: 'safe',
+  desc: `關閉行號顯示`
+},
+{
+  label: 'vi 跳到檔案底部',
+  value: 'G',
+  risk: 'safe',
+  desc: `跳到檔案最後一行`
+},
+{
+  label: 'vi 跳到檔案開頭',
+  value: 'gg',
+  risk: 'safe',
+  desc: `跳到第一行`
+},
+{
+  label: 'vi 跳到指定行',
+  value: ':100',
+  risk: 'safe',
+  desc: `跳到指定行`
+},
+{
+  label: 'vi 行首',
+  value: '0',
+  risk: 'safe',
+  desc: `跳到目前行開頭`
+},
+{
+  label: 'vi 行尾',
+  value: '$',
+  risk: 'safe',
+  desc: `跳到目前行最後`
+},
+{
+  label: 'vi 向下半頁',
+  value: 'Ctrl+d',
+  risk: 'safe',
+  desc: `畫面往下滾半頁`
+},
+{
+  label: 'vi 向上半頁',
+  value: 'Ctrl+u',
+  risk: 'safe',
+  desc: `畫面往上滾半頁`
+},
+{
+  label: 'vi 向下一頁',
+  value: 'Ctrl+f',
+  risk: 'safe',
+  desc: `向下整頁`
+},
+{
+  label: 'vi 向上一頁',
+  value: 'Ctrl+b',
+  risk: 'safe',
+  desc: `向上整頁`
+},
+{
+  label: 'vi 複製一行',
+  value: 'yy',
+  risk: 'safe',
+  desc: `複製目前行`
+},
+{
+  label: 'vi 複製多行',
+  value: '10yy',
+  risk: 'safe',
+  desc: `複製10行`
+},
+{
+  label: 'vi 貼上',
+  value: 'p',
+  risk: 'safe',
+  desc: `在游標下方貼上`
+},
+{
+  label: 'vi 上方貼上',
+  value: 'P',
+  risk: 'safe',
+  desc: `在游標上方貼上`
+},
+{
+  label: 'vi 刪除一行',
+  value: 'dd',
+  risk: 'safe',
+  desc: `刪除目前行`
+},
+{
+  label: 'vi 刪除多行',
+  value: '5dd',
+  risk: 'safe',
+  desc: `刪除5行`
+},
+{
+  label: 'vi undo',
+  value: 'u',
+  risk: 'safe',
+  desc: `復原上一個操作`
+},
+{
+  label: 'vi redo',
+  value: 'Ctrl+r',
+  risk: 'safe',
+  desc: `恢復 undo`
+},
+{
+  label: 'vi 全域替換',
+  value: ':%s/old/new/g',
+  risk: 'safe',
+  desc: `整個檔案替換`
+},
+{
+  label: 'vi 替換並確認',
+  value: ':%s/old/new/gc',
+  risk: 'safe',
+  desc: `逐一確認替換`
+},
+{
+  label: 'vi 指定行替換',
+  value: ':10,20s/old/new/g',
+  risk: 'safe',
+  desc: `指定範圍替換`
+},
+{
+  label: 'vi visual mode',
+  value: 'v',
+  risk: 'safe',
+  desc: `選取文字`
+},
+{
+  label: 'vi visual line',
+  value: 'V',
+  risk: 'safe',
+  desc: `整行選取`
+},
+{
+  label: 'vi 進入插入模式',
+  value: 'i',
+  risk: 'safe',
+  desc: `游標前插入`
+},
+{
+  label: 'vi 行首插入',
+  value: 'I',
+  risk: 'safe',
+  desc: `行首插入`
+},
+{
+  label: 'vi 行尾新增',
+  value: 'A',
+  risk: 'safe',
+  desc: `行尾新增文字`
+},
+{
+  label: 'vi 儲存',
+  value: ':w',
+  risk: 'safe',
+  desc: `寫入檔案`
+},
+{
+  label: 'vi 儲存離開',
+  value: ':wq',
+  risk: 'safe',
+  desc: `儲存並離開`
+},
+{
+  label: 'vi 強制離開',
+  value: ':q!',
+  risk: 'safe',
+  desc: `不儲存離開`
+}
+
+],
+ 
 Config_white_TEMPLATE_CONFIG : []
 
 }
