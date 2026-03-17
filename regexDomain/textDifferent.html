@@ -164,6 +164,7 @@
       <input type="file" id="fileInput2" />
           <button id="compareBtn" class="compare-button">比對</button>
       <button id="clearBtn" class="compare-button">清除高亮</button>
+      <button id="clearTextBtn" class="compare-button">清除文字</button>
         <label class="compare-button">
       <input type="checkbox" id="syncScroll" checked >同步滑條</input>
       </label>
@@ -439,11 +440,19 @@ function controllOverflow(){
     clearBtn.addEventListener("click", () => {
       textArea1.innerHTML = textArea1.innerText;
       textArea2.innerHTML = textArea2.innerText;
-      status.innerText = "Format cleared";
+      status.innerText = "高亮清除";
       status.style.color = "#BB86FC";
       updateAllLineNumbers();
     });
-    /////
+
+    clearTextBtn.addEventListener("click", () => {
+      textArea1.innerHTML = '';
+      textArea2.innerHTML = '';
+      status.innerText = "清除文字";
+      status.style.color = "#BB86FC";
+      updateAllLineNumbers();
+    });
+    /////javascript:capture()
     function capture() {
         tardiv= document.getElementsByClassName('file-input-container')[0]
         tardiv.setAttribute('style', 'display: none;');
