@@ -12,7 +12,8 @@
     { label: 'cfCurlAPI', url: '../regexDomain/cfCurlAPI.html' },
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
-    { label: '文本比對', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
+    { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
+    { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
     { label: 'cmd+k開啟清單', url: 'javascript:alert()' }
   ];
