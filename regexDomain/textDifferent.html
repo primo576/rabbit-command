@@ -81,7 +81,7 @@
       display: flex;
       gap: 10px;
       flex: 1;
-      overflow: hidden;
+       /* overflow: hidden; */
     }
     .editor {
       position: relative;
@@ -162,15 +162,17 @@
       <button id="switchBtn" class="compare-button">左右交換</button>
       <label for="fileInput2">上傳檔案 B</label>
       <input type="file" id="fileInput2" />
-    
-    </div>
-    <!-- Compare and Clear buttons -->
-    <div class="compare-switch-container">
-      <button id="compareBtn" class="compare-button">比對</button>
+          <button id="compareBtn" class="compare-button">比對</button>
       <button id="clearBtn" class="compare-button">清除高亮</button>
         <label class="compare-button">
       <input type="checkbox" id="syncScroll" checked >同步滑條</input>
       </label>
+       <button id="b" onclick="controllOverflow();" class="compare-button">固定頁面</button>
+        <button id="b" onclick="capture();" class="compare-button">截圖</button>
+    </div>
+    <!-- Compare and Clear buttons -->
+    <div class="compare-switch-container">
+
     </div>
     <!-- Progress Bar -->
     <div id="progressContainer">
@@ -189,6 +191,8 @@
     </div>
   </div>
 
+<script src="../public/floating-menu.js"></script>
+<script src="../public/js/html2canvas@1.4.1.js"></script>
   <script>
     // Update line numbers based on the text content
     function updateLineNumbers(textArea, lineNumbersElement) {
@@ -361,6 +365,10 @@ textArea2.addEventListener('scroll', () => {
   }
   isSyncingRight = false;
 });
+
+function controllOverflow(){
+    document.getElementsByClassName('text-area-container')[0].setAttribute('style', 'overflow: hidden;');
+}
     /////
 
     // Switch texts (and their associated file objects).
@@ -435,6 +443,25 @@ textArea2.addEventListener('scroll', () => {
       status.style.color = "#BB86FC";
       updateAllLineNumbers();
     });
+    /////
+    function capture() {
+        tardiv= document.getElementsByClassName('file-input-container')[0]
+        tardiv.setAttribute('style', 'display: none;');
+  html2canvas(document.body).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'screenshot_'+gettime()+'.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    tardiv.removeAttribute('style')
+  });
+
+  function gettime(){
+    a=new Date();
+    b=a.getMonth()+1 +''+a.getDate()+ a.getHours()+ a.getMinutes()+ a.getSeconds()
+    return b
+  }
+}
+    /////
   </script>
 </body>
 </html>

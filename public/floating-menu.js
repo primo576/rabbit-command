@@ -1,3 +1,5 @@
+
+
 (function () {
   if (window.__FLOATING_MENU__) return;
   window.__FLOATING_MENU__ = true;
@@ -16,6 +18,7 @@
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
     { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
+    { label: '截圖', url: 'javascript:capture()' },
     { label: 'cmd+k開啟清單', url: 'javascript:alert()' }
   ];
 
@@ -128,6 +131,11 @@
       menu.style.display = 'none';
     }, 500);
   }
+  ///
+  
+
+  
+  ///
 
   document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -160,5 +168,33 @@ document.addEventListener('click', e => {
   document.head.appendChild(link)
 })()
 
+function loadScript(url) {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+    document.head.appendChild(script);
+}
+loadScript('../public/js/html2canvas@1.4.1.js');
+
+
 })();
+
+
  
+     function capture() {
+        tardiv= document.getElementsByClassName('fab-wrap')[0]
+        tardiv.setAttribute('style', 'display: none;');
+  html2canvas(document.body).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'screenshot_'+gettime()+'.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    tardiv.removeAttribute('style')
+  });
+
+  function gettime(){
+    a=new Date();
+    b=a.getMonth()+1 +''+a.getDate()+ a.getHours()+ a.getMinutes()+ a.getSeconds()
+    return b
+  }
+}
