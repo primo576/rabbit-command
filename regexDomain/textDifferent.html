@@ -301,9 +301,9 @@
 
     // Update line numbers on input and scroll.
     textArea1.addEventListener("input", () => {updateLineNumbers(textArea1, lineNumbers1) 
-        runCompare()});
+       });
     textArea2.addEventListener("input", () => {updateLineNumbers(textArea2, lineNumbers2)
-        runCompare()
+        
     });
     textArea1.addEventListener("scroll", () => syncScroll(textArea1, lineNumbers1));
     textArea2.addEventListener("scroll", () => syncScroll(textArea2, lineNumbers2));
