@@ -19,6 +19,7 @@
     { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
     { label: '截圖', url: 'javascript:capture()' },
+    { label: '回到頂部', url: '#' },
     { label: 'cmd+k開啟清單', url: 'javascript:alert()' }
   ];
 
