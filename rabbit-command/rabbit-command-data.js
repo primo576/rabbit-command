@@ -609,7 +609,46 @@ SYSTEMCTL_TEMPLATE_CONFIG :[
     label: '取消開機自動啟動（⚠️變更系統狀態）',
     value: 'systemctl disable ${service}',
     risk: 'danger'
-  }
+  } ,
+ {
+    label: '建立新服務流程（⚠️變更系統狀態）',
+    value: 'sudo vi /etc/systemd/system/new.service',
+    risk: 'danger',
+     desc: `
+new.service
+[Unit]
+Description=Promtail Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/promtail -config.file=/etc/promtail-config.yaml
+Restart=always
+RestartSec=5
+
+# 建議加上
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+
+
+重載入systemctl
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+
+
+sudo systemctl start promtail
+
+sudo systemctl enable promtail
+
+sudo systemctl status promtail
+
+sudo systemctl restart promtail
+`
+  },
 ],
 
 LINUX_BASIC_TEMPLATE_CONFIG : [
@@ -1802,8 +1841,42 @@ debug config / log 很常用`
 
 ],
  
-Config_white_TEMPLATE_CONFIG : []
+install_TEMPLATE_CONFIG : [
+  {
+    label: 'install promtail）',
+    value: 'curl http://loki-gateway/loki/api/v1/push',
+    risk: 'safe',
+     desc: `
+wget https://github.com/grafana/loki/releases/latest/download/promtail-linux-amd64.zip
+unzip promtail-linux-amd64.zip
+apt install unzip
+unzip promtail-linux-amd64.zip
+sudo mv promtail-linux-amd64 /usr/local/bin/promtail
+vim /etc/promtail-config.yaml
+promtail -config.file=/etc/promtail-config.yaml
+curl localhost:9080/metrics | grep promtail_sent
+要去找promtail-config.yaml 模板
 
+test net port
+
+curl -X POST http://loki.test-yq.top/loki/api/v1/push \
+  -H "Content-Type: application/json" \
+  -d '{
+    "streams": [
+      {
+        "stream": {
+          "job": "test-log-e1"
+        },
+        "values": [
+          ["'$(date +%s%N)'", "hello loki post test"]
+        ]
+      }
+    ]
+  }'
+`
+  },{}
+],
+Config_white_TEMPLATE_CONFIG : []
 }
 
 /*
