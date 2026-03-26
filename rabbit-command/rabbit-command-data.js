@@ -1874,7 +1874,13 @@ curl -X POST http://loki.test-yq.top/loki/api/v1/push \
     ]
   }'
 `
-  },{}
+  },  
+ {
+    label: '— 自訂 —',
+    value: '',
+    risk: 'custom',
+    desc: ``
+  }
 ],
 Config_white_TEMPLATE_CONFIG : []
 }
