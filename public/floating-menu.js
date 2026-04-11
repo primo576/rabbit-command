@@ -13,6 +13,7 @@
     { label: 'nsid過濾工具', url: '../regexDomain/searchnsid.html' },
     { label: 'cfCurlAPI', url: '../regexDomain/cfCurlAPI.html' },
     { label: '文本比對0', url: '../regexDomain/textDifferent.html' },
+    { label: '剪貼板', url: '../regexDomain/clipboard_local_storage.html' },
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},

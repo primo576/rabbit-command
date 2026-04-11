@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Clipboard + LocalStorage</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    textarea { width: 100%; height: 80px; }
+    .item { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    .time { display:block; font-size: 12px; color: gray; margin-bottom:5px; }
+    button { margin-left: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>貼上文字（自動生成）</h2>
+
+<textarea class="my-input" id="input" placeholder="貼上內容..."></textarea>
+<button class="paste-btn" id="paste-btn" >貼上</button>
+
+<div id="list"></div>
+
+
+
+<script>
+  const input = document.getElementById('input');
+  const list = document.getElementById('list');
+
+  // 讀取 localStorage
+  let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
+
+  function save() {
+    localStorage.setItem('clipboardData', JSON.stringify(data));
+  }
+
+  function formatTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleString();
+  }
+
+  function render() {
+    list.innerHTML = '';
+    data.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      const time = document.createElement('span');
+      time.className = 'time';
+      time.textContent = formatTime(item.time);
+
+      const span = document.createElement('textarea');
+      span.textContent = item.text;
+
+      const copyBtn = document.createElement('button');
+      copyBtn.textContent = '複製';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(item.text);
+        alert('已複製');
+      };
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '刪除';
+      delBtn.onclick = () => {
+        data.splice(index, 1);
+        save();
+        render();
+      };
+
+      div.appendChild(time);
+      div.appendChild(span);
+      div.appendChild(copyBtn);
+      div.appendChild(delBtn);
+      list.appendChild(div);
+    });
+  }
+
+  // 偵測貼上
+  input.addEventListener('paste', (e) => {
+    mainaction();
+  });
+
+  function mainaction(){
+       setTimeout(() => {
+      const value = input.value.trim();
+      if (value) {
+        data.unshift({
+          text: value,
+          time: Date.now()
+        });
+        save();
+        render();
+        input.value = '';
+      }
+    }, 0);
+  }
+
+  render();
+
+    const pasteButton = document.getElementById('paste-btn');
+
+
+pasteButton.addEventListener('click', async () => {
+  try {
+   
+    const text = await navigator.clipboard.readText();
+    input.value = text;
+
+    mainaction();
+  } catch (err) {
+  }
+});
+
+</script>
+
+</body>
+</html>
