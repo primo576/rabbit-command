@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Clipboard + LocalStorage</title>
   <style>
     body { font-family: Arial; padding: 20px; }
@@ -13,10 +14,12 @@
 </head>
 <body>
 
-<h2>貼上文字（自動生成）</h2>
+<h2 id="mytitle">剪貼板</h2>
 
-<textarea class="my-input" id="input" placeholder="貼上內容..."></textarea>
+<textarea class="my-input" id="input" placeholder="貼上內容..." style="height: 23px;"></textarea>
 <button class="paste-btn" id="paste-btn" >貼上</button>
+<button onclick="applyToAllTextareasSet()">全部展開</button>
+<button onclick="applyToAllTextareasRm()">全部收起</button>
 
 <div id="list"></div>
 
@@ -25,6 +28,7 @@
 <script>
   const input = document.getElementById('input');
   const list = document.getElementById('list');
+  mycount=0
 
   // 讀取 localStorage
   let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
@@ -38,8 +42,35 @@
     return d.toLocaleString();
   }
 
-  function render() {
+    function auto_grow(el) {
+    el.style.height = "5px"; // 先壓縮
+    el.style.height = el.scrollHeight + "px"; // 再撐開
+  }
+
+////
+function applyToAllTextareasRm() {
+  const list = document.getElementsByTagName('textarea');
+
+  for (let i = 1; i < list.length; i++) {
+    const el = list[i];
+    el.removeAttribute('style');
+  }
+}
+
+function applyToAllTextareasSet() {
+  const list = document.getElementsByTagName('textarea');
+
+  for (let i = 1; i < list.length; i++) {
+    const el = list[i];
+    auto_grow(el);
+  }
+}
+////
+
+
+ function render() {
     list.innerHTML = '';
+
     data.forEach((item, index) => {
       const div = document.createElement('div');
       div.className = 'item';
@@ -48,14 +79,23 @@
       time.className = 'time';
       time.textContent = formatTime(item.time);
 
-      const span = document.createElement('textarea');
-      span.textContent = item.text;
+      const textarea = document.createElement('textarea');
+      textarea.className = 'content';
+      textarea.value = item.text;
+
+      // ⭐ 重點：初始化時也要手動觸發
+     // setTimeout(() => auto_grow(textarea), 0);
+
+      // ⭐ 綁定 input 事件（你原本的寫法）
+      textarea.addEventListener('input', () => auto_grow(textarea));
 
       const copyBtn = document.createElement('button');
       copyBtn.textContent = '複製';
       copyBtn.onclick = () => {
         navigator.clipboard.writeText(item.text);
-        alert('已複製');
+        //alert('已複製');
+        mytitle.innerHTML= '已複製 '+mycount+' '+formatTime(item.time)
+        mycount++;
       };
 
       const delBtn = document.createElement('button');
@@ -67,7 +107,7 @@
       };
 
       div.appendChild(time);
-      div.appendChild(span);
+      div.appendChild(textarea);
       div.appendChild(copyBtn);
       div.appendChild(delBtn);
       list.appendChild(div);
@@ -96,7 +136,7 @@
 
   render();
 
-    const pasteButton = document.getElementById('paste-btn');
+const pasteButton = document.getElementById('paste-btn');
 
 
 pasteButton.addEventListener('click', async () => {
@@ -112,6 +152,5 @@ pasteButton.addEventListener('click', async () => {
 
 </script>
 <script src="../public/floating-menu.js"></script>
-  
 </body>
 </html>
