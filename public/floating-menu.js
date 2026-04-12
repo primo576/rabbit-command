@@ -93,7 +93,10 @@
   const btn = document.createElement('button');
   btn.className = 'fab-btn';
   btn.textContent = '⚙️';
-
+  btn.onclick = () => {
+    window.location.href='#'
+  };
+  
   const menu = document.createElement('div');
   menu.className = 'fab-menu';
 
