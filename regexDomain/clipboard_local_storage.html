@@ -1,53 +1,65 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clipboard + LocalStorage</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clipboard Tool Pro</title>
   <style>
     body { font-family: Arial; padding: 20px; }
-    textarea { width: 100%; height: 80px; }
+    textarea#input { width: 100%; height: 80px; }
+
+    .toolbar { margin: 10px 0; }
+
     .item { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
-    .time { display:block; font-size: 12px; color: gray; margin-bottom:5px; }
-    button { margin-left: 10px; }
+    .time { font-size: 12px; color: gray; }
+
+    .content { width: 100%; height: 80px; overflow: auto; resize: none; }
+    .expanded {  overflow: hidden; }
+
+    .line { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer; }
+    .line:hover { background: #eee; }
+
+    .bar-container { margin-top: 20px; height: 100px; overflow: auto;}
+    .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
+    .bar:hover { opacity: 0.8; }
+    .bar span { position: absolute; left: 5px; font-size: 12px; }
+
+    .progress { height: 20px; background: #4caf50; }
   </style>
 </head>
 <body>
 
-<h2 id="mytitle">剪貼板</h2>
+<h2>Clipboard Tool</h2>
+<textarea id="input" placeholder="貼上內容..."></textarea>
 
-<textarea class="my-input" id="input" placeholder="貼上內容..." style="height: 23px;"></textarea>
-<button class="paste-btn" id="paste-btn" >貼上</button>
+<div class="toolbar">
+
+  <button class="paste-btn" id="paste-btn" >貼上</button>
+   <button  id="seveText-btn"  onclick="mainaction()">保存文字</button>
 <button onclick="applyToAllTextareasSet()">全部展開</button>
 <button onclick="applyToAllTextareasRm()">全部收起</button>
+  <button id="exportBtn">匯出</button>
+  <input type="file" id="importFile" />
+</div>
+
+<div id="usage"></div>
+<div class="bar-container" id="bars"></div>
 
 <div id="list"></div>
 
-
-
 <script>
-  const input = document.getElementById('input');
-  const list = document.getElementById('list');
-  mycount=0
+const input = document.getElementById('input');
+const list = document.getElementById('list');
+const bars = document.getElementById('bars');
+const usage = document.getElementById('usage');
 
-  // 讀取 localStorage
-  let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
-
-  function save() {
-    localStorage.setItem('clipboardData', JSON.stringify(data));
-  }
-
-  function formatTime(ts) {
-    const d = new Date(ts);
-    return d.toLocaleString();
-  }
-
+////
     function auto_grow(el) {
     el.style.height = "5px"; // 先壓縮
     el.style.height = el.scrollHeight + "px"; // 再撐開
   }
 
-////
 function applyToAllTextareasRm() {
   const list = document.getElementsByTagName('textarea');
 
@@ -65,76 +77,6 @@ function applyToAllTextareasSet() {
     auto_grow(el);
   }
 }
-////
-
-
- function render() {
-    list.innerHTML = '';
-
-    data.forEach((item, index) => {
-      const div = document.createElement('div');
-      div.className = 'item';
-
-      const time = document.createElement('span');
-      time.className = 'time';
-      time.textContent = formatTime(item.time);
-
-      const textarea = document.createElement('textarea');
-      textarea.className = 'content';
-      textarea.value = item.text;
-
-      // ⭐ 重點：初始化時也要手動觸發
-     // setTimeout(() => auto_grow(textarea), 0);
-
-      // ⭐ 綁定 input 事件（你原本的寫法）
-      textarea.addEventListener('input', () => auto_grow(textarea));
-
-      const copyBtn = document.createElement('button');
-      copyBtn.textContent = '複製';
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(item.text);
-        //alert('已複製');
-        mytitle.innerHTML= '已複製 '+mycount+' '+formatTime(item.time)
-        mycount++;
-      };
-
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '刪除';
-      delBtn.onclick = () => {
-        data.splice(index, 1);
-        save();
-        render();
-      };
-
-      div.appendChild(time);
-      div.appendChild(textarea);
-      div.appendChild(copyBtn);
-      div.appendChild(delBtn);
-      list.appendChild(div);
-    });
-  }
-
-  // 偵測貼上
-  input.addEventListener('paste', (e) => {
-    mainaction();
-  });
-
-  function mainaction(){
-       setTimeout(() => {
-      const value = input.value.trim();
-      if (value) {
-        data.unshift({
-          text: value,
-          time: Date.now()
-        });
-        save();
-        render();
-        input.value = '';
-      }
-    }, 0);
-  }
-
-  render();
 
 const pasteButton = document.getElementById('paste-btn');
 
@@ -144,12 +86,197 @@ pasteButton.addEventListener('click', async () => {
    
     const text = await navigator.clipboard.readText();
     input.value = text;
-
     mainaction();
   } catch (err) {
   }
 });
+////
 
+let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
+
+data = data.map(item => {
+  if (typeof item === 'string') return { text: item, time: Date.now(), expanded: false, lineMode: false };
+  if (item.lineMode === undefined) item.lineMode = false;
+  return item;
+});
+
+function save() {
+  localStorage.setItem('clipboardData', JSON.stringify(data));
+}
+
+function getSize(obj) {
+  return new Blob([JSON.stringify(obj)]).size;
+}
+
+function renderUsage() {
+  const total = getSize(data);
+  const max = 5 * 1024 * 1024;
+  const percent = (total / max) * 100;
+
+  usage.innerHTML = `
+    <div style="background:#ddd;width:100%;">
+      <div class="progress" style="width:${percent}%"></div>
+    </div>
+    ${(total/1024).toFixed(1)}KB / 5120KB
+  `;
+}
+
+function renderBars() {
+  bars.innerHTML = '';
+
+  const maxSize = Math.max(...data.map(getSize));
+  const ol = document.createElement('ol');
+
+  data.forEach((item, index) => {
+    const size = getSize(item);
+    const percent = (size / maxSize) * 100;
+
+    const li = document.createElement('li');
+    li.className = 'bar';
+
+    // 🔥 背景比例條
+    li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #eee ${percent}%)`;
+
+    // 👉 文字完整顯示
+    li.textContent = `${new Date(item.time).toLocaleString()} - ${item.text.slice(0, 30)} (${(size/1024).toFixed(1)}KB)`;
+
+    li.onclick = () => {
+      document.getElementById(`item-${index}`)
+        .scrollIntoView({ behavior: 'smooth' });
+    };
+
+    ol.appendChild(li);
+  });
+
+  bars.appendChild(ol);
+}
+
+function render() {
+  list.innerHTML = '';
+
+  data.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.id = `item-${index}`;
+
+    const time = document.createElement('div');
+    time.className = 'time';
+    time.textContent = new Date(item.time).toLocaleString();
+
+    const textarea = document.createElement('textarea');
+    textarea.className = 'content';
+    textarea.value = item.text;
+
+    textarea.oninput = () => {
+      item.text = textarea.value;
+      save();
+      renderBars();
+      renderUsage();
+    };
+
+    const toggleBtn = document.createElement('button');
+    toggleBtn.textContent = item.expanded ? '收起' : '展開';
+    toggleBtn.onclick = () => {
+      item.expanded = !item.expanded;
+      save();
+      render();
+    };
+
+    if (item.expanded) {
+      textarea.classList.add('expanded');
+      setTimeout(() => {
+       // textarea.style.height = "5px";
+        //textarea.style.height = textarea.scrollHeight + 'px';
+        auto_grow(textarea);
+      }, 0);
+    }
+
+    const lineBtn = document.createElement('button');
+    lineBtn.textContent = '逐行';
+    lineBtn.onclick = () => {
+      item.lineMode = !item.lineMode;
+      save();
+      render();
+    };
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '複製';
+    copyBtn.onclick = () => navigator.clipboard.writeText(item.text);
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '刪除';
+    delBtn.onclick = () => {
+      data.splice(index, 1);
+      save();
+      render();
+    };
+
+    div.appendChild(time);
+    div.appendChild(textarea);
+    div.appendChild(toggleBtn);
+    div.appendChild(lineBtn);
+    div.appendChild(copyBtn);
+    div.appendChild(delBtn);
+
+    if (item.lineMode) {
+      const lines = item.text.split('\n').filter(l => l.trim());
+      lines.forEach(line => {
+        const ldiv = document.createElement('div');
+        ldiv.className = 'line';
+        ldiv.textContent = line;
+        ldiv.onclick = () => navigator.clipboard.writeText(line);
+        div.appendChild(ldiv);
+      });
+    }
+
+    list.appendChild(div);
+  });
+
+  renderBars();
+  renderUsage();
+}
+
+// 匯出
+exportBtn.onclick = () => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'backup.json';
+  a.click();
+};
+
+// 匯入
+importFile.onchange = (e) => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    const imported = JSON.parse(reader.result);
+    data = [...imported, ...data];
+    save();
+    render();
+  };
+  reader.readAsText(file);
+};
+
+// paste
+input.addEventListener('paste', () => {
+mainaction();
+});
+
+function mainaction(){
+      setTimeout(() => {
+    const value = input.value.trim();
+    if (value) {
+      data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false });
+      save();
+      render();
+      input.value = '';
+    }
+  }, 0);
+}
+
+render();
 </script>
 <script src="../public/floating-menu.js"></script>
 </body>
