@@ -35,15 +35,21 @@
       font-family: system-ui, -apple-system;
     }
     .fab-btn {
+      transition: all 1s ease;
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: #2563eb;
+      background: #ffffff00;
       color: #fff;
       border: none;
       font-size: 22px;
       cursor: pointer;
+      opacity: 0.5;
+    }
+    .fab-btn:hover {
+      background: #2564ebb5;
       box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      opacity: 0.9;
     }
     .fab-menu {
       position: absolute;
@@ -58,6 +64,7 @@
       display: none;
       box-shadow: 0 12px 28px rgba(0,0,0,.5);
     }
+
     .fab-menu input {
       width: 100%;
       box-sizing: border-box;
@@ -92,7 +99,8 @@
 
   const btn = document.createElement('button');
   btn.className = 'fab-btn';
-  btn.textContent = '⚙️';
+  btn.textContent = '⬆️';
+  //⚙️ ⬆️
   btn.onclick = () => {
     window.location.href='#'
   };
@@ -153,7 +161,10 @@
 
 document.addEventListener('click', e => {
   if (!wrap.contains(e.target)) menu.style.display = 'none';
+     
 });
+
+
 
 
   btn.addEventListener('mouseenter', show);
