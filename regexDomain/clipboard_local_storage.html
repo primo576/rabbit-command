@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -6,10 +5,10 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>剪貼簿</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
+    body { font-family: Arial; padding: 0px; }
     textarea#input { width: 100%; height: 80px; }
     .toolbar { margin: 10px 0; }
-    .item { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    .item { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
     .time { font-size: 12px; color: gray; }
     .content { width: 100%; height: 80px; overflow: auto; resize: none; }
     .expanded {  overflow: hidden; }
@@ -20,6 +19,9 @@
     .bar:hover { opacity: 0.8; }
     .bar span { position: absolute; left: 5px; font-size: 12px; }
     .progress { height: 20px; background: #4caf50; }
+    .col {padding-inline-start: 0px;}
+    .col2 {padding-inline-start: 30px;}
+    li div {display: inline;}
   </style>
 </head>
 <body>
@@ -38,7 +40,7 @@
 
 <div id="usage"></div>
 <div class="bar-container" id="bars"></div>
-<div id="list"></div>
+<ol class="col" id="list"></ol>
 
 <script>
 const input = document.getElementById('input');
@@ -116,6 +118,7 @@ function renderBars() {
 
   const maxSize = Math.max(...data.map(getSize));
   const ol = document.createElement('ol');
+  ol.className="col2";
 
   data.forEach((item, index) => {
     const size = getSize(item);
@@ -143,11 +146,22 @@ function renderBars() {
 
 
 function render() {
+
   list.innerHTML = '';
+    //////
+  function createBtnClickFun(BtnText,clickFun){
+      const lineBtn = document.createElement('button');
+      lineBtn.textContent = BtnText;
+      lineBtn.onclick = () => {
+        clickFun();
+      };
+      return lineBtn
+  }
+  //////
 
   data.forEach((item, index) => {
    //const div = document.createElement('div');
-    const div = document.createElement('ol');
+    const div = document.createElement('li');
     div.className = 'item';
     div.id = `item-${index}`;
 
@@ -164,6 +178,9 @@ function render() {
       save();
       renderBars();
       renderUsage();
+      if (item.expanded) {
+      auto_grow(textarea);
+      }
     };
 
     const toggleBtn = document.createElement('button');
@@ -180,47 +197,57 @@ function render() {
         auto_grow(textarea);
       }, 0);
     }
+    ////
+    const toggleBtnToLower = document.createElement('button');
+    toggleBtnToLower.textContent = item.tolowered ? '原文' : '小寫';
+    toggleBtnToLower.onclick = () => {
+      item.tolowered = !item.tolowered;
+      //save();
+      render();
+    };
+    if (item.tolowered) {
+      textarea.value=data[index].text.toLowerCase();
+    }
+    ////
 
-    const lineBtn = document.createElement('button');
-    lineBtn.textContent = '逐行';
-    lineBtn.onclick = () => {
+    function lineMode(){
       item.lineMode = !item.lineMode;
       //save();展開後儲存狀態
       render();
-    };
+    }
 
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = '複製';
-    //copyBtn.onclick = () => navigator.clipboard.writeText(item.text);
-    copyBtn.onclick = () => copyText(item.text);
+ 
 
-    const delBtn = document.createElement('button');
-    delBtn.textContent = '刪除';
-    delBtn.onclick = () => {
+    function delLine(){
       console.log(data[index].text)
       data.splice(index, 1);
       save();
       render();
       titleChange('已刪除：'+time.textContent+"···log還有機會找到")  
       recoverTitle();
-    };
+    }
+
 
     div.appendChild(time);
     div.appendChild(textarea);
-    div.appendChild(toggleBtn);
-    div.appendChild(lineBtn);
-    div.appendChild(copyBtn);
-    div.appendChild(delBtn);
+    div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value)));
+    div.appendChild(toggleBtn); //展開收起
+    div.appendChild(createBtnClickFun('逐行',lineMode));
+    div.appendChild(toggleBtnToLower);
+    div.appendChild(createBtnClickFun('刪除',delLine));
 
-    if (item.lineMode) {
-      const lines = item.text.split('\n').filter(l => l.trim());
+
+    //if function要在按鈕建立之後 不然排版會混亂
+      if (item.lineMode) {
+      //const lines = item.text.split('\n').filter(l => l.trim());
+      const lines = textarea.value.split('\n').filter(l => l.trim());
       lines.forEach(line => {
         //const ldiv = document.createElement('div');
         const ldiv = document.createElement('li');
         ldiv.className = 'line';
         ldiv.textContent = line;
        //ldiv.onclick = () => navigator.clipboard.writeText(line);
-       ldiv.onclick = () => copyText(line);
+       ldiv.onclick = () => copyText(line,'true');
         div.appendChild(ldiv);
       });
     }
@@ -245,10 +272,13 @@ function titleChange(string){
  titleA.textContent=string
 }
 
-function copyText(text){
+function copyText(text,B){
         navigator.clipboard.writeText(text)
         titleChange('已複製：'+text.slice(0, 20)+"···")  
         recoverTitle();
+        if (B){
+          //alert()
+        }
 }
 
 function randomFacetext(){
@@ -310,6 +340,8 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+
+
 // 匯出
 exportBtn.onclick = () => {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -336,14 +368,13 @@ importFile.onchange = (e) => {
 // paste
 input.addEventListener('paste', () => {
 mainaction();
- 
 });
 
 function mainaction(){
       setTimeout(() => {
     const value = input.value.trim();
     if (value) {
-      data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false });
+      data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
       save();
       render();
       titleChange('已貼上：'+value.slice(0, 20)+"···")  
