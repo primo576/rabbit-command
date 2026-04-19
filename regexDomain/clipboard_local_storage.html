@@ -239,6 +239,8 @@ function render() {
 
     //if function要在按鈕建立之後 不然排版會混亂
       if (item.lineMode) {
+        const ol = document.createElement('ol');
+        ol.className = 'col';
       //const lines = item.text.split('\n').filter(l => l.trim());
       const lines = textarea.value.split('\n').filter(l => l.trim());
       lines.forEach(line => {
@@ -247,8 +249,9 @@ function render() {
         ldiv.className = 'line';
         ldiv.textContent = line;
        //ldiv.onclick = () => navigator.clipboard.writeText(line);
-       ldiv.onclick = () => copyText(line,'true');
-        div.appendChild(ldiv);
+       ldiv.onclick = () => copyText(line,div.id);
+       ol.appendChild(ldiv);
+        div.appendChild(ol);
       });
     }
 
@@ -274,10 +277,16 @@ function titleChange(string){
 
 function copyText(text,B){
         navigator.clipboard.writeText(text)
-        titleChange('已複製：'+text.slice(0, 20)+"···")  
+        text20=text.slice(0, 20)
+        titleChange('已複製：'+text20+"···")  
         recoverTitle();
         if (B){
-          //alert()
+          nodeTimeTitle=document.getElementById(B).childNodes[0]
+          nodeTimeTitle_backup=nodeTimeTitle.innerText
+          nodeTimeTitle.innerText='已複製：'+text20+"···"+randomFacetext()
+      setTimeout(() => {
+          nodeTimeTitle.innerText=nodeTimeTitle_backup
+      }, 3000);
         }
 }
 
@@ -333,7 +342,7 @@ function randomFacetext(){
  '(☍﹏⁰)'
   ]
   
-  return warFace[getRandomInt(warFace.length)]
+  return warFace[getRandomInt(warFace.length-1)]
 }
 
 function getRandomInt(max) {
