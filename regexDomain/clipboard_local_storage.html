@@ -230,7 +230,7 @@ function render() {
 
     div.appendChild(time);
     div.appendChild(textarea);
-    div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value)));
+    div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
     div.appendChild(toggleBtn); //展開收起
     div.appendChild(createBtnClickFun('逐行',lineMode));
     div.appendChild(toggleBtnToLower);
@@ -249,7 +249,7 @@ function render() {
         ldiv.className = 'line';
         ldiv.textContent = line;
        //ldiv.onclick = () => navigator.clipboard.writeText(line);
-       ldiv.onclick = () => copyText(line,div.id);
+       ldiv.onclick = () => copyText(line,index);
        ol.appendChild(ldiv);
         div.appendChild(ol);
       });
@@ -275,17 +275,16 @@ function titleChange(string){
  titleA.textContent=string
 }
 
-function copyText(text,B){
+function copyText(text,index){
         navigator.clipboard.writeText(text)
         text20=text.slice(0, 20)
         titleChange('已複製：'+text20+"···")  
         recoverTitle();
-        if (B){
-          nodeTimeTitle=document.getElementById(B).childNodes[0]
-          nodeTimeTitle_backup=nodeTimeTitle.innerText
-          nodeTimeTitle.innerText='已複製：'+text20+"···"+randomFacetext()
+        if (typeof(index)=='number'){
+          nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0] 
+          nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
       setTimeout(() => {
-          nodeTimeTitle.innerText=nodeTimeTitle_backup
+          nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
       }, 3000);
         }
 }
