@@ -15,7 +15,7 @@
     .content { border-radius: 8px; width: calc(100% - 10px); height: 80px; overflow: auto; resize: none; }
     .expanded {  overflow: hidden; }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
-    .line { word-wrap: break-word;border-radius: 8px; margin-top: 10px; background: #eee; padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
+    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px; background: #eee; padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
     /* font-size: 18px; line的影響閱讀 可以做成動態 */
     .line0:hover { background: #eee; }
     .line:hover { background: #a2a2a2; }
@@ -80,6 +80,9 @@
   <button class="buttomStyle1" id="exportBtn">匯出</button>
   <label class="custom-file-upload buttomStyle1">匯入
   <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
+  </label>
+   <label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">逐行文字大小
+  <input type="range" min="10" max="50" value="18" id="slider">
   </label>
 </div>
 
@@ -446,6 +449,15 @@ function mainaction(){
 }
 
 render();
+////
+const slider = document.getElementById('slider');
+// 拉條改文字大小
+
+
+slider.addEventListener('input', (e) => {
+  document.documentElement.style.setProperty('--font-size', e.target.value + 'px');
+});
+////
 </script>
 <script src="../public/floating-menu.js"></script>
 </body>
