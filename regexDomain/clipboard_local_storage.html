@@ -6,7 +6,7 @@
   <title>剪貼簿</title>
   <style>
     body { font-family: Arial; padding: 0px; }
-    textarea#input { width: 100%; height: 80px; }
+     /*textarea#input { width: 100%; height: 80px; }*/
     .toolbar { margin: 8px 0; display: flex;flex-wrap: nowrap;}
     .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
@@ -64,14 +64,23 @@
 
     .hide{display: none;}
 
-    .textCenter{display: flex;justify-content: center;}
+    .textCenter{
+      display: flex;
+      justify-content: center;
+      margin-block-start: 0em;
+    margin-block-end: 0em;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;}
+    .titleStyle{width: 100%;}
   </style>
 </head>
 <body>
-
+<div class="titleStyle">
 <h2 id="titleA" class="textCenter">剪貼簿</h2>
 <textarea class="content" id="input" placeholder="貼上內容..."></textarea>
-
+</div>
 <div class="toolbar ">
   <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
   <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
