@@ -14,11 +14,20 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = '150';
 
+
+const PADDING ={
+    width :50,
+    height: 15
+};
+
+/*
 let mouse = { x: 0, y: 0 };
 window.addEventListener('mousemove', e => {
   mouse.x = e.clientX;
   mouse.y = e.clientY;
+  console.log(mouse.x,mouse.y)
 });
+*/
 
 const cat = {
   x: canvas.width/2,
@@ -38,8 +47,9 @@ function changeState() {
   const r = Math.random();
   if (r < 0.5) {
     cat.state = 'wander';
-    cat.targetX = Math.random() * canvas.width;
-    cat.targetY = Math.random() * canvas.height;
+    cat.targetX = PADDING.width + Math.random() * (canvas.width - PADDING.width * 2);
+    cat.targetY = PADDING.height + Math.random() * (canvas.height - PADDING.height * 2);
+    //console.log(cat.targetX,cat.targetY)
     cat.timer = 200 + Math.random() * 200;
   } else if (r < 0.8) {
     cat.state = 'idle';
@@ -57,9 +67,10 @@ function update() {
   if (cat.state === 'wander') {
     const dx = cat.targetX - cat.x;
     const dy = cat.targetY - cat.y;
-
+    
     cat.vx += dx * 0.001;
     cat.vy += dy * 0.001;
+    //console.log(dx,dy,cat.vx,cat.vy)
   }
 
   // 摩擦（慣性）
@@ -113,6 +124,7 @@ function drawCat() {
   ctx.arc(25, -5, 12, 0, Math.PI*2);
   ctx.stroke();
 
+    num=1
   // 耳朵
   ctx.beginPath();
   ctx.moveTo(18, -12);
