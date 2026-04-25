@@ -46,7 +46,7 @@ const cat = {
 
 function changeState() {
     cat.hungry--;
-    console.log(cat.hungry)
+    //console.log(cat.hungry)
   const r = Math.random();
   const f = Math.random();
   //飢餓了才吃東西 不然一直睡覺
@@ -195,9 +195,36 @@ function drawCat() {
   ctx.stroke();
 
   // 頭
-  ctx.beginPath();
+  
+
+  // 眼睛
+  if (cat.state === 'eat') {
+   // 頭的位置（旋轉中心）
+const headX = 25;
+const headY = -5;
+
+// 吃東西時搖頭
+let angle = 0;
+if (cat.state === 'eat') {
+  angle = Math.sin(Date.now() * 0.02) * 0.3; // 搖頭幅度
+}
+
+ctx.translate(headX, headY);
+ctx.rotate(angle);
+ctx.translate(-headX, -headY);
+
+// 畫頭
+ctx.beginPath();
+ctx.arc(headX, headY, 12, 0, Math.PI*2);
+ctx.stroke();
+  } else {
+ ctx.beginPath();
   ctx.arc(25, -5, 12, 0, Math.PI*2);
   ctx.stroke();
+  }
+
+  
+
 
    
   // 耳朵
@@ -309,6 +336,8 @@ function drawFishBone(food) {
     ctx.stroke();
   }
 
+  ctx.rotate(Math.sin(Date.now() * 0.005) * 0.1);
+
   
 
   ctx.restore();
@@ -324,6 +353,62 @@ function drawFood(food) {
   ctx.fill();
 
   ctx.restore();
+}
+
+function drawHungry(object) {
+  const width = 40;
+  const height = 6;
+
+  const x = object.x - width / 2;
+  const y = object.y - 30;
+
+  // 限制範圍（0~100）
+  const value = Math.max(0, Math.min(100, object.hungry));
+  const percent = value / 100;
+
+  ctx.save();
+
+  // 背景（灰底）
+  ctx.fillStyle = '#444';
+  ctx.fillRect(x, y, width, height);
+
+  // 顏色（隨飢餓變化）
+  let color = '#4caf50'; // 綠（不餓）
+  if (percent < 0.6) color = '#ffc107'; // 黃
+  if (percent < 0.3) color = '#f44336'; // 紅（很餓）
+/*
+  // 前景（飢餓值）
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, width * percent, height);
+
+  // 外框（可選）
+  ctx.strokeStyle = '#000';
+  ctx.strokeRect(x, y, width, height);
+*/
+ // 外框（可選）
+  roundRect(x, y, width, height, 3);
+ctx.fillStyle = '#444';
+ctx.fill();
+ // 前景（飢餓值）
+roundRect(x, y, width * percent, height, 3);
+ctx.fillStyle = color;
+ctx.fill();
+
+  ctx.restore();
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
 }
 
 /*
@@ -362,6 +447,7 @@ function animate() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   update();
   drawCat();
+  drawHungry(cat)
   foods.forEach(food => {
   if (food.eaten) return;
 
