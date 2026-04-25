@@ -13,7 +13,7 @@ const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = '150';
-
+const foods = [];
 
 const PADDING ={
     width :50,
@@ -40,11 +40,20 @@ const cat = {
   timer: 0,
   dir: 1,
   walkCycle: 0,
-  tailTime: 0
+  tailTime: 0,
+  hungry:30
 };
 
 function changeState() {
+    cat.hungry--;
+    console.log(cat.hungry)
   const r = Math.random();
+  const f = Math.random();
+  //飢餓了才吃東西 不然一直睡覺
+  if (cat.hungry<30){
+    cat.state = 'sleep';
+    cat.timer = 200 + Math.random() * 200;
+  }
   if (r < 0.5) {
     cat.state = 'wander';
     cat.targetX = PADDING.width + Math.random() * (canvas.width - PADDING.width * 2);
@@ -58,9 +67,30 @@ function changeState() {
     cat.state = 'sleep';
     cat.timer = 200 + Math.random() * 200;
   }
+  //創立食物
+  if (f < 0.2 && foods.length<4) {
+    for (let index = 0; index < f*10; index++) {
+       foodCreat();
+       // console.log('1')
+    }
+  }
+ //console.log(f)
 }
 
 function update() {
+    ///
+ if (cat.eatTimer > 0) {
+  cat.eatTimer--;
+
+  cat.state = 'eat';
+
+  if (cat.eatTimer === 0) {
+    cat.targetFood = null;
+  }
+
+  return; // 🔥 很重要：吃的時候不做其他行為
+}
+    ///
   cat.timer--;
   if (cat.timer <= 0) changeState();
 
@@ -91,6 +121,51 @@ function update() {
   cat.walkCycle += speed * 0.3;
 
   cat.tailTime += 0.1 + Math.random()*0.05;
+  ////
+  // ===== 找最近食物 =====
+let nearest = null;
+let minDist = Infinity;
+
+foods.forEach(food => {
+  if (food.eaten) return;
+
+  const dx = food.x - cat.x;
+  const dy = food.y - cat.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+
+  if (dist < minDist) {
+    minDist = dist;
+    nearest = food;
+  }
+});
+
+// ===== 吃東西優先權最高 =====
+//飢餓小於60才吃
+if (nearest && cat.hungry<60) {
+  cat.targetFood = nearest;
+
+  const dx = nearest.x - cat.x;
+  const dy = nearest.y - cat.y;
+
+  // 還沒到 → 走過去
+  if (minDist > 20) {
+    cat.state = 'walk';
+
+    cat.vx += dx * 0.003;
+    cat.vy += dy * 0.003;
+  } else {
+    // 到了 → 吃
+    cat.state = 'eat';
+    cat.vx = 0;
+    cat.vy = 0;
+
+    cat.eatTimer = 60; // 吃1秒
+    cat.hungry+=10;
+    nearest.eaten = true;
+    
+  }
+}
+  ////
 }
 
 function drawCat() {
@@ -124,7 +199,7 @@ function drawCat() {
   ctx.arc(25, -5, 12, 0, Math.PI*2);
   ctx.stroke();
 
-    num=1
+   
   // 耳朵
   ctx.beginPath();
   ctx.moveTo(18, -12);
@@ -194,10 +269,108 @@ function drawCat() {
   ctx.restore();
 }
 
+//eat
+function drawFishBone(food) {
+  ctx.save();
+  ctx.translate(food.x, food.y);
+
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 2;
+
+  // 主骨
+  ctx.beginPath();
+  ctx.moveTo(-10, 0);
+  ctx.lineTo(10, 0);
+  ctx.stroke();
+
+  // 魚頭（三角）
+    ctx.beginPath();
+    ctx.moveTo(15, 0);    // 尖端（右）
+    ctx.lineTo(10, -5);   // 上
+    ctx.lineTo(10, 5);    // 下
+    ctx.closePath();
+    ctx.stroke();
+
+  // 魚尾（叉）
+  ctx.beginPath();
+  ctx.moveTo(-10, 0);
+  ctx.lineTo(-15, -5);
+  ctx.moveTo(-10, 0);
+  ctx.lineTo(-15, 5);
+  ctx.stroke();
+
+  // 肋骨
+  for (let i = -6; i <= 6; i += 4) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i - 3, -4);
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i - 3, 4);
+    ctx.stroke();
+  }
+
+  
+
+  ctx.restore();
+}
+
+function drawFood(food) {
+  ctx.save();
+  ctx.translate(food.x, food.y);
+
+  ctx.beginPath();
+  ctx.arc(0, 0, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#8B5A2B'; // 飼料棕色
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/*
+foods.push({
+  x: e.clientX,
+  y: e.clientY,
+  type: Math.random() > 0.5 ? 'food' : 'fish',
+  eaten: false
+});
+*/
+
+
+
+canvas.addEventListener('click', (e) => {
+  foods.push({
+    x: e.clientX,
+    y: e.clientY,
+    type: Math.random() > 0.5 ? 'food' : 'fish',
+    eaten: false
+  });
+});
+
+function foodCreat(){
+      foods.push({
+    x: Math.random() * canvas.width +PADDING.width ,
+    y: Math.random() * canvas.height+PADDING.height ,
+    type: Math.random() > 0.5 ? 'food' : 'fish',
+    eaten: false
+  });
+}
+//eat
+
+
+
 function animate() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   update();
   drawCat();
+  foods.forEach(food => {
+  if (food.eaten) return;
+
+  if (food.type === 'fish') {
+    drawFishBone(food);
+  } else {
+    drawFood(food);
+  }
+});
   requestAnimationFrame(animate);
 }
 
