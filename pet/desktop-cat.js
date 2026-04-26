@@ -15,8 +15,11 @@ canvas.width = window.innerWidth;
 canvas.height = '150';
 const foods = [];
 const coins = [];
+const pets=[];
 
 let score = 0;
+let maxOwnPets=10
+
 
 // UI 位置（右上角）
 const UI_POS = {
@@ -38,7 +41,7 @@ window.addEventListener('mousemove', e => {
 });
 */
 
-const cat = {
+const cat1 = {
   x: canvas.width/2,
   y: canvas.height/2,
   vx: 0,
@@ -54,15 +57,18 @@ const cat = {
   energy:0
 };
 
-function changeState() {
+function changeState(pets) {
+      pets.forEach(cat => {
     //每次動作扣飢餓
     cat.hungry--;
+
+  
     //console.log(cat.hungry)
 
     if (cat.energy>99) {
         cat.hungry-=30
         cat.energy=0;
-        coinCreat();
+        coinCreat(cat);
         //console.log('消耗能量')
     }
   const r = Math.random();
@@ -87,15 +93,16 @@ function changeState() {
   }
   //創立食物
   if (f < 0.2 && foods.length<4) {
-    for (let index = 0; index < f*10; index++) {
+    for (let index = 0; index < f*10 + pets.length; index++) {
        foodCreat();
        // console.log('1')
     }
   }
  //console.log(f)
-}
+})}
 
-function update() {
+function update(pets) {
+    pets.forEach(cat => {
     ///
     if (cat.hungry>60) {
         cat.energy++;
@@ -116,7 +123,7 @@ function update() {
 }
     ///
   cat.timer--;
-  if (cat.timer <= 0) changeState();
+  if (cat.timer <= 0) changeState(pets);
 
   if (cat.state === 'wander') {
     const dx = cat.targetX - cat.x;
@@ -194,6 +201,7 @@ if (nearest && cat.hungry<60) {
 //
 //coin
   ////
+})
 }
 
 //coin
@@ -249,9 +257,28 @@ function updateCoins() {
       coins.splice(i, 1);
     }
   }
+
+  // 清掉餓死貓
+  for (let i = pets.length - 1; i >= 0; i--) {
+    if (pets[i].hungry<3) {
+      pets.splice(i, 1);
+    }
+  }
+  
+if (score>2 && pets.length<maxOwnPets) {
+    petCreat();
+    score=0;
 }
 
-function drawCat() {
+if (pets.length==0){
+    petCreat();
+}
+
+
+}
+
+function drawCat(pets) {
+    pets.forEach(cat => {
   ctx.save();
 
   ctx.translate(cat.x, cat.y);
@@ -377,7 +404,9 @@ ctx.stroke();
   }
 
   ctx.restore();
+})
 }
+
 
 //eat
 function drawFishBone(food) {
@@ -587,7 +616,28 @@ function foodCreat(){
   });
 }
 
-function coinCreat(){
+function petCreat(){
+      pets.push({
+  type:'cat',
+  x: PADDING.width + Math.random() * (canvas.width - PADDING.width * 2),
+  y: PADDING.height + Math.random() * (canvas.height - PADDING.height * 2),
+  vx: 0,
+  vy: 0,
+  targetX: 0,
+  targetY: 0,
+  state: 'idle',
+  timer: 0,
+  dir: 1,
+  walkCycle: 0,
+  tailTime: 0,
+  hungry:30,
+  energy:0
+
+  });
+}
+petCreat();
+
+function coinCreat(cat){
     /*
       coins.push({
    x: Math.random() * canvas.width +PADDING.width ,
@@ -615,10 +665,11 @@ coins.push({
 
 //eat
 
-function drawCatStatus(){
+function drawCatStatus(pets){
+    pets.forEach(cat => {
 drawHungry(cat,'hungry')
 drawHungry(cat,'energy')
-}
+})}
 
 function drawFoodmain(){
     drawUI();
@@ -645,15 +696,15 @@ function drawFoodmain(){
 
 function animate() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  update();
+  update(pets);
   //updateCoins();
   updateCoins();
-  drawCat();
-  drawCatStatus();
+  drawCat(pets);
+  drawCatStatus(pets);
     drawFoodmain();
   requestAnimationFrame(animate);
 }
 
-changeState();
+changeState(pets);
 animate();
 })();
