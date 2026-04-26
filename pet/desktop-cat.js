@@ -15,10 +15,11 @@ canvas.width = window.innerWidth;
 canvas.height = '150';
 const foods = [];
 const coins = [];
-const pets=[];
+pets=[];
+monsters=[]
 
 let score = 0;
-let maxOwnPets=10
+let maxOwnPets=30
 
 
 // UI 位置（右上角）
@@ -65,12 +66,7 @@ function changeState(pets) {
   
     //console.log(cat.hungry)
 
-    if (cat.energy>99) {
-        cat.hungry-=30
-        cat.energy=0;
-        coinCreat(cat);
-        //console.log('消耗能量')
-    }
+   
   const r = Math.random();
   const f = Math.random();
   //飢餓了才吃東西 不然一直睡覺
@@ -90,13 +86,20 @@ function changeState(pets) {
   } else {
     cat.state = 'sleep';
     cat.timer = 200 + Math.random() * 200;
+     if (cat.energy>99) {
+        cat.hungry-=30
+        cat.energy=0;
+        coinCreat(cat);
+        //console.log('消耗能量')
+    }
   }
   //創立食物
   if (f < 0.2 && foods.length<4) {
-    for (let index = 0; index < f*10 + pets.length; index++) {
+    for (let index = 0; index <  pets.length*0.6; index++) {
        foodCreat();
-       // console.log('1')
+       
     }
+     console.log('食物',foods.length,'個')
   }
  //console.log(f)
 })}
@@ -157,7 +160,9 @@ function update(pets) {
 let nearest = null;
 let minDist = Infinity;
 
-foods.forEach(food => {
+if (cat.hungry<60) {
+    if(cat.state=='sleep') return
+    foods.forEach(food => {
   if (food.eaten) return;
 
   const dx = food.x - cat.x;
@@ -169,10 +174,18 @@ foods.forEach(food => {
     nearest = food;
   }
 });
+}
+
+
 
 // ===== 吃東西優先權最高 =====
 //飢餓小於60才吃
-if (nearest && cat.hungry<60) {
+
+//if(!cat.state=='sleep'){console.log(cat)}
+
+if (nearest  ) {
+    //睡覺不吃飯
+    if(cat.state=='sleep') return
   cat.targetFood = nearest;
 
   const dx = nearest.x - cat.x;
@@ -258,10 +271,18 @@ function updateCoins() {
     }
   }
 
+  // 清掉吃過的食物
+  for (let i = foods.length - 1; i >= 0; i--) {
+    if (foods[i].eaten) {
+      foods.splice(i, 1);
+    }
+  }
+
   // 清掉餓死貓
   for (let i = pets.length - 1; i >= 0; i--) {
-    if (pets[i].hungry<3) {
+    if (pets[i].hungry<10 || pets[i].remove == true) {
       pets.splice(i, 1);
+      console.log(pets[i],'餓死了或被殺死了')
     }
   }
   
@@ -270,12 +291,49 @@ if (score>2 && pets.length<maxOwnPets) {
     score=0;
 }
 
-if (pets.length==0){
-    petCreat();
+if (score>50 ) {
+    score=0;
+    monsterCreat();
 }
 
 
+
+
 }
+
+//mouse system
+function updateMouse(monsters, cats) {
+    monsters.forEach(mouse => {
+  let nearest = null;
+  let minDist = Infinity;
+
+  cats.forEach(cat => {
+    const dx = cat.x - mouse.x;
+    const dy = cat.y - mouse.y;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist < minDist) {
+      minDist = dist;
+      nearest = cat;
+    }
+  });
+
+  if (nearest) {
+    const dx = nearest.x - mouse.x;
+    const dy = nearest.y - mouse.y;
+
+    mouse.x += dx * 0.02;
+    mouse.y += dy * 0.02;
+
+    mouse.dir = dx > 0 ? 1 : -1;
+
+    // 碰到貓 → 清除
+    if (minDist < 20) {
+      nearest.remove = true;
+    }
+  }})
+}
+//
 
 function drawCat(pets) {
     pets.forEach(cat => {
@@ -408,6 +466,72 @@ ctx.stroke();
 }
 
 
+
+//mouse
+function drawMouse(monsters) {
+    monsters.forEach(mouse => {
+  ctx.save();
+  ctx.translate(mouse.x, mouse.y);
+  ctx.scale(mouse.dir || 1, 1); // 面向方向
+
+  // 身體（橢圓）
+  ctx.beginPath();
+  ctx.ellipse(0, 5, 12, 8, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  const jitter = Math.sin(Date.now() * 0.02) * 1;
+ctx.translate(0, jitter);
+
+  // 頭
+  ctx.beginPath();
+  ctx.arc(12, 0, 6, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 耳朵
+  ctx.beginPath();
+  ctx.arc(9, -5, 3, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(15, -5, 3, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 眼睛
+  ctx.beginPath();
+  ctx.arc(14, -1, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 鼻子
+  ctx.beginPath();
+  ctx.arc(18, 0, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 鬍鬚
+  ctx.beginPath();
+  ctx.moveTo(18, 0);
+  ctx.lineTo(22, -2);
+  ctx.moveTo(18, 0);
+  ctx.lineTo(22, 2);
+  ctx.stroke();
+
+  // 尾巴（曲線）
+  ctx.beginPath();
+  ctx.moveTo(-10, 5);
+  ctx.quadraticCurveTo(-25, -5, -30, 10);
+  ctx.stroke();
+
+  
+
+const wave = Math.sin(Date.now() * 0.1) * 5;
+
+ctx.beginPath();
+ctx.moveTo(-10, 5);
+ctx.quadraticCurveTo(-25, -5 + wave, -30, 10 + wave);
+ctx.stroke();
+
+  ctx.restore();
+   })
+}
+//mouse
 //eat
 function drawFishBone(food) {
   ctx.save();
@@ -599,13 +723,38 @@ foods.push({
 
 
 canvas.addEventListener('click', (e) => {
+    
   foods.push({
     x: e.clientX,
     y: e.clientY,
     type: Math.random() > 0.5 ? 'food' : 'fish',
     eaten: false
   });
+  //console.log(foods)
+  
+  //
 });
+//
+/*
+monsters.push({
+  type:'mouse',
+  x: PADDING.width + Math.random() * (canvas.width - PADDING.width * 2),
+  y: PADDING.height + Math.random() * (canvas.height - PADDING.height * 2),
+  vx: 0,
+  vy: 0,
+  targetX: 0,
+  targetY: 0,
+  state: 'idle',
+  timer: 0,
+  dir: 1,
+  walkCycle: 0,
+  tailTime: 0,
+  hungry:30,
+  energy:0
+
+  });
+  */
+//
 
 function foodCreat(){
       foods.push({
@@ -635,19 +784,32 @@ function petCreat(){
 
   });
 }
-petCreat();
+
+//
+function monsterCreat(){
+ monsters.push({
+  type:'mouse',
+  x: PADDING.width + Math.random() * (canvas.width - PADDING.width * 2),
+  y: PADDING.height + Math.random() * (canvas.height - PADDING.height * 2),
+  vx: 0,
+  vy: 0,
+  targetX: 0,
+  targetY: 0,
+  state: 'idle',
+  timer: 0,
+  dir: 1,
+  walkCycle: 0,
+  tailTime: 0,
+  hungry:30,
+  energy:0
+
+  });
+  console.log(monsters)
+}
+//
+//petCreat();
 
 function coinCreat(cat){
-    /*
-      coins.push({
-   x: Math.random() * canvas.width +PADDING.width ,
-    y: Math.random() * canvas.height+PADDING.height ,
-  vy: 0,
-  gravity: 0.4,
-  bounce: 0.6
-});
-*/
-
 coins.push({
     x: cat.x,
     y: cat.y,
@@ -692,15 +854,25 @@ function drawFoodmain(){
 //
 }
 
+function petCrontol(){
+    if (pets.length==0){
+    petCreat();
+    monsters=[];
+}
+}
+
 
 
 function animate() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
+  petCrontol();
   update(pets);
+  updateMouse(monsters,pets)
   //updateCoins();
   updateCoins();
   drawCat(pets);
   drawCatStatus(pets);
+  drawMouse(monsters)
     drawFoodmain();
   requestAnimationFrame(animate);
 }
