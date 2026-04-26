@@ -14,6 +14,15 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = '150';
 const foods = [];
+const coins = [];
+
+let score = 0;
+
+// UI 位置（右上角）
+const UI_POS = {
+  x: canvas.width - 60,
+  y: 40
+};
 
 const PADDING ={
     width :50,
@@ -41,12 +50,21 @@ const cat = {
   dir: 1,
   walkCycle: 0,
   tailTime: 0,
-  hungry:30
+  hungry:30,
+  energy:0
 };
 
 function changeState() {
+    //每次動作扣飢餓
     cat.hungry--;
     //console.log(cat.hungry)
+
+    if (cat.energy>99) {
+        cat.hungry-=30
+        cat.energy=0;
+        coinCreat();
+        //console.log('消耗能量')
+    }
   const r = Math.random();
   const f = Math.random();
   //飢餓了才吃東西 不然一直睡覺
@@ -78,6 +96,12 @@ function changeState() {
 }
 
 function update() {
+    ///
+    if (cat.hungry>60) {
+        cat.energy++;
+        
+    }
+   // console.log(cat.energy)
     ///
  if (cat.eatTimer > 0) {
   cat.eatTimer--;
@@ -164,8 +188,67 @@ if (nearest && cat.hungry<60) {
     nearest.eaten = true;
     
   }
+  //updateCoins();
 }
+
+//
+//coin
   ////
+}
+
+//coin
+function updateCoins() {
+  coins.forEach(coin => {
+    coin.time += 0.1;
+
+    if (coin.state === 'drop') {
+      coin.vy += coin.gravity;
+      coin.x += coin.vx;
+      coin.y += coin.vy;
+
+      const ground = canvas.height - 20;
+
+      if (coin.y > ground) {
+        coin.y = ground;
+        coin.vy *= -coin.bounce;
+
+        // 停下來
+        if (Math.abs(coin.vy) < 1) {
+          coin.vy = 0;
+          coin.state = 'idle';
+          coin.timer = 30; // 停一下再飛
+        }
+      }
+    }
+
+    else if (coin.state === 'idle') {
+      coin.timer--;
+      if (coin.timer <= 0) {
+        coin.state = 'fly';
+      }
+    }
+
+    else if (coin.state === 'fly') {
+      const dx = UI_POS.x - coin.x;
+      const dy = UI_POS.y - coin.y;
+
+      coin.x += dx * 0.1;
+      coin.y += dy * 0.1;
+
+      // 到 UI
+      if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+        coin.collected = true;
+        score++;
+      }
+    }
+  });
+
+  // 清掉已收集
+  for (let i = coins.length - 1; i >= 0; i--) {
+    if (coins[i].collected) {
+      coins.splice(i, 1);
+    }
+  }
 }
 
 function drawCat() {
@@ -355,15 +438,77 @@ function drawFood(food) {
   ctx.restore();
 }
 
-function drawHungry(object) {
+//coin
+function drawCoin(coin) {
+  ctx.save();
+  ctx.translate(coin.x, coin.y);
+
+  // 翻轉動畫
+  const scaleX = Math.abs(Math.sin(coin.time));
+  ctx.scale(scaleX, 1);
+
+  const r = 10;
+
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#FFD700';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, r - 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#FFC107';
+  ctx.fill();
+
+  ctx.strokeStyle = '#B8860B';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 高光
+  ctx.beginPath();
+  ctx.arc(-3, -3, 3, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fill();
+
+  ctx.restore();
+}
+//coin
+//ui
+function drawUI() {
+  ctx.save();
+
+  ctx.fillStyle = '#000';
+  ctx.font = '16px Arial';
+  ctx.textAlign = 'right';
+
+  ctx.fillText('🪙 ' + score, canvas.width - 20, 40);
+
+  ctx.restore();
+}
+//
+
+function drawHungry(object,type) {
+     y =0;
+     height = 0;
+    if (type=='hungry') {
+         y = object.y - 30;
+        drawType=object.hungry
+        height=6;
+    }
+    if (type=='energy') {
+         y = object.y - 33;
+        drawType=object.energy
+        height=3;
+    }
+
   const width = 40;
-  const height = 6;
+ 
 
   const x = object.x - width / 2;
-  const y = object.y - 30;
+  //const y = object.y - 30;
+  
 
   // 限制範圍（0~100）
-  const value = Math.max(0, Math.min(100, object.hungry));
+  const value = Math.max(0, Math.min(100, drawType));
   const percent = value / 100;
 
   ctx.save();
@@ -374,8 +519,10 @@ function drawHungry(object) {
 
   // 顏色（隨飢餓變化）
   let color = '#4caf50'; // 綠（不餓）
-  if (percent < 0.6) color = '#ffc107'; // 黃
+
+  
   if (percent < 0.3) color = '#f44336'; // 紅（很餓）
+  if (type=='energy' ) color = '#ffc107'; // 黃
 /*
   // 前景（飢餓值）
   ctx.fillStyle = color;
@@ -439,15 +586,42 @@ function foodCreat(){
     eaten: false
   });
 }
+
+function coinCreat(){
+    /*
+      coins.push({
+   x: Math.random() * canvas.width +PADDING.width ,
+    y: Math.random() * canvas.height+PADDING.height ,
+  vy: 0,
+  gravity: 0.4,
+  bounce: 0.6
+});
+*/
+
+coins.push({
+    x: cat.x,
+    y: cat.y,
+    vx: (Math.random() - 0.5) * 4,
+    vy: -5,
+    gravity: 0.4,
+    bounce: 0.5,
+    state: 'drop', // drop → idle → fly
+    timer: 0,
+    time: 0
+  });
+
+}
+
+
 //eat
 
+function drawCatStatus(){
+drawHungry(cat,'hungry')
+drawHungry(cat,'energy')
+}
 
-
-function animate() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  update();
-  drawCat();
-  drawHungry(cat)
+function drawFoodmain(){
+    drawUI();
   foods.forEach(food => {
   if (food.eaten) return;
 
@@ -457,6 +631,26 @@ function animate() {
     drawFood(food);
   }
 });
+//
+  coins.forEach(coin => {
+  //if (coin.eaten) return;
+
+  drawCoin(coin);
+});
+
+//
+}
+
+
+
+function animate() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  update();
+  //updateCoins();
+  updateCoins();
+  drawCat();
+  drawCatStatus();
+    drawFoodmain();
   requestAnimationFrame(animate);
 }
 
