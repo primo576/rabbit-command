@@ -19,7 +19,7 @@ pets=[];
 monsters=[]
 
 let score = 0;
-let maxOwnPets=30
+let maxOwnPets=11
 
 
 // UI 位置（右上角）
@@ -280,9 +280,29 @@ function updateCoins() {
 
   // 清掉餓死貓
   for (let i = pets.length - 1; i >= 0; i--) {
-    if (pets[i].hungry<10 || pets[i].remove == true) {
+    if (pets[i].hungry<10 ) {
       pets.splice(i, 1);
-      console.log(pets[i],'餓死了或被殺死了')
+      console.log(pets[i],'餓死了')
+    }
+    if ( pets[i].remove == true) {
+        console.log(pets[i],'被殺死了')
+        pets.splice(i, 1);
+        
+    monsters.forEach(mouse => {
+        mouse.HP--;
+        //所有老鼠生命-1
+    })
+
+    
+
+
+        }
+  }
+
+  for (let i = monsters.length - 1; i >= 0; i--) {
+    if (monsters[i].HP<1) {
+       console.log(monsters[i],'老鼠死了')
+      monsters.splice(i, 1);
     }
   }
   
@@ -653,6 +673,12 @@ function drawHungry(object,type) {
         height=3;
     }
 
+        if (type=='HP') {
+         y = object.y - 30;
+        drawType=object.HP*10
+        height=6;
+    }
+
   const width = 40;
  
 
@@ -786,6 +812,23 @@ function petCreat(){
 }
 
 //
+monsters.push({
+  type:'mouse',
+  x: PADDING.width + Math.random() * (canvas.width - PADDING.width * 2),
+  y: PADDING.height + Math.random() * (canvas.height - PADDING.height * 2),
+  vx: 0,
+  vy: 0,
+  targetX: 0,
+  targetY: 0,
+  state: 'idle',
+  timer: 0,
+  dir: 1,
+  walkCycle: 0,
+  tailTime: 0,
+  hungry:30,
+  energy:0,
+  HP:10});
+//
 function monsterCreat(){
  monsters.push({
   type:'mouse',
@@ -801,7 +844,8 @@ function monsterCreat(){
   walkCycle: 0,
   tailTime: 0,
   hungry:30,
-  energy:0
+  energy:0,
+  HP:10
 
   });
   console.log(monsters)
@@ -833,6 +877,11 @@ drawHungry(cat,'hungry')
 drawHungry(cat,'energy')
 })}
 
+function drawMousesStatus(monsters){
+    monsters.forEach(mouse => {
+drawHungry(mouse,'HP')
+})}
+
 function drawFoodmain(){
     drawUI();
   foods.forEach(food => {
@@ -857,7 +906,7 @@ function drawFoodmain(){
 function petCrontol(){
     if (pets.length==0){
     petCreat();
-    monsters=[];
+   
 }
 }
 
@@ -872,6 +921,7 @@ function animate() {
   updateCoins();
   drawCat(pets);
   drawCatStatus(pets);
+  drawMousesStatus(monsters);
   drawMouse(monsters)
     drawFoodmain();
   requestAnimationFrame(animate);
