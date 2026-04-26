@@ -5,7 +5,7 @@ const catCanvas = document.createElement('canvas');
 catCanvas.id='canvas'
 //document.getElementsByTagName('body')[0].appendChild(catCanvas);
 document.getElementsByTagName('body')[0].prepend(catCanvas);
-const canvas = document.getElementById('canvas');
+const canvas = catCanvas
 const ctx = canvas.getContext('2d');
 
 //canvas.width = window.innerWidth;
@@ -13,6 +13,7 @@ const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = '150';
+//canvas.height = window.innerHeight;
 const foods = [];
 const coins = [];
 pets=[];
@@ -101,6 +102,12 @@ function changeState(pets) {
     }
      console.log('食物',foods.length,'個')
   }
+
+  if (f < 0.001 && pets.length>5) {
+    monsterCreat();
+    console.log('怪物',monsters.length,'個')
+  }
+   
  //console.log(f)
 })}
 
@@ -302,6 +309,10 @@ function updateCoins() {
   for (let i = monsters.length - 1; i >= 0; i--) {
     if (monsters[i].HP<1) {
        console.log(monsters[i],'老鼠死了')
+       
+      for (let index = 0; index < maxOwnPets*3; index++) {
+       foodCreat();
+      }
       monsters.splice(i, 1);
     }
   }
@@ -749,7 +760,12 @@ foods.push({
 
 
 canvas.addEventListener('click', (e) => {
-    
+    if (monsters.length>0) {
+        monsters.forEach(mouse => {
+        mouse.HP-=5;
+        //所有老鼠生命-1
+    })
+    }else{
   foods.push({
     x: e.clientX,
     y: e.clientY,
@@ -757,7 +773,7 @@ canvas.addEventListener('click', (e) => {
     eaten: false
   });
   //console.log(foods)
-  
+  }
   //
 });
 //
