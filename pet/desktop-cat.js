@@ -27,6 +27,7 @@ let catPower=1
 let rank=0
 let diePetNum=0
 let dieMonNum=0
+let maxFoodNum=999
 
 
 // UI 位置（右上角）
@@ -557,6 +558,9 @@ ctx.stroke();
 function choiceDrawTail(cat){
     //console.log('use',cat.type)
     switch (cat.tail_type) {
+  case 0:
+    // Code to run if expression === value1
+    break;
   case 1:
     // Code to run if expression === value1
     drawTail(cat)
@@ -575,9 +579,10 @@ function choiceDrawTail(cat){
     break;
   default:
     // Code to run if no cases match
+    drawTailCurl(cat)
 }
 
-}
+
 
 function drawTail(cat){
     let baseX = -20;
@@ -654,6 +659,23 @@ function drawTailShake(cat) {
     baseX -= 10;
     baseY -= 10;
   }
+}
+
+function drawTailCurl(cat) {
+  const t = cat.tailTime;
+
+  ctx.beginPath();
+  ctx.moveTo(-20, 5);
+
+  ctx.bezierCurveTo(
+    -40, -10,
+    -30, -30,
+    -10 + Math.sin(t)*5, -20
+  );
+
+  ctx.stroke();
+}
+
 }
 //tailArea
 
@@ -1031,7 +1053,7 @@ function foodCreat(x,y){
         y=Math.random() * canvas.height+PADDING.height
     }
 
-    if (foods.length<50) {
+    if (foods.length<maxFoodNum) {
          foods.push({
     x: x ,
     y: y ,
@@ -1060,17 +1082,15 @@ function petCreat(){
   tailTime: 0,
   hungry:30,
   energy:0,
-  power:1
-
+  power:1,
+  tail_type:rank
   }
   if (monsters.length>0) {
      c.face=randomFacetext()
      c.power=catPower
   }
 
-  if (rank>0) {
-    c.tail_type=rank
-  } else if (rank>5){c.tail_type=4}
+  
  
 
 pets.push(c);
@@ -1163,7 +1183,12 @@ drawHungry(mouse,'HP')
 
 function drawFoodmain(){
     drawUI();
+    i=0;
   foods.forEach(food => {
+    i++
+    if (i>49) {
+        return
+    }
   if (food.eaten) return;
 
   if (food.type === 'fish') {
