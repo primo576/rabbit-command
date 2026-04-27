@@ -18,6 +18,7 @@ const foods = [];
 const coins = [];
 pets=[];
 monsters=[]
+const popTexts = [];
 
 let score = 0;
 let maxOwnPets=11
@@ -32,8 +33,10 @@ let maxFoodNum=999
 
 // UI 位置（右上角）
 const UI_POS = {
-  x: canvas.width - 60,
-  y: 40
+  //x: canvas.width - 60,
+  //y: 40
+  x: 10,
+  y: 10
 };
 
 const PADDING ={
@@ -847,6 +850,7 @@ function drawUI() {
   ctx.font = '16px Arial';
   ctx.textAlign = 'right';
   w=canvas.width - 20
+  
 
   ctx.fillText('💰: ' + score, w, 40);
   ctx.fillText('🆙: ' + level, w, 70);
@@ -856,6 +860,46 @@ function drawUI() {
   ctx.fillText('🆖: ' + rank, w, 190);
   ctx.fillText('☠️🐱: ' + diePetNum, w, 220);
   ctx.fillText('☠️🐭: ' + dieMonNum, w, 250);
+
+  ctx.restore();
+}
+
+function drawTopHUD() {
+  ctx.save();
+
+  ctx.font = '14px Arial';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+  //
+ //ctx.fillStyle = 'rgba(184, 184, 184, 0.4)';
+//ctx.fillRect(0, 0, canvas.width, canvas.height);
+//ctx.shadowColor = 'black';
+//ctx.shadowBlur = 4;
+  //
+
+  let x = 10;
+  const y = 10;
+  const gap = 20;
+
+  const items = [
+    '💰 ' + score,
+    '🆙 ' + level,
+    '🐱 ' + pets.length,
+    '🐭 ' + monsters.length,
+    '🍖 ' + foods.length,
+    '🆖 ' + rank,
+    '☠️🐱 ' + diePetNum,
+    '☠️🐭 ' + dieMonNum
+  ];
+//items.join('   |   ')
+
+  items.forEach(text => {
+   
+    ctx.fillText(text, x, y);
+    
+    const width = ctx.measureText(text).width;
+    x += width + gap; // 🔥 根據實際寬度往右排
+  });
 
   ctx.restore();
 }
@@ -1166,7 +1210,9 @@ coins.push({
   });
 
 }
+//socore effict
 
+//
 
 //eat
 
@@ -1182,7 +1228,7 @@ drawHungry(mouse,'HP')
 })}
 
 function drawFoodmain(){
-    drawUI();
+    
     i=0;
   foods.forEach(food => {
     i++
@@ -1221,15 +1267,19 @@ function petCrontol(){
 function animate() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   petCrontol();
+  
   update(pets);
   updateMouse(monsters,pets)
-  //updateCoins();
+  
   updateCoins();
+  
   drawCat(pets);
   drawCatStatus(pets);
   drawMousesStatus(monsters);
   drawMouse(monsters)
     drawFoodmain();
+   
+    drawTopHUD();
   requestAnimationFrame(animate);
 }
 
