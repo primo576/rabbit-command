@@ -12,8 +12,8 @@ const ctx = canvas.getContext('2d');
 //canvas.height = window.innerHeight;
 
 canvas.width = window.innerWidth;
-canvas.height = '150';
-//canvas.height = window.innerHeight;
+//canvas.height = '150';
+canvas.height = window.innerHeight;
 const foods = [];
 const coins = [];
 pets=[];
@@ -21,6 +21,9 @@ monsters=[]
 
 let score = 0;
 let maxOwnPets=11
+let maxlevel=20
+let level=0
+let catPower=1
 
 
 // UI 位置（右上角）
@@ -100,12 +103,12 @@ function changeState(pets) {
        foodCreat();
        
     }
-     console.log('食物',foods.length,'個')
+     //console.log('食物',foods.length,'個')
   }
 
   if (f < 0.001 && pets.length>5) {
     monsterCreat();
-    console.log('怪物',monsters.length,'個')
+    //console.log('怪物',monsters.length,'個')
   }
    
  //console.log(f)
@@ -294,13 +297,19 @@ function updateCoins() {
     if ( pets[i].remove == true) {
         console.log(pets[i],'被殺死了')
         pets.splice(i, 1);
-        
+        /*
     monsters.forEach(mouse => {
+        if (pets[i].power) {
+            mouse.HP-=pets[i].power
+        }else{
         mouse.HP--;
         //所有老鼠生命-1
+        //  得想個辦法只扣單個老鼠生命
+        }
     })
-
-    
+*/
+    foodCreat();
+    score++;
 
 
         }
@@ -314,17 +323,25 @@ function updateCoins() {
        foodCreat();
       }
       monsters.splice(i, 1);
+      if (maxOwnPets<maxlevel) {
+        maxOwnPets++
+        level++
+        catPower++
+      }
     }
   }
   
 if (score>2 && pets.length<maxOwnPets) {
     petCreat();
-    score=0;
+    score-=3;
 }
 
 if (score>50 ) {
-    score=0;
-    monsterCreat();
+    score-=20;
+    for (let index = 0; index < level; index++) {
+        monsterCreat();
+        
+    }
 }
 
 
@@ -361,6 +378,7 @@ function updateMouse(monsters, cats) {
     // 碰到貓 → 清除
     if (minDist < 20) {
       nearest.remove = true;
+      mouse.HP-=nearest.power
     }
   }})
 }
@@ -414,9 +432,38 @@ ctx.translate(-headX, -headY);
 
 // 畫頭
 ctx.beginPath();
-ctx.arc(headX, headY, 12, 0, Math.PI*2);
+roundRect(25 - 14, -5 - 8, 30, 16, 6);
 ctx.stroke();
-  } else {
+  }else if (cat.face){
+    ctx.font = '10px Arial';
+
+const text = cat.face;
+const metrics = ctx.measureText(text);
+const textWidth = metrics.width;
+const padding = 5; // 左右留白
+const headWidth = textWidth + padding;
+const headHeight = 20; // 可以固定
+//
+const headX = 25;
+const headY = -5;
+
+ctx.beginPath();
+ctx.ellipse(
+  headX,
+  headY,
+  headWidth / 2,
+  headHeight / 2,
+  0,
+  0,
+  Math.PI * 2
+);
+ctx.stroke();
+//
+//roundRect(25 - 14, -5 - 8, 60, 16, 6);
+//function roundRect(x, y, w, h, r) {
+ctx.stroke();
+  } 
+  else {
  ctx.beginPath();
   ctx.arc(25, -5, 12, 0, Math.PI*2);
   ctx.stroke();
@@ -447,10 +494,22 @@ ctx.stroke();
     ctx.moveTo(30, -5);
     ctx.lineTo(34, -5);
     ctx.stroke();
-  } else {
+  } 
+  else if(cat.face) {
     ctx.beginPath();
+    //ctx.arc(25, -5, 1.5, 0, Math.PI*2);
+    //ctx.arc(32, -5, 1.5, 0, Math.PI*2);  
+   // ctx.textAlign = 'center';
+ //ctx.textBaseline = 'middle';
+    ctx.font = "10px Arial"; 
+    //const metrics = ctx.measureText(cat.face);
+    //const textWidth = metrics.width;
+    ctx.fillText(cat.face, 10, -5);
+    ctx.fill();
+  }else{
+     ctx.beginPath();
     ctx.arc(25, -5, 1.5, 0, Math.PI*2);
-    ctx.arc(32, -5, 1.5, 0, Math.PI*2);
+    ctx.arc(32, -5, 1.5, 0, Math.PI*2);  
     ctx.fill();
   }
 
@@ -663,8 +722,13 @@ function drawUI() {
   ctx.fillStyle = '#000';
   ctx.font = '16px Arial';
   ctx.textAlign = 'right';
+  w=canvas.width - 20
 
-  ctx.fillText('🪙 ' + score, canvas.width - 20, 40);
+  ctx.fillText('$: ' + score, w, 40);
+  ctx.fillText('L: ' + level, w, 70);
+  ctx.fillText('C: ' + pets.length, w, 100);
+  ctx.fillText('M: ' + monsters.length, w, 130);
+  ctx.fillText('F: ' + foods.length, w, 160);
 
   ctx.restore();
 }
@@ -756,7 +820,63 @@ foods.push({
   eaten: false
 });
 */
+function randomFacetext(){
+  warFace=[
 
+ '⋛⋋( ‘Θ’)⋌⋚',
+ '▼・ᴥ・▼',
+ '/ᐠ .ᆺ. ᐟ\\ﾉ',
+ '/ᐠ｡ꞈ｡ᐟ\\',
+ 'ฅ^•ﻌ•^ฅ',
+ 'Ꮚ･ꈊ･Ꮚ',
+ 
+ '(′゜ω。‵)',
+ '(つ´ω`)つ',
+ '⧸⎩⎠⎞͏(・∀・)⎛͏⎝⎭⧹',
+ '( ˊ̱˂˃ˋ̱ )',
+ '(ꐦ°᷄д°᷅)',
+ '⁽⁽٩(๑˃̶͈̀ ᗨ ˂̶͈́)۶⁾⁾',
+ '⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄',
+ '⸜(* ॑꒳ ॑* )⸝',
+ '(◉３◉)',
+ '(ノ▼Д▼)ノ',
+ '(=^-ω-^=)',
+ '(╯✧∇✧)╯',
+ '_(┐ ◟;ﾟдﾟ)ノ',
+
+ '(｡・ω・｡)',
+ 
+ '(つд⊂)',
+ '∑(✘Д✘๑ )',
+ '(•ө•)',
+ 
+ '(灬ºωº灬)',
+ 'ლ(́◕◞౪◟◕‵ლ)',
+
+
+ '٩(◦`꒳´◦)۶',
+ '(๑¯∀¯๑)',
+ '(ΦωΦ)',
+ '( ╯' - ')╯ ┻━┻',
+ '༼ つ ◕_◕ ༽つ',
+ '( ﾒ∀・)',
+ '⊙谷⊙',
+ '(╬▼дﾟ)▄︻┻┳═一',
+ '(:◎)≡',
+ 
+ 'σ`∀´)σ',
+ '（’へ’）',
+ 'ヽ( ° ▽°)ノ',
+ '(☍﹏⁰)'
+  ]
+  
+  return warFace[getRandomInt(warFace.length-1)]
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+//
 
 
 canvas.addEventListener('click', (e) => {
@@ -799,17 +919,22 @@ monsters.push({
 //
 
 function foodCreat(){
-      foods.push({
+    if (foods.length<50) {
+         foods.push({
     x: Math.random() * canvas.width +PADDING.width ,
     y: Math.random() * canvas.height+PADDING.height ,
     type: Math.random() > 0.5 ? 'food' : 'fish',
     eaten: false
   });
+    }
 }
 
 function petCreat(){
-      pets.push({
+   // const r = Math.random();
+    
+    c={
   type:'cat',
+  
   x: PADDING.width + Math.random() * (canvas.width - PADDING.width * 2),
   y: PADDING.height + Math.random() * (canvas.height - PADDING.height * 2),
   vx: 0,
@@ -822,9 +947,17 @@ function petCreat(){
   walkCycle: 0,
   tailTime: 0,
   hungry:30,
-  energy:0
+  energy:0,
+  power:1
 
-  });
+  }
+  if (monsters.length>0) {
+     c.face=randomFacetext()
+     c.power=catPower
+  }
+ 
+
+pets.push(c);
 }
 
 //
@@ -843,7 +976,8 @@ monsters.push({
   tailTime: 0,
   hungry:30,
   energy:0,
-  HP:10});
+  HP:10+level
+});
 //
 function monsterCreat(){
  monsters.push({
@@ -922,7 +1056,7 @@ function drawFoodmain(){
 function petCrontol(){
     if (pets.length==0){
     petCreat();
-   
+   level=1
 }
 }
 
