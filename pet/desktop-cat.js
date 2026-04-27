@@ -25,6 +25,8 @@ let maxlevel=20
 let level=0
 let catPower=1
 let rank=0
+let diePetNum=0
+let dieMonNum=0
 
 
 // UI 位置（右上角）
@@ -239,6 +241,7 @@ function updateCoins() {
       coin.y += coin.vy;
 
       const ground = canvas.height - 20;
+      //const ground = coin.y-20;
 
       if (coin.y > ground) {
         coin.y = ground;
@@ -294,10 +297,12 @@ function updateCoins() {
     if (pets[i].hungry<10 ) {
       pets.splice(i, 1);
       console.log(pets[i],'餓死了')
+      diePetNum++
     }
     if ( pets[i].remove == true) {
         console.log(pets[i],'被殺死了')
         pets.splice(i, 1);
+        diePetNum++
         /*
     monsters.forEach(mouse => {
         if (pets[i].power) {
@@ -324,6 +329,7 @@ function updateCoins() {
        foodCreat();
       }
       monsters.splice(i, 1);
+      dieMonNum++
       if (maxOwnPets<maxlevel) {
         maxOwnPets++
         level++
@@ -535,19 +541,8 @@ ctx.stroke();
   leg(-20, 0);
 
   // === 尾巴（多段） ===
-  let baseX = -20;
-  let baseY = 5;
-
-  for (let i=0;i<3;i++) {
-    const wave = Math.sin(cat.tailTime + i*0.5) * 5;
-    ctx.beginPath();
-    ctx.moveTo(baseX, baseY);
-    ctx.lineTo(baseX - 10, baseY - 10 + wave);
-    ctx.stroke();
-    baseX -= 10;
-    baseY -= 10;
-  }
-
+ 
+    choiceDrawTail(cat)
   // 睡覺 Z
   if (cat.state === 'sleep') {
     ctx.fillText('Z', 40, -20);
@@ -556,6 +551,111 @@ ctx.stroke();
   ctx.restore();
 })
 }
+
+//tailArea
+
+function choiceDrawTail(cat){
+    //console.log('use',cat.type)
+    switch (cat.tail_type) {
+  case 1:
+    // Code to run if expression === value1
+    drawTail(cat)
+    break;
+  case 2:
+    // Code to run if expression === value2
+    drawTailSmooth(cat)
+    break;
+  case 3:
+    // Code to run if expression === value2
+    drawTailSwing(cat)
+    break;
+  case 4:
+    // Code to run if expression === value2
+    drawTailShake(cat)
+    break;
+  default:
+    // Code to run if no cases match
+}
+
+}
+
+function drawTail(cat){
+    let baseX = -20;
+    let baseY = 5;
+    if (cat) {
+            for (let i=0;i<3;i++) {
+            const wave = Math.sin(cat.tailTime + i*0.5) * 5;
+            ctx.beginPath();
+            ctx.moveTo(baseX, baseY);
+            ctx.lineTo(baseX - 10, baseY - 10 + wave);
+            ctx.stroke();
+            baseX -= 10;
+            baseY -= 10;
+        }
+    }
+}
+
+function drawTailSmooth(cat) {
+  let x = -20;
+  let y = 5;
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  for (let i = 0; i < 3; i++) {
+    const wave = Math.sin(cat.tailTime + i * 0.5) * 6;
+
+    const cx = x - 8;                 // 控制點
+    const cy = y - 10 + wave;
+
+    const nx = x - 16;                // 終點
+    const ny = y - 12 + wave;
+
+    ctx.quadraticCurveTo(cx, cy, nx, ny);
+
+    x = nx;
+    y = ny;
+  }
+ctx.stroke();
+  
+}
+
+function drawTailSwing(cat) {
+  let x = -20;
+  let y = 5;
+
+  const swing = Math.sin(cat.tailTime) * 15;
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  ctx.quadraticCurveTo(
+    x - 20,
+    y - 10 + swing,
+    x - 40,
+    y + swing
+  );
+
+  ctx.stroke();
+}
+
+function drawTailShake(cat) {
+  let baseX = -20;
+  let baseY = 5;
+
+  for (let i = 0; i < 4; i++) {
+    const jitter = Math.sin(cat.tailTime * 5 + i) * 3;
+
+    ctx.beginPath();
+    ctx.moveTo(baseX, baseY);
+    ctx.lineTo(baseX - 10, baseY - 10 + jitter);
+    ctx.stroke();
+
+    baseX -= 10;
+    baseY -= 10;
+  }
+}
+//tailArea
 
 
 
@@ -726,12 +826,14 @@ function drawUI() {
   ctx.textAlign = 'right';
   w=canvas.width - 20
 
-  ctx.fillText('$: ' + score, w, 40);
-  ctx.fillText('L: ' + level, w, 70);
-  ctx.fillText('C: ' + pets.length, w, 100);
-  ctx.fillText('M: ' + monsters.length, w, 130);
-  ctx.fillText('F: ' + foods.length, w, 160);
-  ctx.fillText('R: ' + rank, w, 190);
+  ctx.fillText('💰: ' + score, w, 40);
+  ctx.fillText('🆙: ' + level, w, 70);
+  ctx.fillText('🐱: ' + pets.length, w, 100);
+  ctx.fillText('🐭: ' + monsters.length, w, 130);
+  ctx.fillText('🍖: ' + foods.length, w, 160);
+  ctx.fillText('🆖: ' + rank, w, 190);
+  ctx.fillText('☠️🐱: ' + diePetNum, w, 220);
+  ctx.fillText('☠️🐭: ' + dieMonNum, w, 250);
 
   ctx.restore();
 }
@@ -965,6 +1067,10 @@ function petCreat(){
      c.face=randomFacetext()
      c.power=catPower
   }
+
+  if (rank>0) {
+    c.tail_type=rank
+  } else if (rank>5){c.tail_type=4}
  
 
 pets.push(c);
@@ -986,7 +1092,7 @@ monsters.push({
   tailTime: 0,
   hungry:30,
   energy:0,
-  HP:10+level+pets.length
+  HP:10+level+pets.length+1*rank
 });
 //
 function monsterCreat(){
