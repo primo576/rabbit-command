@@ -24,6 +24,7 @@ let maxOwnPets=11
 let maxlevel=20
 let level=0
 let catPower=1
+let rank=0
 
 
 // UI 位置（右上角）
@@ -106,7 +107,7 @@ function changeState(pets) {
      //console.log('食物',foods.length,'個')
   }
 
-  if (f < 0.001 && pets.length>5) {
+  if (f < 0.01 && pets.length>5) {
     monsterCreat();
     //console.log('怪物',monsters.length,'個')
   }
@@ -338,10 +339,11 @@ if (score>2 && pets.length<maxOwnPets) {
 
 if (score>50 ) {
     score-=20;
-    for (let index = 0; index < level; index++) {
+    for (let index = 0; index < level+pets.length+rank; index++) {
         monsterCreat();
-        
+        console.log('創立怪物',monsters)
     }
+    rank++
 }
 
 
@@ -729,6 +731,7 @@ function drawUI() {
   ctx.fillText('C: ' + pets.length, w, 100);
   ctx.fillText('M: ' + monsters.length, w, 130);
   ctx.fillText('F: ' + foods.length, w, 160);
+  ctx.fillText('R: ' + rank, w, 190);
 
   ctx.restore();
 }
@@ -886,12 +889,11 @@ canvas.addEventListener('click', (e) => {
         //所有老鼠生命-1
     })
     }else{
-  foods.push({
-    x: e.clientX,
-    y: e.clientY,
-    type: Math.random() > 0.5 ? 'food' : 'fish',
-    eaten: false
-  });
+  foodCreat(e.clientX,e.clientY)
+   coinCreat(0,e.clientX,e.clientY)
+  //console.log(e.clientX,e.clientY)
+  //petCreat()
+  //coinCreat()
   //console.log(foods)
   }
   //
@@ -918,11 +920,19 @@ monsters.push({
   */
 //
 
-function foodCreat(){
+function foodCreat(x,y){
+    if (x && y){
+        x=x
+        y=y
+    }else{
+        x=Math.random() * canvas.width +PADDING.width
+        y=Math.random() * canvas.height+PADDING.height
+    }
+
     if (foods.length<50) {
          foods.push({
-    x: Math.random() * canvas.width +PADDING.width ,
-    y: Math.random() * canvas.height+PADDING.height ,
+    x: x ,
+    y: y ,
     type: Math.random() > 0.5 ? 'food' : 'fish',
     eaten: false
   });
@@ -976,7 +986,7 @@ monsters.push({
   tailTime: 0,
   hungry:30,
   energy:0,
-  HP:10+level
+  HP:10+level+pets.length
 });
 //
 function monsterCreat(){
@@ -1003,10 +1013,23 @@ function monsterCreat(){
 //
 //petCreat();
 
-function coinCreat(cat){
+function coinCreat(cat,x,y){
+if (x && y){
+        x=x
+        y=y
+    }else if (cat){
+  x= cat.x
+    y= cat.y
+    }
+    else{
+        x=Math.random() * canvas.width +PADDING.width
+        y=Math.random() * canvas.height+PADDING.height
+    }
+
+
 coins.push({
-    x: cat.x,
-    y: cat.y,
+    x: x,
+    y: y,
     vx: (Math.random() - 0.5) * 4,
     vy: -5,
     gravity: 0.4,
@@ -1057,6 +1080,8 @@ function petCrontol(){
     if (pets.length==0){
     petCreat();
    level=1
+   if (rank>1) {rank-=1}
+   
 }
 }
 
