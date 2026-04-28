@@ -18,7 +18,7 @@ const foods = [];
 const coins = [];
 pets=[];
 monsters=[]
-const popTexts = [];
+//const popTexts = [];
 
 let score = 0;
 let maxOwnPets=11
@@ -29,6 +29,14 @@ let rank=0
 let diePetNum=0
 let dieMonNum=0
 let maxFoodNum=999
+let mouseSpeed=0.5+rank*0.1 //老鼠的數度 是乘法 1是正常
+
+//手勢睏鼠
+let drawing = false;
+let currentPath = [];
+const paths = [];
+let drawPathTime=60*5 //筆跡存在時間 秒
+//
 
 
 // UI 位置（右上角）
@@ -363,7 +371,33 @@ if (score>50 ) {
 
 //mouse system
 function updateMouse(monsters, cats) {
+
+     //monsters.forEach(m => {
+      //status_a 筆跡受困狀態
+      function status_a(m){
+    if (m.trapped) {
+      m.trapTimer--;
+      //console.log('a')
+      // 🔥 扣血
+      m.HP = (m.HP || 100) - 0.1;
+      //console.log(m.);
+      // 被困住（不能動）
+     // m.dx = 0;
+     // m.dy = 0;
+
+      if (m.trapTimer <= 0) {
+        m.trapped = false;
+      }
+    }
+   // console.log(m.trapped)
+    return m.trapped
+    }
+  //});
+
     monsters.forEach(mouse => {
+     b= status_a(mouse)
+    if (b){return} 
+     
   let nearest = null;
   let minDist = Infinity;
 
@@ -381,9 +415,9 @@ function updateMouse(monsters, cats) {
   if (nearest) {
     const dx = nearest.x - mouse.x;
     const dy = nearest.y - mouse.y;
-
-    mouse.x += dx * 0.02;
-    mouse.y += dy * 0.02;
+    
+    mouse.x += dx * 0.02 *mouseSpeed;
+    mouse.y += dy * 0.02 *mouseSpeed;
 
     mouse.dir = dx > 0 ? 1 : -1;
 
@@ -393,6 +427,8 @@ function updateMouse(monsters, cats) {
       mouse.HP-=nearest.power
     }
   }})
+
+
 }
 //
 
@@ -878,7 +914,7 @@ function drawTopHUD() {
   //
 
   let x = 10;
-  const y = 10;
+  let y = 10;
   const gap = 20;
 
   const items = [
@@ -899,6 +935,10 @@ function drawTopHUD() {
     
     const width = ctx.measureText(text).width;
     x += width + gap; // 🔥 根據實際寬度往右排
+    if (x>canvas.width-50) {
+      y+=25
+      x=10
+    }
   });
 
   ctx.restore();
@@ -1049,16 +1089,17 @@ function getRandomInt(max) {
 }
 //
 
-
+//原本的食物
 canvas.addEventListener('click', (e) => {
     if (monsters.length>0) {
-        monsters.forEach(mouse => {
-        mouse.HP-=5;
+        //monsters.forEach(mouse => {
+       // mouse.HP-=5;
         //所有老鼠生命-1
-    })
+   // })
+     coinCreat(0,e.clientX,e.clientY)
     }else{
   foodCreat(e.clientX,e.clientY)
-   coinCreat(0,e.clientX,e.clientY)
+  
   //console.log(e.clientX,e.clientY)
   //petCreat()
   //coinCreat()
@@ -1086,6 +1127,136 @@ monsters.push({
 
   });
   */
+//
+
+//睏鼠
+
+
+canvas.addEventListener('mousedown', (e) => {
+  drawing = true;
+  currentPath = [];
+  path=[]
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!drawing) return;
+
+  currentPath.push({
+    x: e.clientX,
+    y: e.clientY
+  });
+
+ if (currentPath.length > 10) {
+     path = {
+      points: currentPath,
+      life: drawPathTime
+    };
+
+    paths.push(path);
+ 
+   
+  }
+
+});
+
+canvas.addEventListener('mouseup', () => {
+  drawing = false;
+if (currentPath.length > 10) {
+  checkTrap(path); // 🔥 判斷圈
+   
+  }
+  
+});
+
+function isClosed(path) {
+  const last = path.points[path.points.length - 1];
+
+  for (let i = 0; i < path.points.length - 10; i++) {
+    const p = path.points[i];
+
+    const dx = last.x - p.x;
+    const dy = last.y - p.y;
+
+    if (Math.hypot(dx, dy) < 30) {
+      console.log('算閉合')
+      return true;
+      
+    }
+  }
+
+  return false;
+}
+
+
+
+function getBounds(points) {
+  let minX = Infinity, maxX = -Infinity;
+  let minY = Infinity, maxY = -Infinity;
+
+  points.forEach(p => {
+    minX = Math.min(minX, p.x);
+    maxX = Math.max(maxX, p.x);
+    minY = Math.min(minY, p.y);
+    maxY = Math.max(maxY, p.y);
+  });
+
+  return { minX, maxX, minY, maxY };
+}
+
+function checkTrap(path) {
+  //console.log('1')
+  if (!isClosed(path)){ 
+    return};
+//console.log('3')
+  const box = getBounds(path.points);
+
+  monsters.forEach(m => {
+    console.log('1')
+    if (
+      m.x > box.minX &&
+      m.x < box.maxX &&
+      m.y > box.minY &&
+      m.y < box.maxY
+    ) {
+      m.trapped = true;
+      m.trapTimer = drawPathTime;
+    }
+  });
+}
+
+
+
+function drawPaths() {
+  ctx.save();
+
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+
+  paths.forEach(path => {
+    ctx.beginPath();
+
+    path.points.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+function updatePaths() {
+  paths.forEach(p => {
+    p.life--;
+  });
+
+  for (let i = paths.length - 1; i >= 0; i--) {
+    if (paths[i].life <= 0) {
+      paths.splice(i, 1);
+    }
+  }
+}
 //
 
 function foodCreat(x,y){
@@ -1269,12 +1440,15 @@ function animate() {
   petCrontol();
   
   update(pets);
+  updatePaths()
+  //updateMonsters();
   updateMouse(monsters,pets)
   
   updateCoins();
   
   drawCat(pets);
   drawCatStatus(pets);
+  drawPaths();
   drawMousesStatus(monsters);
   drawMouse(monsters)
     drawFoodmain();
