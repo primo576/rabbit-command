@@ -394,7 +394,11 @@ function updateCoins() {
        console.log(monsters[i],'老鼠死了')
        
       for (let index = 0; index < maxOwnPets*3; index++) {
-       foodCreat();
+      
+       if (index <diePetNum+3) {
+         foodCreat();
+        coinCreat();
+       } 
       }
       monsters.splice(i, 1);
       dieMonNum++
@@ -1143,16 +1147,23 @@ function randomFacetext(){
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
+
+function monstersHPdown(){
+      monsters.forEach(mouse => {
+        mouse.HP-=5;
+})
+}
 //
 
 //原本的食物
 canvas.addEventListener('click', (e) => {
-    if (monsters.length>0) {
-        //monsters.forEach(mouse => {
-       // mouse.HP-=5;
+    if (monsters.length>5) {
+      monstersHPdown()
         //所有老鼠生命-1
    // })
-     coinCreat(0,e.clientX,e.clientY)
+    // coinCreat(0,e.clientX,e.clientY)
+    }else if (foods.length>50) {
+       coinCreat(0,e.clientX,e.clientY)
     }else{
   foodCreat(e.clientX,e.clientY)
   
@@ -1471,13 +1482,10 @@ function drawFoodmain(){
 function petCrontol(){
     if (pets.length==0){
     petCreat();
-   level=1
+   level-=1
    if (rank>1) {rank-=1}
-   
 }
 }
-
-
 
 function animate() {
   
@@ -1505,10 +1513,6 @@ function animate() {
   }
   requestAnimationFrame(animate);
 }
-
 changeState(pets);
-
 animate();
-
-
 })();
