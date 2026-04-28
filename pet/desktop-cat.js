@@ -1177,15 +1177,14 @@ monsters.push({
 //
 
 //睏鼠
-
-
-canvas.addEventListener('mousedown', (e) => {
+canvas.style.touchAction = 'none'; // 手機沒加沒法滑圖
+canvas.addEventListener('pointerdown', (e) => {
   drawing = true;
   currentPath = [];
   path=[]
 });
 
-canvas.addEventListener('mousemove', (e) => {
+canvas.addEventListener('pointermove', (e) => {
   if (!drawing) return;
 
   currentPath.push({
@@ -1198,17 +1197,14 @@ canvas.addEventListener('mousemove', (e) => {
       points: currentPath,
       life: drawPathTime
     };
-
-    paths.push(path);
- 
-   
+    paths.push(path);  
   }
 
 });
 
-canvas.addEventListener('mouseup', () => {
+canvas.addEventListener('pointerup', () => {
   drawing = false;
-if (currentPath.length > 10) {
+if (currentPath.length > 10 && gameStart) {
   checkTrap(path); // 🔥 判斷圈
    
   }
@@ -1326,8 +1322,6 @@ function foodCreat(x,y){
 }
 
 function petCreat(){
-   // const r = Math.random();
-    
     c={
   type:'cat',
   
@@ -1351,10 +1345,6 @@ function petCreat(){
      c.face=randomFacetext()
      c.power=catPower
   }
-
-  
- 
-
 pets.push(c);
 }
 
@@ -1413,8 +1403,6 @@ if (x && y){
         x=Math.random() * canvas.width +PADDING.width
         y=Math.random() * canvas.height+PADDING.height
     }
-
-
 coins.push({
     x: x,
     y: y,
