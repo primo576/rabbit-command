@@ -58,7 +58,7 @@ const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 //canvas.height = '150';
-canvas.height = window.innerHeight;
+canvas.height = window.innerHeight*0.95;
 gameStart=true
 const foods = [];
 const coins = [];
