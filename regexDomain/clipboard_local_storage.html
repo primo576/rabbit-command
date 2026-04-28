@@ -94,6 +94,7 @@
   <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
   <button class="buttomStyle1" id="exportBtn">匯出</button>
   <label class="custom-file-upload buttomStyle1">匯入
+    <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
   <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
   </label>
    <label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">逐行文字大小
@@ -211,6 +212,14 @@ function renderBars() {
   bars.appendChild(ol);
 }
 
+function parseDelimiter(str) {
+  if (!str) return '\n'; // 預設
+
+  return str
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '\t');
+}
+
 
 
 function render() {
@@ -226,6 +235,8 @@ function render() {
       };
       return lineBtn
   }
+
+
   //////
 
   data.forEach((item, index) => {
@@ -304,6 +315,7 @@ function render() {
     div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
     div.appendChild(toggleBtn); //展開收起
     div.appendChild(createBtnClickFun('逐行',lineMode));
+    //div.appendChild(createInputFun(index,'逐行分隔符'));
     div.appendChild(toggleBtnToLower);
     div.appendChild(createBtnClickFun('刪除',delLine));
 
@@ -313,7 +325,9 @@ function render() {
         const ol = document.createElement('ol');
         ol.className = 'col';
       //const lines = item.text.split('\n').filter(l => l.trim());
-      const lines = textarea.value.split('\n').filter(l => l.trim());
+      const rawDelimiter = document.getElementById('delimiterInput').value;
+      const delimiter = parseDelimiter(rawDelimiter);
+      const lines = textarea.value.split(delimiter).filter(l => l.trim());
       lines.forEach(line => {
         //const ldiv = document.createElement('div');
         const ldiv = document.createElement('li');
