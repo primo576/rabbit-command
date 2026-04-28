@@ -1,19 +1,65 @@
 (function () {
   if (window.__Desktop_Cat__) return;
   window.__Desktop_Cat__ = true;
+const gameDiv = document.createElement('div');
+gameDiv.id='Desktop_Cat'
 const catCanvas = document.createElement('canvas');
+
+//按鈕
+  const startToggleBtn = document.createElement('button');
+    startToggleBtn.textContent = '開始暫停'
+    startToggleBtn.className='buttomStyle1'
+    startToggleBtn.onclick = () => {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    gameStart= !gameStart
+    console.log('開始暫停遊戲');
+    };
+
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = '清畫面'
+    clearBtn.className='buttomStyle1'
+    clearBtn.onclick = () => {
+     ctx.clearRect(0,0,canvas.width,canvas.height);
+    paths=[]
+    console.log('清畫面');
+    };
+
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Space') {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    gameStart= !gameStart
+    console.log('暫停遊戲');
+  }
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'KeyC') {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    paths=[]
+    
+    console.log('C 清空畫面');
+  }
+});
+
+//
 catCanvas.id='canvas'
 //document.getElementsByTagName('body')[0].appendChild(catCanvas);
-document.getElementsByTagName('body')[0].prepend(catCanvas);
+gameDiv.appendChild(catCanvas)
+gameDiv.appendChild(startToggleBtn)
+gameDiv.appendChild(clearBtn)
+document.getElementsByTagName('body')[0].prepend(gameDiv);
 const canvas = catCanvas
 const ctx = canvas.getContext('2d');
 
 //canvas.width = window.innerWidth;
 //canvas.height = window.innerHeight;
 
+//canvas.height = '150';
+
 canvas.width = window.innerWidth;
 //canvas.height = '150';
 canvas.height = window.innerHeight;
+gameStart=true
 const foods = [];
 const coins = [];
 pets=[];
@@ -21,11 +67,12 @@ monsters=[]
 //const popTexts = [];
 
 let score = 0;
-let maxOwnPets=11
+
 let maxlevel=20
 let level=0
 let catPower=1
 let rank=0
+let maxOwnPets=11+rank
 let diePetNum=0
 let dieMonNum=0
 let maxFoodNum=999
@@ -34,7 +81,7 @@ let mouseSpeed=0.5+rank*0.1 //老鼠的數度 是乘法 1是正常
 //手勢睏鼠
 let drawing = false;
 let currentPath = [];
-const paths = [];
+paths = [];
 let drawPathTime=60*5 //筆跡存在時間 秒
 //
 
@@ -1436,14 +1483,14 @@ function petCrontol(){
 
 
 function animate() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  petCrontol();
   
+  if (gameStart) {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  
+  petCrontol();
   update(pets);
   updatePaths()
-  //updateMonsters();
   updateMouse(monsters,pets)
-  
   updateCoins();
   
   drawCat(pets);
@@ -1451,12 +1498,20 @@ function animate() {
   drawPaths();
   drawMousesStatus(monsters);
   drawMouse(monsters)
-    drawFoodmain();
-   
-    drawTopHUD();
+  drawFoodmain(); 
+  drawTopHUD();
+  
+  
+  }else{
+   // updatePaths()
+    drawPaths();
+  }
   requestAnimationFrame(animate);
 }
 
 changeState(pets);
+
 animate();
+
+
 })();
