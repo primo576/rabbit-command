@@ -23,6 +23,14 @@ const catCanvas = document.createElement('canvas');
     paths=[]
     console.log('清畫面');
     };
+    
+   const fullScreenBtn = document.createElement('button');
+    fullScreenBtn.textContent = '全螢幕'
+    fullScreenBtn.className='buttomStyle1'
+    fullScreenBtn.onclick = () => {
+    canvas.height = window.innerHeight;
+    console.log('全螢幕');
+    };
 
 document.addEventListener('keydown', (event) => {
   if (event.code === 'Space') {
@@ -45,6 +53,7 @@ document.addEventListener('keydown', (event) => {
 catCanvas.id='canvas'
 //document.getElementsByTagName('body')[0].appendChild(catCanvas);
 gameDiv.appendChild(catCanvas)
+gameDiv.appendChild(fullScreenBtn)
 gameDiv.appendChild(startToggleBtn)
 gameDiv.appendChild(clearBtn)
 document.getElementsByTagName('body')[0].prepend(gameDiv);
