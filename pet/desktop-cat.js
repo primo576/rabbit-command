@@ -394,9 +394,8 @@ function updateCoins() {
        console.log(monsters[i],'老鼠死了')
        
       for (let index = 0; index < maxOwnPets*3; index++) {
-      
-       if (index <diePetNum+3) {
-         foodCreat();
+      foodCreat();
+       if (index <6) {
         coinCreat();
        } 
       }
@@ -1469,11 +1468,18 @@ function drawFoodmain(){
     drawFood(food);
   }
 });
+i=0
 //
   coins.forEach(coin => {
   //if (coin.eaten) return;
+    i++
+    if (i>49) {
+        return
+    }else{
+      drawCoin(coin);
+    }
 
-  drawCoin(coin);
+  
 });
 
 //
