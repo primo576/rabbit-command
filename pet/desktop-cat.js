@@ -81,11 +81,12 @@ let maxlevel=20
 let level=0
 let catPower=1
 let rank=0
-let maxOwnPets=11+rank
+let maxOwnPets=11+rank*0.5
 let diePetNum=0
 let dieMonNum=0
 let maxFoodNum=999
 let mouseSpeed=0.5+rank*0.1 //老鼠的數度 是乘法 1是正常
+let creatCDtimer=10;
 
 //手勢睏鼠
 let drawing = false;
@@ -392,10 +393,12 @@ function updateCoins() {
   for (let i = monsters.length - 1; i >= 0; i--) {
     if (monsters[i].HP<1) {
        console.log(monsters[i],'老鼠死了')
-       
+      // coinCreat();
       for (let index = 0; index < maxOwnPets*3; index++) {
       foodCreat();
-       if (index <6) {
+      //console.log(creatCDtimer)
+       if (monsters[i].trapped && creatCDtimer<0 && index<3) {
+        //m.trapped = true;
         coinCreat();
        } 
       }
@@ -408,10 +411,14 @@ function updateCoins() {
       }
     }
   }
+  if (creatCDtimer>=0) {
+    creatCDtimer--;
+  }
   
-if (score>2 && pets.length<maxOwnPets) {
+if (score>2 && pets.length<maxOwnPets && creatCDtimer<0) {
     petCreat();
     score-=3;
+    creatCDtimer=10;
 }
 
 if (score>50 ) {
@@ -492,7 +499,12 @@ function updateMouse(monsters, cats) {
 //
 
 function drawCat(pets) {
+  i=0
     pets.forEach(cat => {
+      i++
+      if (i<maxFoodNum) {
+        
+     
   ctx.save();
 
   ctx.translate(cat.x, cat.y);
@@ -648,7 +660,9 @@ ctx.stroke();
   }
 
   ctx.restore();
+   }
 })
+
 }
 
 //tailArea
@@ -1273,7 +1287,7 @@ function checkTrap(path) {
   const box = getBounds(path.points);
 
   monsters.forEach(m => {
-    console.log('1')
+    //console.log('1')
     if (
       m.x > box.minX &&
       m.x < box.maxX &&
@@ -1352,6 +1366,7 @@ function petCreat(){
   targetY: 0,
   state: 'idle',
   timer: 0,
+  creatCDtimer:10,
   dir: 1,
   walkCycle: 0,
   tailTime: 0,
