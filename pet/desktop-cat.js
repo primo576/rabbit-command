@@ -69,7 +69,7 @@ canvas.width = window.innerWidth;
 //canvas.height = '150';
 canvas.height = window.innerHeight*0.85;
 gameStart=true
-const foods = [];
+ foods = [];
 const coins = [];
 pets=[];
 monsters=[]
@@ -86,7 +86,8 @@ let diePetNum=0
 let dieMonNum=0
 let maxFoodNum=999
 let mouseSpeed=0.5+rank*0.1 //老鼠的數度 是乘法 1是正常
-let creatCDtimer=10;
+let creatCDtimer=60;
+canCreatMonster=1
 
 //手勢睏鼠
 let drawing = false;
@@ -189,7 +190,7 @@ function changeState(pets) {
 function update(pets) {
     pets.forEach(cat => {
     ///
-    if (cat.hungry>60) {
+    if (cat.hungry>60 && cat.energy<100) {
         cat.energy++;
         
     }
@@ -365,11 +366,11 @@ function updateCoins() {
   for (let i = pets.length - 1; i >= 0; i--) {
     if (pets[i].hungry<10 ) {
       pets.splice(i, 1);
-      console.log(pets[i],'餓死了')
+      //console.log(pets[i],'餓死了')
       diePetNum++
     }
     if ( pets[i].remove == true) {
-        console.log(pets[i],'被殺死了')
+        //console.log(pets[i],'被殺死了')
         pets.splice(i, 1);
         diePetNum++
         /*
@@ -392,7 +393,7 @@ function updateCoins() {
 
   for (let i = monsters.length - 1; i >= 0; i--) {
     if (monsters[i].HP<1) {
-       console.log(monsters[i],'老鼠死了')
+       //console.log(monsters[i],'老鼠死了')
       // coinCreat();
       for (let index = 0; index < maxOwnPets*3; index++) {
       foodCreat();
@@ -421,13 +422,19 @@ if (score>2 && pets.length<maxOwnPets && creatCDtimer<0) {
     creatCDtimer=10;
 }
 
-if (score>50 ) {
+if (score>50 && canCreatMonster ) {
     score-=20;
-    for (let index = 0; index < level+pets.length+rank; index++) {
-        monsterCreat();
-        console.log('創立怪物',monsters)
+    hp=0
+    for (let index = 0; index < level+pets.length+rank; index++&& creatCDtimer<0) {
+       hp++
+        //
+
     }
+     monsterCreat(hp);
+     console.log('創立怪物',hp,monsters)
     rank++
+    canCreatMonster=0
+    console.log(canCreatMonster)
 }
 
 
@@ -795,7 +802,12 @@ function drawTailCurl(cat) {
 
 //mouse
 function drawMouse(monsters) {
+  i=0
+  if (i<50) {
+    
+  
     monsters.forEach(mouse => {
+      i++;
   ctx.save();
   ctx.translate(mouse.x, mouse.y);
   ctx.scale(mouse.dir || 1, 1); // 面向方向
@@ -856,6 +868,7 @@ ctx.stroke();
 
   ctx.restore();
    })
+   }
 }
 //mouse
 //eat
@@ -1034,7 +1047,7 @@ function drawHungry(object,type) {
 
         if (type=='HP') {
          y = object.y - 30;
-        drawType=object.HP*10
+        drawType=object.HP
         height=6;
     }
 
@@ -1047,7 +1060,9 @@ function drawHungry(object,type) {
 
   // 限制範圍（0~100）
   const value = Math.max(0, Math.min(100, drawType));
+
   const percent = value / 100;
+  
 
   ctx.save();
 
@@ -1170,13 +1185,21 @@ function monstersHPdown(){
 
 //原本的食物
 canvas.addEventListener('click', (e) => {
-    if (monsters.length>5) {
+    if (monsters.length>2) {
       monstersHPdown()
         //所有老鼠生命-1
    // })
     // coinCreat(0,e.clientX,e.clientY)
-    }else if (foods.length>50) {
+    }else if (foods.length>50 ) {
        coinCreat(0,e.clientX,e.clientY)
+      /*
+      foods.forEach(f => {
+       // console.log(f)
+       coinCreat(0,f.x,f.y);
+      })
+*/
+     // foods=[]
+
     }else{
   foodCreat(e.clientX,e.clientY)
   
@@ -1401,8 +1424,15 @@ monsters.push({
   HP:10+level+pets.length+1*rank
 });
 //
-function monsterCreat(){
- monsters.push({
+function monsterCreat(hp){
+  if (hp) {
+    hp=hp
+  }else{
+    hp=10
+  }
+  console.log('建立',hp)
+d={
+  HP:hp,
   type:'mouse',
   x: PADDING.width + Math.random() * (canvas.width - PADDING.width * 2),
   y: PADDING.height + Math.random() * (canvas.height - PADDING.height * 2),
@@ -1411,15 +1441,10 @@ function monsterCreat(){
   targetX: 0,
   targetY: 0,
   state: 'idle',
-  timer: 0,
-  dir: 1,
-  walkCycle: 0,
-  tailTime: 0,
-  hungry:30,
-  energy:0,
-  HP:10
 
-  });
+  }
+
+ monsters.push(d);
   console.log(monsters)
 }
 //
@@ -1505,7 +1530,9 @@ function petCrontol(){
     petCreat();
    level-=1
    if (rank>1) {rank-=1}
+   
 }
+if (monsters.length==0) {canCreatMonster=1}
 }
 
 function animate() {
