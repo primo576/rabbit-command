@@ -6,6 +6,28 @@
   <title>剪貼簿</title>
   <style>
     body { font-family: Arial; padding: 0px; }
+    .testImg{width: 100%; 
+        object-fit: contain;
+    }
+    .divTestImgTop{  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--img-size, 150px), 1fr));
+  gap: 12px;
+}
+
+    .divTestImg{ border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;}
+  .divTestImg a {
+  display: block;
+  max-width: 100%;
+  /*
+  overflow: hidden;
+  white-space: wrap;
+  */
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+    
      /*textarea#input { width: 100%; height: 80px; }*/
     .toolbar { margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;}
     .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
@@ -107,12 +129,15 @@
   </label>
    <label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">逐行文字大小
   <input type="range" min="10" max="50" value="18" id="slider">
+  
+  <input type="range" min="50" max="300" value="150" id="sliderIMG">圖片大小
   <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
   </label>
 </div>
 
 <div id="usage"></div>
 <div class="bar-container" id="bars"></div>
+<img id="imgTest">
 <ol class="col" id="list"></ol>
 
 <script>
@@ -144,6 +169,16 @@ function applyToAllTextareasSet() {
   for (let i = 1; i < list.length; i++) {
     const el = list[i];
     auto_grow(el);
+  }
+}
+
+function testIMGlink(link){
+  imgTag=document.getElementById('imgTest');
+  
+  if (link) {
+    imgTag.src=link
+  }else{
+    imgTag.removeAttribute('src');
   }
 }
 
@@ -284,6 +319,15 @@ function render() {
       render();
     };
 
+    const testIMGlinkBtn = document.createElement('button');
+    testIMGlinkBtn.textContent = item.linkToIMG ? '收起img' : '顯示img';
+    testIMGlinkBtn.className='buttomStyle1'
+    testIMGlinkBtn.onclick = () => {
+      item.linkToIMG = !item.linkToIMG;
+      //save();
+      render();
+    };
+
     if (item.expanded) {
       textarea.classList.add('expanded');
       setTimeout(() => {
@@ -326,14 +370,18 @@ function render() {
     div.appendChild(textarea);
     div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
     div.appendChild(toggleBtn); //展開收起
+    div.appendChild(testIMGlinkBtn); //展開收起
     div.appendChild(createBtnClickFun('逐行',lineMode));
-    //div.appendChild(createInputFun(index,'逐行分隔符'));
+    //div.appendChild(createInputFun(index,'逐行分隔符'));  
     div.appendChild(toggleBtnToLower);
+    //div.appendChild(createBtnClickFun('圖片', ()=>testIMGlink(textarea.value)));
     div.appendChild(createBtnClickFun('刪除',delLine));
 
 
     //if function要在按鈕建立之後 不然排版會混亂
-      if (item.lineMode) {
+     
+
+   if (item.lineMode) {
         const ol = document.createElement('ol');
         ol.className = 'col';
       //const lines = item.text.split('\n').filter(l => l.trim());
@@ -351,6 +399,46 @@ function render() {
         div.appendChild(ol);
       });
     }
+/*
+     if (item.linkToIMG) {
+        const img = document.createElement('img');
+        img.className = 'col';
+      img.src=textarea.value
+       div.appendChild(img);
+    }
+  */
+   if (item.linkToIMG) {
+        
+      
+      const rawDelimiter = document.getElementById('delimiterInput').value;
+      const delimiter = parseDelimiter(rawDelimiter);
+      const lines = textarea.value.split(delimiter).filter(l => l.trim());
+       const Topfdiv = document.createElement('div');
+       Topfdiv.className='divTestImgTop'
+      lines.forEach(line => {
+        const fdiv = document.createElement('div');
+        fdiv.className='divTestImg'
+       const img = document.createElement('img');
+       img.src=line
+       img.className='testImg'
+       //img.onerror="this.style.display='none'"
+       img.onerror = function () {
+          this.style.display = 'none';
+        };
+       const ahref = document.createElement('a');
+       ahref.href=line
+       ahref.textContent=line
+       ahref.title=line
+       ahref.target="_blank"
+       
+       img.onclick = () => copyText(line,index);
+       fdiv.appendChild(ahref)
+       fdiv.appendChild(img);
+       Topfdiv.appendChild(fdiv);
+      });
+      
+      div.appendChild(Topfdiv);
+    }
 
     list.appendChild(div);
   });
@@ -358,7 +446,7 @@ function render() {
   renderBars();
   renderUsage();
 }
-///////
+///////rander到這裡
 function recoverTitle(){
         setTimeout(() => {
           titleOrogin=document.getElementsByTagName('title')[0].textContent;
@@ -497,6 +585,14 @@ const slider = document.getElementById('slider');
 
 slider.addEventListener('input', (e) => {
   document.documentElement.style.setProperty('--font-size', e.target.value + 'px');
+});
+
+const sliderIMG = document.getElementById('sliderIMG');
+// 拉條改文字大小
+
+
+sliderIMG.addEventListener('input', (e) => {
+  document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
 });
 ////
 </script>
