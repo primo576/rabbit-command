@@ -129,9 +129,12 @@
   </label>
    <label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">逐行文字大小
   <input type="range" min="10" max="50" value="18" id="slider">
+  
+  <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+  IMG訪問
+   <input type="checkbox" id="IMGcheckBox">
   圖片大小
   <input type="range" min="50" max="300" value="150" id="sliderIMG">
-  <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
   </label>
 </div>
 
@@ -409,7 +412,7 @@ function render() {
   */
    if (item.linkToIMG) {
         
-      
+      imgcheckbox=document.getElementById('IMGcheckBox');
       const rawDelimiter = document.getElementById('delimiterInput').value;
       const delimiter = parseDelimiter(rawDelimiter);
       const lines = textarea.value.split(delimiter).filter(l => l.trim());
@@ -418,13 +421,17 @@ function render() {
       lines.forEach(line => {
         const fdiv = document.createElement('div');
         fdiv.className='divTestImg'
-       const img = document.createElement('img');
+        const img = document.createElement('img');
+        if (imgcheckbox.checked) {
+           
        img.src=line
        img.className='testImg'
        //img.onerror="this.style.display='none'"
        img.onerror = function () {
           this.style.display = 'none';
         };
+        }
+      
        const ahref = document.createElement('a');
        ahref.href=line
        ahref.textContent=line
