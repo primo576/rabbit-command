@@ -12,8 +12,12 @@
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
     .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
     /* time 時間樣式 127x13.5 */
-    .content { border-radius: 8px; width: calc(100% - 10px); height: 80px; overflow: auto; resize: none; }
-    .expanded {  overflow: hidden; }
+    .content { border-radius: 8px; width: calc(100% - 10px); height: 80px; overflow: auto; resize: none; 
+        white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: auto;
+    }
+    .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
     .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px; background: #eee; padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
     /* font-size: 18px; line的影響閱讀 可以做成動態 */
@@ -116,6 +120,9 @@ const usage = document.getElementById('usage');
     function auto_grow(el) {
     el.style.height = "5px"; // 先壓縮
     el.style.height = el.scrollHeight + "px"; // 再撐開
+    //
+    
+    //
   }
 
 function applyToAllTextareasRm() {

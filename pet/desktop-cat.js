@@ -29,6 +29,7 @@ const catCanvas = document.createElement('canvas');
     fullScreenBtn.className='buttomStyle1'
     fullScreenBtn.onclick = () => {
     canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
     console.log('全螢幕');
     };
 
@@ -1032,6 +1033,7 @@ function drawTopHUD() {
 //
 
 function drawHungry(object,type) {
+  ctx.save();
      y =0;
      height = 0;
     if (type=='hungry') {
@@ -1044,12 +1046,18 @@ function drawHungry(object,type) {
         drawType=object.energy
         height=3;
     }
-
         if (type=='HP') {
-         y = object.y - 30;
-        drawType=object.HP
-        height=6;
+          y = object.y - 10;
+          ctx.font = "16px Arial";
+          ctx.fillStyle = "red"; 
+       ctx.fillText(Math.floor(object.HP), object.x, y);
+       ctx.restore();
+    return
     }
+
+
+
+  
 
   const width = 40;
  
@@ -1064,7 +1072,7 @@ function drawHungry(object,type) {
   const percent = value / 100;
   
 
-  ctx.save();
+  
 
   // 背景（灰底）
   ctx.fillStyle = '#444';
