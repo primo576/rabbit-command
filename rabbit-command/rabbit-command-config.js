@@ -413,17 +413,8 @@ function renderHistory() {
 
   try {
     const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-
     history.forEach(item => {
       const div = document.createElement('div');
-      div.style.cssText = `
-        border:1px solid #ccc;
-        padding:6px;
-        margin-bottom:6px;
-        cursor:pointer;
-        background:#fff;
-      `;
-
       div.innerHTML = `
         <div style="font-size:12px;color:#666;">${item.time}</div>
         <div style="font-size:13px;">${item.template}</div>
