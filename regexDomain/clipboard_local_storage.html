@@ -644,10 +644,20 @@ const sliderIMG = document.getElementById('sliderIMG');
 sliderIMG.addEventListener('input', (e) => {
   document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
 });
+
+function loadGame(){
+const loadButtom = document.createElement('button');
+ loadButtom.textContent = '載入';
+loadButtom.onclick = () => {
+    const script = document.createElement('script');
+    script.src="../pet/desktop-cat.js";
+    document.getElementsByTagName('body')[0].appendChild(script);
+    };
+document.getElementsByTagName('body')[0].prepend(loadButtom);
+}
+//loadGame();
 ////
 </script>
 <script src="../public/floating-menu.js"></script>
-<script id="DesktopPet" src="../pet/desktop-cat.js"></script>
-
 </body>
 </html>

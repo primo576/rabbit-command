@@ -22,7 +22,7 @@
     { label: 'kubectl-commands-documents', url: 'https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands' , blank: true},
     { label: '截圖', url: 'javascript:capture()' },
     { label: '回到頂部', url: '#' },
-    { label: 'cmd+k開啟清單', url: 'javascript:alert()' }
+    { label: 'cmd+k開啟清單', url: 'javascript:alert()' },
   ];
 
   const style = document.createElement('style');
@@ -120,9 +120,29 @@
       .filter(l => l.label.toLowerCase().includes(f))
       .map(l => `<a href="${l.url}" ${l.blank ? 'target="_blank"' : ''}>${l.label}</a>`)
       .join('') || '<div style="padding:6px;color:#94a3b8">找不到連結</div>';
+      if (filter=='') {
+        loadGame(list);
+      }
   }
+  
+
 
   render();
+
+
+  //
+function loadGame(list){
+const loadButtom = document.createElement('a');
+loadButtom.href='#'
+ loadButtom.textContent = '載入老鼠抓貓';
+loadButtom.onclick = () => {
+    const script = document.createElement('script');
+    script.src="../pet/desktop-cat.js";
+    document.getElementsByTagName('body')[0].appendChild(script);
+    };
+list.appendChild(loadButtom);
+}
+  //
 
   input.oninput = () => render(input.value);
 
