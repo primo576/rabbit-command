@@ -13,6 +13,157 @@ ALL_TEMPLATE.Config_white_TEMPLATE_CONFIG=[
     "desc": "查看目前工作目錄與暫存區狀態，最常用的安全指令"
   }
   ]
+ALL_TEMPLATE.NEWwebCreate_TEMPLATE_CONFIG=[
+ {
+    label: '==================8. 建站參考模板======================',
+    value: '',
+    risk: null,
+    desc: ``
+  },
+
+  {
+    label: 'Step1: ns a-z表用',
+    value: `\${ns}a
+\${ns}b
+\${ns}c
+\${ns}d
+\${ns}e
+\${ns}f
+\${ns}g
+\${ns}h
+\${ns}i
+\${ns}j
+\${ns}k
+\${ns}l
+\${ns}m
+\${ns}n
+\${ns}o
+\${ns}p
+\${ns}q
+\${ns}r
+\${ns}s
+\${ns}t
+\${ns}u
+\${ns}v
+\${ns}w
+\${ns}x
+\${ns}y
+\${ns}z`,
+    risk: 'safe',
+    desc: `表用正序abc`
+  },
+  {
+    label: 'Step2: ns a-z建站腳本用',
+    value: `\${ns}a,\${ns}b,\${ns}c,\${ns}d,\${ns}e,\${ns}f,\${ns}g,\${ns}h,\${ns}i,\${ns}j,\${ns}k,\${ns}l,\${ns}m,\${ns}n,\${ns}o,\${ns}p,\${ns}q,\${ns}r,\${ns}s,\${ns}t,\${ns}u,\${ns}v,\${ns}w,\${ns}x,\${ns}y,\${ns}z`,
+    
+    risk: 'safe',
+    desc: `建站腳本用 要記得刪除最後的,`
+  },
+  /*
+  {
+    label: '(略)升級腳本用 ns轉array',
+    value: '"${ns}",',
+    risk: 'safe',
+    desc: ` 產出後貼到網址會一排`
+    //value: `"\${ns}a ","\${ns}b ","\${ns}c ","\${ns}d ","\${ns}e ","\${ns}f ","\${ns}g ","\${ns}h ","\${ns}i ","\${ns}j ","\${ns}k ","\${ns}l ","\${ns}m ","\${ns}n ","\${ns}o ","\${ns}p ","\${ns}q ","\${ns}r ","\${ns}s ","\${ns}t ","\${ns}u ","\${ns}v ","\${ns}w ","\${ns}x ","\${ns}y ","\${ns}z"`,
+    
+  },*/
+  {
+    label: 'Step3: ns z-a升級腳本用',
+    value: `"\${ns}z","\${ns}y","\${ns}x","\${ns}w","\${ns}v","\${ns}u","\${ns}t","\${ns}s","\${ns}r","\${ns}q","\${ns}p","\${ns}o","\${ns}n","\${ns}m","\${ns}l","\${ns}k","\${ns}j","\${ns}i","\${ns}h","\${ns}g","\${ns}f","\${ns}e","\${ns}d","\${ns}c","\${ns}b","\${ns}a",`,
+    risk: 'safe',
+    desc: `要注意是否需要,號
+    abc -> cba
+升級腳本用的順序是倒序 最新的在最上面 和表順序相反`
+  }, {
+    label: 'Step4: 測試gocro路由（✅安全）',
+    value: `date
+echo \${ns}
+echo https://br-gocro.yq-ops.top/\${ns}/#/task
+echo
+curl https://br-gocro.yq-ops.top/\${ns}/#/task
+echo
+echo`,
+    risk: 'safe',
+    desc: `改完gocron後訪問新增的未啟動會是503
+啟動的會是任務後台
+例：
+ph get ingress gocron -n gocron -o yaml
+br get ingress gocron.com -n gocron -o yaml`
+  },
+  {
+    label: '==================以下舊流程===============',
+    value: '',
+    risk: null,
+    desc: ``
+  },
+  {
+    label: 'Step1: ns0-9表用',
+    value: `\${ns}0
+\${ns}1
+\${ns}2
+\${ns}3
+\${ns}4
+\${ns}5
+\${ns}6
+\${ns}7
+\${ns}8
+\${ns}9`,
+    risk: 'safe',
+    desc: `表用正序abc`
+  },  {
+    label: 'Step2: ns0-9建站腳本用',
+    value: `\${ns}0,\${ns}1,\${ns}2,\${ns}3,\${ns}4,\${ns}5,\${ns}6,\${ns}7,\${ns}8,\${ns}9,`,
+    risk: 'safe',
+    desc: `建站腳本用 要記得刪除最後的,`
+  },{
+    label: 'Step3: ns9-0升級腳本用',
+    value: `"\${nsre}9","\${nsre}8","\${nsre}7","\${nsre}6","\${nsre}5","\${nsre}4","\${nsre}3","\${nsre}2","\${nsre}1","\${nsre}0",`,
+    risk: 'safe',
+    desc: `abc -> cba
+升級腳本用的順序是倒序 最新的在最上面 和表順序相反`
+  }, {
+    label: 'Step4: Ingress backend 區塊（gocron 範例）',
+    risk: 'safe',
+    value: `      - backend:
+          service:
+            name: gocron-\${ns}
+            port:
+              number: 80
+        path: /\${ns}(/|$)(.*)
+        pathType: ImplementationSpecific`,
+    desc: `br edit ingress gocron.com -n gocron 
+ph edit ingress gocron -n gocron 
+Ingress rules 片段
+請確認 namespace / service 存在
+保存在推流程
+kubectl get ingress gocron.com -n gocron -o yaml > ingress.yaml
+vim ingress.yaml
+kubectl diff -f ingress.yaml
+kubectl apply -f ingress.yaml
+如果要看log
+kubectl logs -n ingress-nginx deploy/ingress-nginx-controller | tail -n 50
+即時追
+kubectl logs -f deploy/ingress-nginx-controller -n ingress-nginx
+`
+  },
+  {
+    label: 'Step5: 測試gocron路由（✅安全）',
+    value: `date
+echo \${ns}
+echo https://br-gocron.yq-ops.top/\${ns}/#/task
+echo
+curl https://br-gocron.yq-ops.top/\${ns}/#/task
+echo
+echo`,
+    risk: 'safe',
+    desc: `改完gocron後訪問新增的未啟動會是503
+啟動的會是任務後台
+例：
+ph get ingress gocron -n gocron -o yaml
+br get ingress gocron.com -n gocron -o yaml`
+  }, 
+]
 
 ALL_TEMPLATE.CloudFlare_TEMPLATE_CONFIG=[
   {
