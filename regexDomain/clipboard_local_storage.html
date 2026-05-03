@@ -30,6 +30,7 @@
     
      /*textarea#input { width: 100%; height: 80px; }*/
     .toolbar { margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;}
+    .setbar { margin: 8px 0; display: flex;display: flex;flex-direction: column;}
     .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
     .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
@@ -109,6 +110,7 @@
     flex-wrap: wrap;
     
   }
+  
 }
   </style>
 </head>
@@ -126,16 +128,33 @@
   <label class="custom-file-upload buttomStyle1">匯入
     
   <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
-  </label>
-   <label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">逐行文字大小
-  <input type="range" min="10" max="50" value="18" id="slider">
   
-  <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
-  IMG訪問
-   <input type="checkbox" id="IMGcheckBox">
-  圖片大小
-  <input type="range" min="50" max="300" value="150" id="sliderIMG">
   </label>
+   
+</div>
+
+<div class="setbar">
+<label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">
+    <details>
+      <summary>設定</summary>
+    <p>
+    <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+    </p>
+    <p>逐行文字大小
+  <input type="range" min="10" max="50" value="18" id="slider">
+  </p>
+  <p>IMG訪問
+   <input type="checkbox" id="IMGcheckBox">
+   </p>
+   <p>加https
+   <input type="checkbox" id="addHttpscheckBox">
+   </p>
+  <p>圖片大小
+  <input type="range" min="50" max="300" value="150" id="sliderIMG">
+  </p>
+  </label>
+  </details>
+
 </div>
 
 <div id="usage"></div>
@@ -413,6 +432,8 @@ function render() {
    if (item.linkToIMG) {
         
       imgcheckbox=document.getElementById('IMGcheckBox');
+      
+      addHttpscheckBox=document.getElementById('addHttpscheckBox');
       const rawDelimiter = document.getElementById('delimiterInput').value;
       const delimiter = parseDelimiter(rawDelimiter);
       const lines = textarea.value.split(delimiter).filter(l => l.trim());
@@ -433,11 +454,21 @@ function render() {
         }
       
        const ahref = document.createElement('a');
+       
+       if (imgcheckbox.checked) {
+       checkhttp=line.trim().slice(0,4)
+       if (checkhttp!='http') {
+        line='https://'+line
+        //console.log(line)
+       }
+      }
+
        ahref.href=line
        ahref.textContent=line
        ahref.title=line
        ahref.target="_blank"
        
+
        img.onclick = () => copyText(line,index);
        fdiv.appendChild(ahref)
        fdiv.appendChild(img);
