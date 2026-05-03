@@ -1,5 +1,10 @@
 (function () {
-  if (window.__Desktop_Cat__) return;
+  if (window.__Desktop_Cat__) {
+    document.getElementById('Desktop_Cat').remove();
+     window.__Desktop_Cat__ = false;
+     cancelAnimationFrame(anid)
+     console.log('停止繪畫',anid)
+    return};
   window.__Desktop_Cat__ = true;
 const gameDiv = document.createElement('div');
 gameDiv.id='Desktop_Cat'
@@ -1256,7 +1261,7 @@ canvas.addEventListener('pointermove', (e) => {
     y: e.clientY
   });
 
- if (currentPath.length > 10) {
+ if (currentPath.length != 0) {
      path = {
       points: currentPath,
       life: drawPathTime
@@ -1567,8 +1572,10 @@ function animate() {
    // updatePaths()
     drawPaths();
   }
-  requestAnimationFrame(animate);
+  anid=requestAnimationFrame(animate);
 }
 changeState(pets);
+anid=''
 animate();
+console.log('開始繪製',anid)
 })();
