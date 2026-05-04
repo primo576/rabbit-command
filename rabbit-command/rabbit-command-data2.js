@@ -15,7 +15,7 @@ ALL_TEMPLATE.Config_white_TEMPLATE_CONFIG=[
   ]
 ALL_TEMPLATE.NEWwebCreate_TEMPLATE_CONFIG=[
  {
-    label: '==================8. 建站參考模板======================',
+    label: '================== a-z 建站參考模板======================',
     value: '',
     risk: null,
     desc: ``
@@ -92,7 +92,7 @@ ph get ingress gocron -n gocron -o yaml
 br get ingress gocron.com -n gocron -o yaml`
   },
   {
-    label: '==================以下舊流程===============',
+    label: '================== 0-9 建站參考模板======================',
     value: '',
     risk: null,
     desc: ``

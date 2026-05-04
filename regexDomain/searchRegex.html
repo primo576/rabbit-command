@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>Regex Textarea Search</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  textarea { width: 100%; height: 150px; }
+  input { width: 300px; }
+  .highlight { background: yellow; }
+  .error { color: red; }
+  .suggestion span {
+    background: #eee;
+    padding: 4px 8px;
+    margin: 4px;
+    display: inline-block;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h3>Textarea Regex 搜尋</h3>
+
+<textarea id="text"></textarea><br><br>
+
+<label>Regex：</label>
+<input id="pattern" placeholder="例如: error|warn"><br><br>
+<div style="display: none;">
+<label>Flags：</label>
+
+<input id="flags" placeholder="例如: gi">
+</div>
+<button onclick="search()">搜尋</button>
+
+<p id="error" class="error"></p>
+
+<h4>結果：</h4>
+
+<div id="result"></div>
+
+<h4>推薦 Regex：</h4>
+<div class="suggestion" id="suggestion"></div>
+
+<h4>歷史：</h4>
+<div id="history"></div>
+
+<script>
+const suggestions = [
+  { label: "Email", value: "[\\w.-]+@[\\w.-]+\\.\\w+" },
+  { label: "IP", value: "\\b\\d{1,3}(\\.\\d{1,3}){3}\\b" },
+  { label: "數字", value: "\\d+" },
+  { label: "空白行", value: "^\\s*$" },
+  { label: "HTTP 200", value: " 200 " },
+  { label: "http", value: "http.*" },
+];
+
+const historyList = [];
+
+function renderSuggestions() {
+  const el = document.getElementById('suggestion');
+  el.innerHTML = '';
+  suggestions.forEach(s => {
+    const span = document.createElement('span');
+    span.textContent = s.label;
+    span.onclick = () => {
+      document.getElementById('pattern').value = s.value;
+    };
+    el.appendChild(span);
+  });
+}
+
+function renderHistory() {
+  const el = document.getElementById('history');
+  el.innerHTML = historyList.map(h => `<div>${h}</div>`).join('');
+}
+
+
+function search() {
+  const text = document.getElementById('text').value;
+  if (text=='') {
+    document.getElementById('result').innerHTML=''
+    return;
+  }
+  const pattern = document.getElementById('pattern').value;
+  const flags = document.getElementById('flags').value;
+  
+
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+
+  errorEl.textContent = '';
+  resultEl.innerHTML = '';
+
+  let regex;
+  try {
+    regex = new RegExp(pattern, flags.includes('g') ? flags : flags + 'g');
+  } catch (e) {
+    errorEl.textContent = 'Regex 錯誤: ' + e.message;
+    return;
+  }
+
+  // ===== 模式1：整段高亮 =====
+  const highlighted = text.replace(regex, match => {
+    return `<span class="highlight">${match}</span>`;
+  });
+
+  // ===== 模式2：每個結果獨立 =====
+  const matches = [...text.matchAll(regex)];
+  myarray=[];
+  
+
+  const listHtml = matches.map((m, idx) => {
+    const value = m[0];
+    const index = m.index;
+
+    // 找所在行（實用）
+    const lines = text.slice(0, index).split('\n');
+    const lineNumber = lines.length;
+    const lineText = text.split('\n')[lineNumber - 1];
+    myarray.push(value)
+   
+    return `
+      <div style="border:1px solid #ccc; padding:8px; margin:6px 0;">
+        <b>#${idx + 1}</b><br>
+        <b>Match:</b> ${value}<br>
+        <b>Index:</b> ${index}<br>
+        <b>Line:</b> ${lineNumber}<br>
+        <b>Content:</b> ${lineText}
+      </div>
+    `;
+  }).join('');
+   uniqueArray = [...new Set(myarray)];
+  uniqueArray=uniqueArray.join('\n')
+  myarray=myarray.join('\n');
+
+  resultEl.innerHTML = `
+  <h4>🔹 文字模式</h4>
+  <textarea >${myarray}</textarea>
+   <h4>🔹 去重模式</h4>
+  <textarea >${uniqueArray}</textarea>
+    <h4>🔹 高亮模式</h4>
+    <div>${highlighted}</div>
+    
+
+    <h4>🔹 獨立結果 (${matches.length})</h4>
+    <div>${listHtml || '無結果'}</div>
+  `;
+}
+
+
+// init
+renderSuggestions();
+
+//
+pattern.addEventListener('input', async () => {
+  try {
+    search();
+  } catch (err) {
+  }
+});
+text.addEventListener('input', async () => {
+  try {
+    search();
+  } catch (err) {
+  }
+});
+//
+</script>
+<script src="../public/floating-menu.js"></script>
+</body>
+</html>
