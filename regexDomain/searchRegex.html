@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Regex Textarea Search</title>
 <style>
   body { font-family: sans-serif; padding: 20px; }
@@ -16,6 +17,12 @@
     display: inline-block;
     cursor: pointer;
   }
+  @media (hover: none) and (pointer: coarse) {
+  input, textarea, select {
+    font-size: 16px;
+  } 
+}
+  
 </style>
 </head>
 <body>
@@ -30,20 +37,24 @@
 <label>Flags：</label>
 
 <input id="flags" placeholder="例如: gi">
+<h4>歷史：</h4>
+<div id="history"></div>
 </div>
 <button onclick="search()">搜尋</button>
 
 <p id="error" class="error"></p>
-
+    <details>
+      <summary>更多</summary>
+<h4>推薦 Regex：</h4>
+<div class="suggestion" id="suggestion"></div>
+ </details>
 <h4>結果：</h4>
 
 <div id="result"></div>
 
-<h4>推薦 Regex：</h4>
-<div class="suggestion" id="suggestion"></div>
 
-<h4>歷史：</h4>
-<div id="history"></div>
+
+
 
 <script>
 const suggestions = [
@@ -78,11 +89,12 @@ function renderHistory() {
 
 function search() {
   const text = document.getElementById('text').value;
-  if (text=='') {
+
+  const pattern = document.getElementById('pattern').value;
+  if (text=='' || pattern=='') {
     document.getElementById('result').innerHTML=''
     return;
   }
-  const pattern = document.getElementById('pattern').value;
   const flags = document.getElementById('flags').value;
   
 
