@@ -148,14 +148,24 @@
   <input type="range" min="10" max="50" value="18" id="slider">
   </p>
   </li>
-  <li>
-  <p>IMG訪問
-   <input type="checkbox" id="IMGcheckBox">
+   <li>
+   <p>前綴加https
+   <input type="checkbox" id="addHttpscheckBox">
    </p>
    </li>
    <li>
-   <p>加https
-   <input type="checkbox" id="addHttpscheckBox">
+  <p>逐行點擊訪問域名
+   <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
+   </p>
+   </li>
+   <li>
+  <p>
+   <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+   </p>
+   </li>
+  <li>
+  <p>IMG訪問
+   <input type="checkbox" id="IMGcheckBox">
    </p>
    </li>
    <li>
@@ -414,7 +424,7 @@ function render() {
 
     //if function要在按鈕建立之後 不然排版會混亂
      
-
+//逐行模式
    if (item.lineMode) {
         const ol = document.createElement('ol');
         ol.className = 'col';
@@ -428,7 +438,14 @@ function render() {
         ldiv.className = 'line';
         ldiv.textContent = line;
        //ldiv.onclick = () => navigator.clipboard.writeText(line);
-       ldiv.onclick = () => copyText(line,index);
+       ///
+       ldiv.onclick = () => {
+        copyText(line,index);
+       if (lineUrlahref.checked) {
+        openNewWindow(line);
+       }
+      }
+       ///
        ol.appendChild(ldiv);
         div.appendChild(ol);
       });
@@ -468,11 +485,7 @@ function render() {
        const ahref = document.createElement('a');
        
        if (addHttpscheckBox.checked) {
-       checkhttp=line.trim().slice(0,4)
-       if (checkhttp!='http') {
-        line='https://'+line
-        //console.log(line)
-       }
+       line=urlHttps(line)
       }
 
        ahref.href=line
@@ -523,7 +536,56 @@ function copyText(text,index){
       }, 3000);
         }
 }
+//
+//開視窗
+//
+windowsObject=[]
+newWindowConf={
+  x:0,
+  y:0,
+  baseline:60,
+  userScreenMaxWidth:1200,
+  windowHeight:200,
+  windowWidth:200
+}
 
+function openNewWindow(url){
+     if (addHttpscheckBox.checked) {
+       url=urlHttps(url)
+      }
+  w=window.open(
+            url,
+            '_blank',
+           `height=${newWindowConf.windowHeight},width=${newWindowConf.windowWidth},left=${newWindowConf.x},top=${newWindowConf.y}`
+        ); // 在新的標籤頁或視窗中打開每個連結
+  windowsObject.push(w);
+
+  newWindowConf.x+=newWindowConf.windowWidth;
+  if (newWindowConf.x>newWindowConf.userScreenMaxWidth) {
+    newWindowConf.y+=newWindowConf.windowWidth+newWindowConf.baseline;
+    newWindowConf.x=0;
+  }
+}
+
+function closeMultipleWindows() {
+  windowsObject.forEach(windowO => {
+        if (windowO && !windowO.closed) {
+            windowO.close(); // 关闭有效且尚未关闭的窗口
+        }
+  }  )
+    windowsObject=[]
+    newWindowConf.x=0
+    newWindowConf.y=0
+}
+
+function urlHttps(url){
+        checkhttp=url.trim().slice(0,4)
+       if (checkhttp!='http') {
+        url='https://'+url
+       }
+       return url
+}
+///
 function randomFacetext(){
   warFace=[
  " ̿̿ ̿̿ ̿̿ ̿'̿’\̵͇̿̿\з=( ͠° ͟ʖ ͡°)=ε/̵͇̿̿/‘̿̿ ̿ ̿ ̿ ̿ ̿",

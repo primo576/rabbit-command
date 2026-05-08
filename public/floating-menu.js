@@ -15,6 +15,7 @@
     { label: '文本比對0', url: '../regexDomain/textDifferent.html' },
     { label: 'regex搜索文本', url: '../regexDomain/searchRegex.html' },
     { label: '剪貼板', url: '../regexDomain/clipboard_local_storage.html' },
+    { label: 'url多開', url: '../regexDomain/openUrls.html' },
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},

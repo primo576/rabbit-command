@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+     
+    </style>
+</head>
+
+<body>
+    <h2>1920*1080上限54開啟網頁_多行_超過_建構ahef_網址切割後去除空白以,轉一行,建構ahef</h2>
+	
+	<textarea id="target" ></textarea>
+	<input type='button' value='go' onclick='openMultipleLinks(myLinks)'>
+	<input type='button' value='close' onclick='closeMultipleLinks(myLinks)'>
+	<p id = 'len'></p>
+	<textarea id="targetA" ></textarea>
+	<p id = 'goto'>網址:</p>
+	
+	
+<body id="myBody">
+<script>
+
+//開一堆視窗
+// 调用函数并传递链接数组作为参数
+var  myLinks = [];
+var myWindow = [];
+
+function openMultipleLinks(links) {
+    var x = 0;
+    var y = 0;
+    myWindow = []; // 初始化一個陣列來存儲視窗引用
+
+    for (var i = 0; i < links.length; i++) {
+		if (y<900){
+        myWindow[i] = window.open(
+            links[i],
+            '_blank',
+            `height=200,width=200,left=${x},top=${y}`
+        ); // 在新的標籤頁或視窗中打開每個連結
+		}
+        x += 200; // 將 x 位置增加 200
+        if (x > 1700) {
+            y += 200; // 移動到下一行
+            x = 0; // 為新行重置 x 位置
+        }else if (y>900){outputFunction(links[i])
+		console.log(links[i]);
+		}
+    }
+}
+
+
+
+function closeMultipleLinks() {
+    for (var i = 0; i < myWindow.length; i++) {
+        if (myWindow[i] && !myWindow[i].closed) {
+            myWindow[i].close(); // 关闭有效且尚未关闭的窗口
+        }
+    }
+}
+//開一堆視窗
+
+
+
+
+
+function outputFunction(url) {
+    var myBodyId = document.getElementById("goto");
+    var newBaitTag = document.createElement('li');
+    var newBaitLink = document.createElement('a'); // 創建超連結標籤
+
+    newBaitLink.setAttribute('href', 'https://' + url); // 在超連結標籤上設置 href 屬性
+    newBaitLink.textContent = url; // 設置超連結標籤的文字內容
+
+    // 添加点击事件处理程序
+    newBaitLink.addEventListener('auxclick', function(event) {
+        if (event.button === 1) { // 检查是否为鼠标中键点击事件
+            //event.preventDefault(); // 阻止默认行为，即不跳转到链接所指向的页面
+            newBaitLink.removeAttribute('href'); // 移除链接的 href 属性
+        }
+    });
+
+    newBaitTag.appendChild(newBaitLink); // 將超連結標籤放入列表項目中
+    myBodyId.appendChild(newBaitTag); // 將列表項目放入具有 ID 為 "goto" 的元素中
+}
+	
+	document.getElementById("target").addEventListener("change", myfun2);
+	function myfun2(){
+	myLinks = [];
+	document.getElementById('goto').innerText='';
+	var myinput=document.getElementById('target');
+	let str = myinput.value.replace(/(\r\n)|(\n)/g,'<br>') //字串轉換
+	const myArray = str.split("<br>"); 						//切字段
+	var mylen = myArray.length; 							//陣列長度
+	var mylen2 = mylen-1;
+	var mytext2= "";	//空字串
+	var herfText='';
+	for (let i = 0 ; i<mylen ; i++){						//迴圈加入字串
+		mytext2 += myArray[i].trim() ;                      //去除頭尾空白
+		if (i != mylen2){mytext2+=','}
+		//outputFunction(myArray[i].trim())					//調用建立
+		myLinks.push('https://'+myArray[i].trim());
+		//<a href="https://www.fooish.com/" target="_blank">Fooish 技術教學</a>
+	}
+	document.getElementById('targetA').value=mytext2;	//替換網頁文字
+	document.getElementById('len').innerText=mylen+'個';
+	console.log(myLinks);
+	//document.getElementById('goto').outerText=herfText;
+	}
+</script>
+<script src="../public/floating-menu.js"></script>
+</html>
