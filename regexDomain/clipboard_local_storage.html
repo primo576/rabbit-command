@@ -158,10 +158,19 @@
    <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
    </p>
    </li>
-   <li>
-  <p>
-   <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+    <li>
+   <input id="windowHWset" title="寬,高,螢幕寬,換行線 預設訪問視窗 " value="200,200,1200,1000,60" >
+   </li>
+    <li>
+   <p>允許一次全部訪問
+   <input type="checkbox" id="allowOPENallurl">
    </p>
+   </li>
+      <li> <p>全開延遲秒數
+   <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
+      </p></li>
+   <li>
+   <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
    </li>
   <li>
   <p>IMG訪問
@@ -364,7 +373,7 @@ function render() {
     };
 
     const testIMGlinkBtn = document.createElement('button');
-    testIMGlinkBtn.textContent = item.linkToIMG ? '收起img' : '顯示img';
+    testIMGlinkBtn.textContent = item.linkToIMG ? '收起IMG' : '顯示IMG';
     testIMGlinkBtn.className='buttomStyle1'
     testIMGlinkBtn.onclick = () => {
       item.linkToIMG = !item.linkToIMG;
@@ -409,17 +418,36 @@ function render() {
       recoverTitle();
     }
 
+    function openALLurl(){
+      if (!allowOPENallurl.checked) {
+        alert('先允許全部訪問');
+        return
+      }
+      const rawDelimiter = document.getElementById('delimiterInput').value;
+      const delimiter = parseDelimiter(rawDelimiter);
+      const lines = textarea.value.split(delimiter).filter(l => l.trim());
+      startsleeptime=0
+      sleep=OPENAllwindowTimeset.value*1000
+      lines.forEach(line => {
+         setTimeout(() => {
+        openNewWindow(line);
+         }, startsleeptime);
+         startsleeptime+=sleep
+        // console.log(startsleeptime)
+      })
+    }
+
 
     div.appendChild(time);
     div.appendChild(textarea);
     div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
     div.appendChild(toggleBtn); //展開收起
-    div.appendChild(testIMGlinkBtn); //展開收起
-    div.appendChild(createBtnClickFun('逐行',lineMode));
-    //div.appendChild(createInputFun(index,'逐行分隔符'));  
-    div.appendChild(toggleBtnToLower);
-    //div.appendChild(createBtnClickFun('圖片', ()=>testIMGlink(textarea.value)));
+    div.appendChild(createBtnClickFun('逐行',lineMode)); 
+    div.appendChild(toggleBtnToLower);//全部小寫
+    div.appendChild(testIMGlinkBtn); //IMG訪問
+    div.appendChild(createBtnClickFun('url全部訪問',openALLurl));
     div.appendChild(createBtnClickFun('刪除',delLine));
+    
 
 
     //if function要在按鈕建立之後 不然排版會混亂
@@ -440,7 +468,9 @@ function render() {
        //ldiv.onclick = () => navigator.clipboard.writeText(line);
        ///
        ldiv.onclick = () => {
-        copyText(line,index);
+         copyText(line,index);
+       
+        
        if (lineUrlahref.checked) {
         openNewWindow(line);
        }
@@ -480,7 +510,7 @@ function render() {
        img.onerror = function () {
           this.style.display = 'none';
         };
-        }
+        
       
        const ahref = document.createElement('a');
        
@@ -498,6 +528,13 @@ function render() {
        fdiv.appendChild(ahref)
        fdiv.appendChild(img);
        Topfdiv.appendChild(fdiv);
+       }else{
+        const fdiv = document.createElement('p');
+        fdiv.textContent='先允許訪問IMG'
+        console.log(fdiv)
+        Topfdiv.appendChild(fdiv);
+       }
+       
       });
       
       div.appendChild(Topfdiv);
@@ -524,6 +561,7 @@ function titleChange(string){
 }
 
 function copyText(text,index){
+  
         navigator.clipboard.writeText(text)
         text20=text.slice(0, 20)
         titleChange('已複製：'+text20+"···")  
@@ -545,14 +583,25 @@ newWindowConf={
   y:0,
   baseline:60,
   userScreenMaxWidth:1200,
+  userScreenMaxHeight:1000,
   windowHeight:200,
   windowWidth:200
 }
 
 function openNewWindow(url){
+  if (windowHWset.value) {
+    u=windowHWset.value.split(',');
+    u = u.map(Number); 
+    newWindowConf.windowHeight=u[0]
+    newWindowConf.windowWidth=u[1]
+    newWindowConf.userScreenMaxWidth=u[2]
+    newWindowConf.userScreenMaxHeight=u[3]
+    newWindowConf.baseline=u[4]
+  }
      if (addHttpscheckBox.checked) {
        url=urlHttps(url)
       }
+
   w=window.open(
             url,
             '_blank',
@@ -560,11 +609,11 @@ function openNewWindow(url){
         ); // 在新的標籤頁或視窗中打開每個連結
   windowsObject.push(w);
 
-  newWindowConf.x+=newWindowConf.windowWidth;
-  if (newWindowConf.x>newWindowConf.userScreenMaxWidth) {
-    newWindowConf.y+=newWindowConf.windowWidth+newWindowConf.baseline;
-    newWindowConf.x=0;
-  }
+  
+nextWindowPosition(newWindowConf);
+
+  console.log('x:',typeof(newWindowConf.x),'y:',newWindowConf.y);
+
 }
 
 function closeMultipleWindows() {
@@ -584,6 +633,33 @@ function urlHttps(url){
         url='https://'+url
        }
        return url
+}
+
+function nextWindowPosition(conf) {
+
+  conf.x += conf.windowWidth;
+
+  // 換行
+  if (
+    conf.x + conf.windowWidth >
+    conf.userScreenMaxWidth
+  ) {
+    conf.x = 0;
+
+    conf.y += (
+      conf.windowHeight +
+      conf.baseline
+    );
+  }
+
+  // 超出高度
+  if (
+    conf.y + conf.windowHeight >
+    conf.userScreenMaxHeight
+  ) {
+    conf.x = 0;
+    conf.y = 0;
+  }
 }
 ///
 function randomFacetext(){
