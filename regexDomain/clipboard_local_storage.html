@@ -159,7 +159,7 @@
    </p>
    </li>
     <li>
-   <input id="windowHWset" title="寬,高,螢幕寬,換行線 預設訪問視窗 " value="200,200,1200,1000,60" >
+   <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
    </li>
     <li>
    <p>允許一次全部訪問
@@ -420,7 +420,7 @@ function render() {
 
     function openALLurl(){
       if (!allowOPENallurl.checked) {
-        alert('先允許全部訪問');
+        titleChangeUse('先允許全部訪問');
         return
       }
       const rawDelimiter = document.getElementById('delimiterInput').value;
@@ -435,6 +435,9 @@ function render() {
          startsleeptime+=sleep
         // console.log(startsleeptime)
       })
+       setTimeout(() => {
+      recoverTitle();}
+      , startsleeptime);
     }
 
 
@@ -469,15 +472,18 @@ function render() {
        ///
        ldiv.onclick = () => {
          copyText(line,index);
-       
-        
+       ldiv.style.backgroundColor=randomColor();
+        setTimeout(() => {
+          ldiv.style.backgroundColor=''
+      }, 20*1000);
+      //多久恢復顏色
        if (lineUrlahref.checked) {
         openNewWindow(line);
        }
       }
        ///
        ol.appendChild(ldiv);
-        div.appendChild(ol);
+       div.appendChild(ol);
       });
     }
 /*
@@ -529,9 +535,9 @@ function render() {
        fdiv.appendChild(img);
        Topfdiv.appendChild(fdiv);
        }else{
+        titleChangeUse('先允許訪問IMG');
         const fdiv = document.createElement('p');
         fdiv.textContent='先允許訪問IMG'
-        console.log(fdiv)
         Topfdiv.appendChild(fdiv);
        }
        
@@ -558,6 +564,11 @@ function recoverTitle(){
 function titleChange(string){
  titleA=document.getElementById('titleA');
  titleA.textContent=string
+}
+
+function titleChangeUse(string){
+titleChange(string)
+recoverTitle()
 }
 
 function copyText(text,index){
@@ -611,8 +622,8 @@ function openNewWindow(url){
 
   
 nextWindowPosition(newWindowConf);
-
-  console.log('x:',typeof(newWindowConf.x),'y:',newWindowConf.y);
+titleChange(`開${windowsObject.length}次視窗${randomFacetext()}`);
+  //console.log('x:',typeof(newWindowConf.x),'y:',newWindowConf.y);
 
 }
 
@@ -625,6 +636,7 @@ function closeMultipleWindows() {
     windowsObject=[]
     newWindowConf.x=0
     newWindowConf.y=0
+    titleChangeUse(`關掉所有視窗${randomFacetext()}`);
 }
 
 function urlHttps(url){
@@ -721,6 +733,14 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+
+function randomColor(){
+  c=[
+    'red','yellow','orange','green'
+  ]
+  
+  return c[getRandomInt(c.length)]
+}
 
 
 // 匯出
