@@ -247,6 +247,13 @@ br get ingress gocron.com -n gocron -o yaml`
     risk: 'danger'
   },
   {
+    label: '重新部署 整個ns（⚠️影響線上）',
+    value: 'kubectl get deploy -n ${ns} -o name | xargs -I {} kubectl rollout restart {}  -n ${ns}',
+    risk: 'danger',
+    desc: `搭配grep -E多指定
+grep -v反轉查找`
+  },
+  {
     label: 'delete pod（⚠️影響線上）',
     value: 'kubectl delete pod ${pod} -n ${ns}',
     risk: 'danger'

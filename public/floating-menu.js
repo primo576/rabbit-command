@@ -21,6 +21,7 @@
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
     { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
+    { label: 'linux-command', url: 'https://wangchujiang.com/linux-command/index.html' , blank: true},
     { label: 'kubectl-commands-documents', url: 'https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands' , blank: true},
     { label: '截圖', url: 'javascript:capture()' },
     { label: '回到頂部', url: '#' },

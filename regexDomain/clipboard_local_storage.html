@@ -5,6 +5,32 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>剪貼簿</title>
   <style>
+      body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    textarea,details,a {
+   
+      background: #020617;
+      color: #e5e7eb;
+      
+    }
+    button {
+      /*
+      margin: 8px 0;
+      padding: 8px 14px;
+       */
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+
     body { font-family: Arial; padding: 0px; }
     .testImg{width: 100%; 
         object-fit: contain;
@@ -29,7 +55,7 @@
 }
     
      /*textarea#input { width: 100%; height: 80px; }*/
-    .toolbar { margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;}
+    .toolbar { /* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
     .setbar { margin: 8px 0; display: flex;display: flex;flex-direction: column;}
     .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
@@ -42,10 +68,10 @@
     }
     .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
-    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px; background: #eee; padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
+    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px; background: #1a2b72; padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
     /* font-size: 18px; line的影響閱讀 可以做成動態 */
     .line0:hover { background: #eee; }
-    .line:hover { background: #a2a2a2; }
+    .line:hover { background: #314ec0; }
     .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
     .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
     .bar:hover { opacity: 0.8; }
@@ -70,6 +96,7 @@
 }
 
 .custom-file-upload {
+    
  appearance: auto;
     text-rendering: auto;
     color: buttontext;
@@ -87,6 +114,11 @@
     padding-inline: 6px;
     border-style: double;
     border-color: buttonborder;
+     background: #2563eb;
+      color: white;
+        border: none;
+      border-radius: 6px;
+      cursor: pointer;
 }
 
     .hide{display: none;}
@@ -122,22 +154,24 @@
 <div class="toolbar ">
   <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
   <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
-  <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
-  <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
-  <button class="buttomStyle1" id="exportBtn">匯出</button>
-  <label class="custom-file-upload buttomStyle1">匯入
-    
-  <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
   
-  </label>
-   
 </div>
 
 <div class="setbar">
-<label class="custom-file-upload buttomStyle1" style="margin-left: 2px;">
+<label class="" style="margin-left: 2px;">
     <details>
       <summary>設定</summary>
       <ol>
+        <li>
+    <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
+  <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
+   <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+  <button class="buttomStyle1" id="exportBtn">資料匯出</button>
+  <label class="custom-file-upload buttomStyle1">資料匯入
+    
+  <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
+  
+  </label></li>
         <li>
     <p>
     <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
@@ -169,9 +203,7 @@
       <li> <p>全開延遲秒數
    <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
       </p></li>
-   <li>
-   <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
-   </li>
+   
   <li>
   <p>IMG訪問
    <input type="checkbox" id="IMGcheckBox">
@@ -184,13 +216,15 @@
   </li>
   </label>
   </ol>
+  
+  <div class="bar-container" id="bars"></div>
   </details>
 
 </div>
 
 <div id="usage"></div>
-<div class="bar-container" id="bars"></div>
-<img id="imgTest">
+
+
 <ol class="col" id="list"></ol>
 
 <script>
@@ -210,11 +244,24 @@ const usage = document.getElementById('usage');
 
 function applyToAllTextareasRm() {
   const list = document.getElementsByTagName('textarea');
-
   for (let i = 1; i < list.length; i++) {
     const el = list[i];
     el.removeAttribute('style');
   }
+  data.forEach((item) => {
+    item.expanded = false;
+    item.lineMode = false;
+  /*
+    Object.values(item).forEach((i)=>{
+      if (i===true) {
+        i===false
+      }
+    })
+      */
+    //console.log(Object.keys(item))
+  //console.log(Object.values(item))
+  save();
+  })
 }
 
 function applyToAllTextareasSet() {
@@ -296,7 +343,7 @@ function renderBars() {
     li.className = 'bar';
 
     // 🔥 背景比例條
-    li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #eee ${percent}%)`;
+    li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #263a6a ${percent}%)`;
 
     // 👉 文字完整顯示
     li.textContent = `${new Date(item.time).toLocaleString()} - ${item.text.slice(0, 30)} (${(size/1024).toFixed(1)}KB)`;
