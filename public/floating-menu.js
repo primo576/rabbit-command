@@ -32,20 +32,26 @@
   style.innerHTML = `
     .fab-wrap {
       position: fixed;
+      right: 10px;
+      /*
       right: 16px;
+      */
       bottom: 16px;
       z-index: 999999;
       font-family: system-ui, -apple-system;
     }
     .fab-btn {
       transition: all 1s ease;
+      /*
       width: 56px;
       height: 56px;
+      font-size: 22px;
+      */
+     font-size: 10px;
       border-radius: 50%;
       background: #ffffff00;
       color: #fff;
       border: none;
-      font-size: 22px;
       cursor: pointer;
       opacity: 0.5;
     }
@@ -57,15 +63,19 @@
     .fab-menu {
       position: absolute;
       right: 0;
+      /*
       bottom: 70px;
-    
+      */
+      bottom: 35px;
       border: 1px solid #334155;
       border-radius: 12px;
       padding: 8px;
       min-width: 240px;
       max-height: 60vh;
       display: none;
+      /*
       box-shadow: 0 12px 28px rgba(0,0,0,.5);
+      */
     }
 
     .fab-menu input {

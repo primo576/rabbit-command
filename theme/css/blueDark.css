@@ -7,8 +7,10 @@
     color: var(--text);
      cursor: pointer;
       border: none;
+      /*
       border-radius: 8px;
       padding: 8px 14px;
+      */
     }
 
  .blueDark button:hover {
