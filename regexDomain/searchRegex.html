@@ -61,7 +61,10 @@ table {
 
 <div class="suggestion" id="suggestion"></div>
 <ol>
+  <li> <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button><button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button></li>
 <li><input id="custom-join" placeholder="自訂結果組合方式 預設\n"></li>
+<li><input type="checkbox" id="modeText">文字模式</li>
+<li><input type="checkbox" id="modeUnique" checked="true">去重模式</li>
 <li><input type="checkbox" id="modeHighlight">高亮模式</li>
 <li><input type="checkbox" id="modeOnself">獨立顯示模式</li>
 <li><input type="checkbox" id="modeSort">英文排序模式</li>
@@ -234,7 +237,8 @@ table {
 const suggestions = [
   { label: "清空", value: "" },
   { label: "Email", value: "[\\w.-]+@[\\w.-]+\\.\\w+" },
-  { label: "IP", value: "\\b\\d{1,3}(\\.\\d{1,3}){3}\\b" },
+  { label: "IPv4", value: "\\b\\d{1,3}(\\.\\d{1,3}){3}\\b" },
+  { label: "IPv4:port", value: "\\b\\d{1,3}(\\.\\d{1,3}){3}\\b:{0,}\\d{0,}"},
   { label: "數字", value: "\\d+" },
   { label: "英或數三個", value: "\\w{3}" },
   { label: "-或_", value: ".*(-|_).*" },
@@ -252,6 +256,30 @@ function parseDelimiter(str) {
     .replace(/\\n/g, '\n')
     .replace(/\\t/g, '\t');
 }
+
+function applyToAllTextareasRm() {
+  const list = document.getElementsByTagName('textarea');
+  for (let i = 1; i < list.length; i++) {
+    const el = list[i];
+    el.removeAttribute('style');
+  }
+}
+
+function applyToAllTextareasSet() {
+  const list = document.getElementsByTagName('textarea');
+  for (let i = 1; i < list.length; i++) {
+    const el = list[i];
+    auto_grow(el);
+  }
+}
+
+    function auto_grow(el) {
+    el.style.height = "5px"; // 先壓縮
+    el.style.height = el.scrollHeight + "px"; // 再撐開
+    //
+    
+    //
+  }
 
 function renderSuggestions() {
   const el = document.getElementById('suggestion');
@@ -345,12 +373,15 @@ function search() {
    uniqueArrayhitcount=uniqueArray.length
   uniqueArray=uniqueArray.join(delimiter)
   myarray=myarray.join(delimiter);
-  output= `
-  <h4>🔹 文字模式 ${hitcount}</h4>
-  <textarea >${myarray}</textarea>
-   <h4>🔹 去重模式 ${uniqueArrayhitcount}</h4>
-  <textarea >${uniqueArray}</textarea>
-  `;
+  output= ``;
+  if (modeUnique.checked) {
+    output+=` <h4>🔹 去重模式 ${uniqueArrayhitcount}</h4>
+  <textarea >${uniqueArray}</textarea>`
+  }
+  if (modeText.checked) {
+    output+=` <h4>🔹 文字模式 ${hitcount}</h4>
+  <textarea >${myarray}</textarea>`
+  }
   if (modeHighlight.checked) {
     output+=`<h4>🔹 高亮模式</h4>
     <div>${highlighted}</div>`
@@ -359,7 +390,11 @@ function search() {
     output+=`<h4>🔹 獨立結果 (${matches.length})</h4>
     <div>${listHtml || '無結果'}</div>`
   }
+  
   resultEl.innerHTML =output
+  if (output) {
+    applyToAllTextareasSet();
+  }
 }
 
 

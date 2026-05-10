@@ -96,7 +96,7 @@
 }
 
 .custom-file-upload {
-    
+    font-size: 13px;
  appearance: auto;
     text-rendering: auto;
     color: buttontext;
@@ -166,13 +166,8 @@
     <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
   <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
    <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
-  <button class="buttomStyle1" id="exportBtn">資料匯出</button>
-  <label class="custom-file-upload buttomStyle1">資料匯入
-    
-  <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
-  
-  </label></li>
-        <li>
+</li>
+   <li>
     <p>
     <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
     </p>
@@ -215,6 +210,12 @@
   </p>
   </li>
   </label>
+  <li>
+  <button class="buttomStyle1" id="exportBtn">資料匯出</button>
+  <label class="custom-file-upload buttomStyle1">資料匯入
+  <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
+  </label>
+</li>
   </ol>
   
   <div class="bar-container" id="bars"></div>
@@ -270,6 +271,11 @@ function applyToAllTextareasSet() {
     const el = list[i];
     auto_grow(el);
   }
+   data.forEach((item) => {
+    item.expanded = true;
+    item.lineMode = true;
+     save();
+  })
 }
 
 function testIMGlink(link){
@@ -489,7 +495,7 @@ function render() {
 
 
     div.appendChild(time);
-    div.appendChild(textarea);
+    
     div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
     div.appendChild(toggleBtn); //展開收起
     div.appendChild(createBtnClickFun('逐行',lineMode)); 
@@ -497,6 +503,7 @@ function render() {
     div.appendChild(testIMGlinkBtn); //IMG訪問
     div.appendChild(createBtnClickFun('url全部訪問',openALLurl));
     div.appendChild(createBtnClickFun('刪除',delLine));
+    div.appendChild(textarea);
     
 
 
