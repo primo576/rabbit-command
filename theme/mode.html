@@ -1,0 +1,72 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="css/dark.css">
+     <link rel="stylesheet" type="text/css" href="../theme/css/dark.css">
+</head>
+
+<button id="themeBtn">
+  切換模式
+</button>
+
+<style>
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s;
+}
+
+
+</style>
+
+<div class="card">
+  Hello Dark Mode
+</div>
+<hr>
+<textarea>Hello Dark Mode</textarea>
+<hr>
+<a href="" title="" target="_blank">file:///Users/webp</a>
+
+<script>
+document.getElementById('themeBtn').onclick = () => {
+  setStyle('dark')
+};
+
+function setStyle(styleColor){
+    //改變並寫入storage
+  a=document.body.classList
+  a.toggle(styleColor);
+  localStorage.setItem('theme', a.value);
+}
+
+function initStyle(){
+    //初始化樣式
+const theme = localStorage.getItem('theme');
+if (theme) {
+  document.body.classList.add(theme);
+}
+}
+
+initStyle()
+
+/*
+:root {
+  --bg: white;
+  --text: black;
+  --card: #f5f5f5;
+  --btn: #ffffff;
+}
+
+window.matchMedia(
+ '(prefers-color-scheme: dark)'
+)
+:root {
+  --bg:
+  --text:
+  --border:
+  --danger:
+  --warn:
+  --success:
+  console.log(a);
+   console.log(a.value);
+}*/
+</script>

@@ -21,11 +21,11 @@
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
     { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
-    { label: 'linux-command', url: 'https://wangchujiang.com/linux-command/index.html' , blank: true},
+    { label: 'Global DNS Checker', url: 'https://wangchujiang.com/linux-command/index.html' , blank: true},
     { label: 'kubectl-commands-documents', url: 'https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands' , blank: true},
     { label: '截圖', url: 'javascript:capture()' },
     { label: '回到頂部', url: '#' },
-    { label: 'cmd+k開啟清單', url: 'javascript:alert()' },
+    { label: 'cmd+k開啟清單', url: '#' },
   ];
 
   const style = document.createElement('style');
@@ -51,7 +51,7 @@
     }
     .fab-btn:hover {
       background: #2564ebb5;
-      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      
       opacity: 0.9;
     }
     .fab-menu {
@@ -125,6 +125,7 @@
       .join('') || '<div style="padding:6px;color:#94a3b8">找不到連結</div>';
       if (filter=='') {
         loadGame(list);
+        choiceStyle(list,'dark','暗黑模式');
       }
   }
   
@@ -215,8 +216,44 @@ function loadScript(url) {
     document.head.appendChild(script);
 }
 loadScript('../public/js/html2canvas@1.4.1.js');
+///css
+function loadCss(url) {
+  //<link rel="stylesheet" type="text/css" href="style.css">
+    var link = document.createElement('link');
+    link.rel="stylesheet"
+    link.type = 'text/css';
+    link.href = url;
+    document.head.appendChild(link);
+}
+loadCss('../theme/css/dark.css')
 
+function setStyle(styleColor){
+    //改變並寫入storage
+  a=document.body.classList
+  a.toggle(styleColor);
+  localStorage.setItem('theme', a.value);
+}
 
+function initStyle(){
+    //初始化樣式
+const theme = localStorage.getItem('theme');
+if (theme) {
+  document.body.classList.add(theme);
+}
+}
+
+initStyle()
+
+function choiceStyle(list,color,text){
+const colorButtom = document.createElement('a');
+//colorButtom.href='#'
+ colorButtom.textContent = text;
+colorButtom.onclick = () => {
+    setStyle(color)
+    };
+list.appendChild(colorButtom);
+}
+///css
 })();
 
 

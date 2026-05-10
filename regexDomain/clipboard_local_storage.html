@@ -7,28 +7,9 @@
   <style>
       body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: 16px;
-      background: #0f172a;
-      color: #e5e7eb;
+    
     }
 
-    textarea,details,a {
-   
-      background: #020617;
-      color: #e5e7eb;
-      
-    }
-    button {
-      /*
-      margin: 8px 0;
-      padding: 8px 14px;
-       */
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
 
 
     body { font-family: Arial; padding: 0px; }
@@ -68,10 +49,10 @@
     }
     .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
-    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px; background: #1a2b72; padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
+    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;  padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
     /* font-size: 18px; line的影響閱讀 可以做成動態 */
     .line0:hover { background: #eee; }
-    .line:hover { background: #314ec0; }
+    .line:hover { background: #7f87a5; }
     .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
     .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
     .bar:hover { opacity: 0.8; }
@@ -355,7 +336,7 @@ function renderBars() {
     li.className = 'bar';
 
     // 🔥 背景比例條
-    li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #263a6a ${percent}%)`;
+    li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #577d92 ${percent}%)`;
 
     // 👉 文字完整顯示
     li.textContent = `${new Date(item.time).toLocaleString()} - ${item.text.slice(0, 30)} (${(size/1024).toFixed(1)}KB)`;
@@ -504,8 +485,8 @@ function render() {
     
     div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
     div.appendChild(toggleBtn); //展開收起
-    div.appendChild(createBtnClickFun('逐行',lineMode)); 
     div.appendChild(toggleBtnToLower);//全部小寫
+    div.appendChild(createBtnClickFun('逐行',lineMode)); 
     div.appendChild(testIMGlinkBtn); //IMG訪問
     div.appendChild(createBtnClickFun('url全部訪問',openALLurl));
     div.appendChild(createBtnClickFun('刪除',delLine));

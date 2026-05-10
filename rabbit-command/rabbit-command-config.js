@@ -123,17 +123,13 @@ recoverTitle()
 
 function copy() {
   t=document.getElementById('output').textContent
-  navigator.clipboard.writeText(
-    t
-  );
+  navigator.clipboard.writeText(t);
   titleChangeUse(`已複製結果 ${t.slice(0,30)}`);
 }
 
 function copytemplate() {
   t=document.getElementById('template').value
-  navigator.clipboard.writeText(
-    t
-  );
+  navigator.clipboard.writeText(t);
   titleChangeUse(`已複製模板 ${t.slice(0,30)}`);
 }
 
@@ -449,7 +445,7 @@ function renderHistory() {
         padding:6px;
         margin-bottom:6px;
         cursor:pointer;
-        background:#fff;
+       
         word-wrap: break-word;
       `;
 
