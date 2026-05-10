@@ -216,6 +216,12 @@
   <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
   </label>
 </li>
+<li>
+  <p>
+  <input type="datetime-local" id="timeInput">
+<button onclick="removeBeforeTime()">刪除時間段前資料</button>
+  </p>
+</li>
   </ol>
   
   <div class="bar-container" id="bars"></div>
@@ -465,9 +471,9 @@ function render() {
     function delLine(){
       console.log(data[index].text)
       data.splice(index, 1);
-      save();
+      //save();
       render();
-      titleChange('已刪除：'+time.textContent+"···log還有機會找到")  
+      titleChange('重新整理找回：'+time.textContent+"···操作新資料才保存刪除")  
       recoverTitle();
     }
 
@@ -840,6 +846,35 @@ function mainaction(){
 }
 
 render();
+///刪除時間前資料
+function removeBeforeTime() {
+
+  const value =
+    document.getElementById('timeInput').value;
+const strTime=new Date(value).toLocaleString()
+  if (!value) {
+    titleChangeUse('請選擇時間');
+    return;
+  }
+
+  if (!confirm(`本次刪除${strTime}前的資料`)){
+    titleChangeUse(`取消本次刪除${strTime}前的資料`);
+    return;
+  }
+
+  // datetime-local -> timestamp
+  const targetTime = new Date(value).getTime();
+  
+  // 保留指定時間後的資料
+  data = data.filter(item => {
+    return item.time >= targetTime;
+  });
+
+   titleChangeUse(`刪除${strTime}前的資料,操作一個新資料之後才save`);
+
+  render();
+
+}
 ////
 const slider = document.getElementById('slider');
 // 拉條改文字大小

@@ -50,6 +50,7 @@ function generate() {
   const blocks = document.querySelectorAll('.var-block');
   const names = [];
   const values = [];
+  titleChangeUse(`已產生${template.slice(0, 30)}‧‧‧指令`);
 
   blocks.forEach(b => {
     const n = b.querySelector('input').value;
@@ -86,6 +87,7 @@ function generate() {
       });
       results.push(cmd);
     }
+    
   }
 
   const outputText = results.join('\n');
@@ -94,19 +96,45 @@ function generate() {
   saveVars();
   saveHistory(template, outputText);
 }
+//
+function genCopy(){
+  generate()
+  copy()
+}
+//
+function recoverTitle(){
+        setTimeout(() => {
+          titleOrogin=document.getElementsByTagName('title')[0].textContent;
+        titleChange(titleOrogin);
+      }, 3000);
+}
+
+
+function titleChange(string){
+ titleA=document.getElementById('titleTop');
+ titleA.textContent=string
+}
+
+function titleChangeUse(string){
+titleChange(string)
+recoverTitle()
+}
+//
 
 function copy() {
+  t=document.getElementById('output').textContent
   navigator.clipboard.writeText(
-    document.getElementById('output').textContent
+    t
   );
-  alert('已複製');
+  titleChangeUse(`已複製結果 ${t.slice(0,30)}`);
 }
 
 function copytemplate() {
+  t=document.getElementById('template').value
   navigator.clipboard.writeText(
-    document.getElementById('template').value
+    t
   );
-  alert('已複製模板');
+  titleChangeUse(`已複製模板 ${t.slice(0,30)}`);
 }
 
 
