@@ -36,7 +36,7 @@
       /*
       right: 16px;
       */
-      bottom: 16px;
+      bottom: 45px;
       z-index: 999999;
       font-family: system-ui, -apple-system;
     }
