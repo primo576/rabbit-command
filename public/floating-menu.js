@@ -58,7 +58,7 @@
       position: absolute;
       right: 0;
       bottom: 70px;
-      background: #020617;
+    
       border: 1px solid #334155;
       border-radius: 12px;
       padding: 8px;
@@ -75,20 +75,18 @@
       padding: 6px 8px;
       border-radius: 6px;
       border: 1px solid #334155;
-      background: #020617;
-      color: #e5e7eb;
+      
       font-size: 13px;
     }
     .fab-menu a {
       display: block;
       padding: 6px 8px;
       text-decoration: none;
-      color: #e5e7eb;
       border-radius: 6px;
       font-size: 13px;
     }
     .fab-menu a:hover {
-      background: #1e293b;
+      background: #636e82ff;
     }
     .fab-list {
       max-height: 50vh;
@@ -226,6 +224,7 @@ function loadCss(url) {
     document.head.appendChild(link);
 }
 loadCss('../theme/css/dark.css')
+loadCss('../theme/css/root.css')
 
 function setStyle(styleColor){
     //改變並寫入storage

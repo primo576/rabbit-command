@@ -1,11 +1,11 @@
 .dark textarea,details,a,input,select,div {
     background: var(--card);
     color: var(--text);
-    transition: 0.3s;
 }
 .dark button {
     background:var(--btn);
     color: var(--text);
+    border-radius: 5px;
     transition: 0.3s;
     }
 
@@ -22,35 +22,3 @@
   --card: #222;
   --btn: #616161;
 }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  transition: 0.3s;
-}
-
-:root {
-  --btn: #adadad;
-}
-
-/*
-:root {
-  --bg: white;
-  --text: black;
-  --card: #f5f5f5;
-  --btn: #ffffff;
-}
-
-window.matchMedia(
- '(prefers-color-scheme: dark)'
-)
-:root {
-  --bg:
-  --text:
-  --border:
-  --danger:
-  --warn:
-  --success:
-  console.log(a);
-   console.log(a.value);
-}*/
