@@ -1,0 +1,35 @@
+.blueDark textarea,details,a,input,select,div {
+    background: var(--card);
+    color: var(--text);
+}
+.blueDark button {
+    background:var(--btn);
+    color: var(--text);
+     cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+    }
+
+ .blueDark button:hover {
+      background:var(--btnHover);
+    }
+
+.blueDark card {
+  background: var(--card);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.blueDark {
+  --bg: #0f172a;
+  --text: #e5e7eb;
+  --card: #020617;
+  --btn: #2563eb;
+   --btnHover: #1d4ed8;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s;
+}

@@ -124,6 +124,7 @@
       if (filter=='') {
         loadGame(list);
         choiceStyle(list,'dark','暗黑模式');
+        choiceStyle(list,'blueDark','blue黑模式');
       }
   }
   
@@ -225,11 +226,13 @@ function loadCss(url) {
 }
 loadCss('../theme/css/dark.css')
 loadCss('../theme/css/root.css')
+loadCss('../theme/css/blueDark.css')
 
 function setStyle(styleColor){
     //改變並寫入storage
   a=document.body.classList
   a.toggle(styleColor);
+  //a.value=styleColor;
   localStorage.setItem('theme', a.value);
 }
 

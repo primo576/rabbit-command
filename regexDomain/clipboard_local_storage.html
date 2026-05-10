@@ -5,11 +5,10 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>剪貼簿</title>
   <style>
-      body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    
-    }
-
+     
+.divBtns{
+  padding-bottom: 3px;
+}
 
 
     body { font-family: Arial; padding: 0px; }
@@ -482,14 +481,21 @@ function render() {
 
 
     div.appendChild(time);
+
+    const divBtn = document.createElement('div');
+
+    divBtn.className='divBtns'
     
-    div.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
-    div.appendChild(toggleBtn); //展開收起
-    div.appendChild(toggleBtnToLower);//全部小寫
-    div.appendChild(createBtnClickFun('逐行',lineMode)); 
-    div.appendChild(testIMGlinkBtn); //IMG訪問
-    div.appendChild(createBtnClickFun('url全部訪問',openALLurl));
-    div.appendChild(createBtnClickFun('刪除',delLine));
+    divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
+    divBtn.appendChild(toggleBtn); //展開收起
+    divBtn.appendChild(toggleBtnToLower);//全部小寫
+    divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
+    divBtn.appendChild(testIMGlinkBtn); //IMG訪問
+    divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
+    divBtn.appendChild(createBtnClickFun('刪除',delLine));
+
+    div.appendChild(divBtn);
+    
     div.appendChild(textarea);
     
 
