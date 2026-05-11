@@ -46,6 +46,11 @@
     overflow-x: auto;
     overflow-y: auto;
     }
+  .contentTop { border-radius: 8px; width: calc(100% - 10px); height: 20px; overflow: auto; resize: none; 
+        white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: auto;
+    }
     .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
     .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;  padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
@@ -129,7 +134,7 @@
 <body>
 <div class="titleStyle">
 <h2 id="titleA" class="textCenter">剪貼簿</h2>
-<textarea class="content" id="input" placeholder="貼上內容..."></textarea>
+<textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
 </div>
 <div class="toolbar ">
   <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
@@ -236,19 +241,19 @@ function applyToAllTextareasRm() {
     el.removeAttribute('style');
   }
   data.forEach((item) => {
-    item.expanded = false;
-    item.lineMode = false;
-  /*
-    Object.values(item).forEach((i)=>{
-      if (i===true) {
-        i===false
-      }
+   
+     keys=Object.keys(item)
+   
+    keys.forEach((key) => {
+      if (item[key]===true) {
+          item[key]=false
+          //console.log(item[key])
+        }
     })
-      */
-    //console.log(Object.keys(item))
-  //console.log(Object.values(item))
-  save();
+ 
   })
+   save();
+  render();
 }
 
 function applyToAllTextareasSet() {
@@ -259,9 +264,10 @@ function applyToAllTextareasSet() {
   }
    data.forEach((item) => {
     item.expanded = true;
-    item.lineMode = true;
-     save();
+    //item.lineMode = true;
+     
   })
+  save();
 }
 
 function testIMGlink(link){
