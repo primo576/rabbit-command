@@ -8,11 +8,39 @@ ALL_TEMPLATE.Config_white_TEMPLATE_CONFIG=[
     desc: ``
 },
 {   "label": "查看目前狀態",
-    "value": "git status",
+    "value": `\${example}`,
     "risk": "safe",
-    "desc": "查看目前工作目錄與暫存區狀態，最常用的安全指令"
+    "desc": `查看目前工作目錄與暫存區狀態，最常用的安全指令`
   }
   ]
+
+ALL_TEMPLATE.docker_TEMPLATE_CONFIG=[
+  {
+    label: '— 自訂 —',
+    value: `如果有\${} 要加上跳脫符\\ 可以多行處理`,
+    risk: 'custom',
+    desc: ``
+},
+{   "label": "刪除 build layer cache",
+    "value": `docker builder prune -a`,
+    "risk": "safe",
+    "desc": `先看docker佔用空間再看要怎麼刪除
+  docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          5         1         4.271GB   3.339GB (78%)
+Containers      1         0         214B      214B (100%)
+Local Volumes   0         0         0B        0B
+Build Cache     2600      0         258.6GB   258.6GB
+
+這代表：
+ Build Cache
+  * 有 **2600 個 build layer cache**
+  * 全部都是 **沒在用（ACTIVE = 0）**
+  * **100% 可以刪**
+`
+  }
+  ]
+
 ALL_TEMPLATE.NEWwebCreate_TEMPLATE_CONFIG=[
  {
     label: '================== a-z 建站參考模板======================',

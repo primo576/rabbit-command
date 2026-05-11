@@ -259,10 +259,8 @@ function renderTemplateOptions(arr) {
   const lastIndex = localStorage.getItem('lastTemplateIndex');
   if (lastIndex !== null && select.options[lastIndex]) {
     select.selectedIndex = lastIndex;
-    applyTemplate();
-    
   }
-   
+    applyTemplate();
   
 }
 
@@ -294,6 +292,7 @@ groupSelect.addEventListener('change', e => {
     rendersearch = ALL_TEMPLATE[groupKey];
     loadsearchkeyword()
   }
+   applyTemplate();
 });
 
 

@@ -355,6 +355,29 @@ kubectl edit 本質是：
 - Code Review 輔助
 `
 },
+{
+  label: 'pvc擴容 & grafana設定日誌保存一週',
+  value: `kubectl get pvc -n \${ns}
+kubectl get pvc \${storage} -n \${ns}
+kubectl edit pvc \${storage} -n \${ns}
+kubectl delete pod \${pod} -n \${ns}`,
+  risk: 'danger',
+  desc: `
+用途：
+  - grafana日誌滿了500error
+刪除pod之後才會應用滾動重啟可能失敗
+edit看spec storage 部分
+status是當前狀態不用改
+kubectl edit configmap loki -n monitoring -o yaml
+grafana只保留一週設定
+limits_config:
+  query:10m
+  period:168h
+  timeout:300s
+comapctor:
+  retention_enabled:true
+`
+},
 ],
 
 
