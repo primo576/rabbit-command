@@ -20,6 +20,8 @@
   gap: 3px;
 }
 
+
+
     .divTestImg{ border: 1px solid #ffffff;
   padding: 0px;
   text-align: center;}
@@ -41,15 +43,19 @@
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
     .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
     /* time 時間樣式 127x13.5 */
-    .content { border-radius: 8px; width: calc(100% - 10px); height: 80px; overflow: auto; resize: none; 
+    .content { border-radius: 8px; width: 99%; height: 80px; overflow: auto; resize: none; 
         white-space: nowrap;
     overflow-x: auto;
     overflow-y: auto;
     }
-  .contentTop { border-radius: 8px; width: calc(100% - 10px); height: 20px; overflow: auto; resize: none; 
-        white-space: nowrap;
+  .contentTop { border-radius: 8px; width:99%; height: 20px; overflow: auto; resize: none; 
+    white-space: nowrap;
     overflow-x: auto;
     overflow-y: auto;
+     transition: 0.3s;
+    }
+   .contentTop:focus { height: 80px;
+     transition: 0.3s;
     }
     .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
@@ -117,7 +123,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;}
-    .titleStyle{width: 100%;}
+    .titleStyle{height:35px ;width: 100%;}
 
 @media (hover: none) and (pointer: coarse) {
   input, textarea, select {
@@ -134,12 +140,12 @@
 <body>
 <div class="titleStyle">
 <h2 id="titleA" class="textCenter">剪貼簿</h2>
-<textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
+<div id="usage"></div>
 </div>
 <div class="toolbar ">
   <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
   <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
-  
+  <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
 </div>
 
 <div class="setbar">
@@ -214,11 +220,11 @@
 
 </div>
 
-<div id="usage"></div>
 
 
+<div>
 <ol class="col" id="list"></ol>
-
+</div>
 <script>
 const input = document.getElementById('input');
 const list = document.getElementById('list');
@@ -385,7 +391,8 @@ function render() {
   //////
 
   data.forEach((item, index) => {
-   //const div = document.createElement('div');
+   const divTop = document.createElement('div');
+   divTop.className='divTop'
     const div = document.createElement('li');
     div.className = 'item';
     div.id = `item-${index}`;
@@ -598,8 +605,9 @@ function render() {
       
       div.appendChild(Topfdiv);
     }
-
-    list.appendChild(div);
+    divTop.appendChild(div);
+    list.appendChild(divTop);
+    
   });
 
   renderBars();
@@ -885,19 +893,9 @@ sliderIMG.addEventListener('input', (e) => {
   document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
 });
 
-function loadGame(){
-const loadButtom = document.createElement('button');
- loadButtom.textContent = '載入';
-loadButtom.onclick = () => {
-    const script = document.createElement('script');
-    script.src="../pet/desktop-cat.js";
-    document.getElementsByTagName('body')[0].appendChild(script);
-    };
-document.getElementsByTagName('body')[0].prepend(loadButtom);
-}
-//loadGame();
-////
+
 </script>
 <script src="../public/floating-menu.js"></script>
 </body>
+
 </html>
