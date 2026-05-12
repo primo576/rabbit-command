@@ -70,7 +70,7 @@
     .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
     .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;   padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside;
-    background-color: var(--lineBackroundColor, #ddd);
+    background-color: var(--lineBackroundColor);
     }
     .lineLeftpand{
       margin-right: 10px;
@@ -80,7 +80,10 @@
     .inlineCol{display: flex;overflow: auto;}
     /* font-size: 18px; line的影響閱讀 可以做成動態 */
     .line0:hover { background: #eee; }
-    .line:hover { background: #7f87a5; }
+    .line:hover { color: var(--textFocus);
+ 
+ background-color: var(--textAreaFocusBG, #ddd);
+    }
     .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
     .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
     .bar:hover { opacity: 0.8; }

@@ -10,12 +10,14 @@ body {
   --card: #f5f5f5;
   --btn: #adadad;
   --textFocus: navy;
-  --textAreaFocusBG: #ddd;
+  --textAreaFocusBG: #bebebe;
+  --textAreaBG:#ddd;
+  --lineBackroundColor:#ddd;
 }
 
- textarea:focus{
+ textarea:focus,input :focus{
  color: var(--textFocus);
- background-color: var(--textAreaFocusBG);;
+ background-color: var(--textAreaFocusBG);
 }
 
 .hide-scrollbar {

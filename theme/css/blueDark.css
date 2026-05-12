@@ -17,9 +17,9 @@
       background:var(--btnHover);
     }
 
-.blueDark textarea:focus{
+.blueDark textarea:focus,input:focus{
  color: var(--textFocus);
- background-color: var(--textAreaFocusBG);;
+ 
 }
 
 .blueDark card {
@@ -31,11 +31,11 @@
 .blueDark {
   --bg: #0f172a;
   --text: #e5e7eb;
-  --textFocus: rgb(0, 255, 0);
+  --textFocus: rgb(0, 245, 0);
   --card: #020617;
-   --textAreaFocusBG: #020617;
-   
-  --lineBackroundColor: #3d4459;
+  --lineBackroundColor: #061247;
+  --textAreaFocusBG: #0b2079;
+  --textAreaBG: #3d4459;
   --btn: #2563eb;
    --btnHover: #1d4ed8;
 
