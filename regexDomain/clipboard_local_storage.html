@@ -5,6 +5,12 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>剪貼簿</title>
   <style>
+
+    .divTop{
+      transition: 0.3s;
+    }
+
+    
      
 .divBtns{
   padding-bottom: 3px;
@@ -37,7 +43,7 @@
 }
     
      /*textarea#input { width: 100%; height: 80px; }*/
-    .toolbar { /* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
+    .toolbar { width: 100%;/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
     .setbar { margin: 8px 0; display: flex;display: flex;flex-direction: column;}
     .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
@@ -48,7 +54,8 @@
     overflow-x: auto;
     overflow-y: auto;
     }
-  .contentTop { border-radius: 8px; width:99%; height: 20px; overflow: auto; resize: none; 
+     
+  .contentTop { border-radius: 8px; width:calc(100% - 10px);; height: 20px; overflow: auto; resize: none; 
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: auto;
@@ -59,7 +66,9 @@
     }
     .expanded {  /*overflow: hidden;*/ }
     .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
-    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;  padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; }
+    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;  padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside;
+    background-color: var(--lineBackroundColor, #ddd);
+    }
     /* font-size: 18px; line的影響閱讀 可以做成動態 */
     .line0:hover { background: #eee; }
     .line:hover { background: #7f87a5; }
@@ -71,6 +80,7 @@
     .col {padding-inline-start: 0px;}
     .col2 {padding-inline-start: 30px;margin-block-start: 0;margin-block-end: 0;}
     .buttomStyle1{margin: 2px;}
+
     .buttomStyle1File{    appearance: none;
     background-color: initial;
     cursor: default;
