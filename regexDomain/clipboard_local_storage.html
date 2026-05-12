@@ -49,17 +49,20 @@
     .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
     .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
     /* time 時間樣式 127x13.5 */
-    .content { border-radius: 8px; width: 99%; height: 80px; overflow: auto; resize: none; 
+    .content { border-radius: 8px; width:calc(100% - 10px); height: 80px; overflow: auto; resize: none; 
         white-space: nowrap;
     overflow-x: auto;
     overflow-y: auto;
+   
     }
      
-  .contentTop { border-radius: 8px; width:calc(100% - 10px);; height: 20px; overflow: auto; resize: none; 
+  .contentTop { border-radius: 8px; width:calc(100% - 10px); height: 20px; overflow: auto; resize: none; 
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: auto;
      transition: 0.3s;
+     margin-top: 3px;
+     
     }
    .contentTop:focus { height: 80px;
      transition: 0.3s;

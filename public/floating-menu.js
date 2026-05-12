@@ -32,13 +32,16 @@
   style.innerHTML = `
     .fab-wrap {
       position: fixed;
-      right: 10px;
+      bottom: 30px;
+      right: 30px;
       /*
       right: 16px;
-      */
       bottom: 45px;
+      */
+      
       z-index: 999999;
       font-family: system-ui, -apple-system;
+      background-color: rgba(0, 0, 0, 0);
     }
     .fab-btn {
       transition: all 1s ease;
@@ -47,18 +50,21 @@
       height: 56px;
       font-size: 22px;
       */
-     font-size: 10px;
+     font-size: 22px;
       border-radius: 50%;
-      background: #ffffff00;
+      background-color: rgba(0, 0, 0, 0);
       color: #fff;
       border: none;
       cursor: pointer;
       opacity: 0.5;
     }
     .fab-btn:hover {
+    /*
       background: #2564ebb5;
       
       opacity: 0.9;
+       */
+      opacity: 1;
     }
     .fab-menu {
       position: absolute;
@@ -108,7 +114,7 @@
   const wrap = document.createElement('div');
   wrap.className = 'fab-wrap';
 
-  const btn = document.createElement('button');
+  const btn = document.createElement('div');
   btn.className = 'fab-btn';
   btn.textContent = '⬆️';
   //⚙️ ⬆️
@@ -162,6 +168,7 @@ list.appendChild(loadButtom);
   menu.appendChild(input);
   menu.appendChild(list);
   wrap.appendChild(menu);
+  
   wrap.appendChild(btn);
   document.body.appendChild(wrap);
 
@@ -178,6 +185,8 @@ list.appendChild(loadButtom);
       menu.style.display = 'none';
     }, 500);
   }
+
+ 
   ///
   
 
