@@ -18,6 +18,20 @@ body {
  background-color: var(--textAreaFocusBG);;
 }
 
+.hide-scrollbar {
+    /* Firefox */
+    scrollbar-width: none;
+    
+    /* IE and Edge */
+    -ms-overflow-style: none;
+    
+    /* Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+
 /*
 :root {
   --bg: white;
@@ -38,4 +52,21 @@ window.matchMedia(
   --success:
   console.log(a);
    console.log(a.value);
+
+   js
+   const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (isDarkMode) {
+  console.log("User is in Dark Mode");
+}
+
+const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+darkModeQuery.addEventListener('change', (event) => {
+  if (event.matches) {
+    // Switch to dark theme
+  } else {
+    // Switch to light theme
+  }
+});
 }*/

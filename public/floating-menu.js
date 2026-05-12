@@ -251,7 +251,27 @@ function initStyle(){
 const theme = localStorage.getItem('theme');
 if (theme) {
   document.body.classList.add(theme);
+}else{
+const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (isDarkMode) {
+  document.body.classList.add('blueDark');
 }
+}
+
+const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+darkModeQuery.addEventListener('change', (event) => {
+  if (event.matches) {
+    // Switch to dark theme
+    setStyle('blueDark')
+  } else {
+    // Switch to light theme
+     document.body.classList.value=''
+    // setStyle('blueDark')
+  }
+});
+
 }
 
 initStyle()
@@ -266,6 +286,8 @@ colorButtom.onclick = () => {
 list.appendChild(colorButtom);
 }
 ///css
+
+///
 })();
 
 
