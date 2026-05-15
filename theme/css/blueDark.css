@@ -1,46 +1,53 @@
-.blueDark textarea,details,a,input,select,div {
-    background: var(--card);
-    color: var(--text);
+.blueDark textarea,
+details,
+a,
+input,
+select,
+div {
+	background: var(--card);
+	color: var(--text);
 }
+
 .blueDark button {
-    background:var(--btn);
-    color: var(--text);
-     cursor: pointer;
-      border: none;
-      /*
+	background: var(--btn);
+	color: var(--text);
+	cursor: pointer;
+	border: none;
+	/*
       border-radius: 8px;
       padding: 8px 14px;
       */
-    }
+}
 
- .blueDark button:hover {
-      background:var(--btnHover);
-    }
+.blueDark button:hover {
+	background: var(--btnHover);
+}
 
-.blueDark textarea:focus,input:focus{
- color: var(--textFocus);
- 
+.blueDark textarea:focus,
+input:focus {
+	color: var(--textFocus);
+
 }
 
 .blueDark card {
-  background: var(--card);
-  padding: 20px;
-  margin-top: 20px;
+	background: var(--card);
+	padding: 20px;
+	margin-top: 20px;
 }
 
 .blueDark {
-  --bg: #0f172a;
-  --text: #e5e7eb;
-  --textFocus: rgb(0, 245, 0);
-  --card: #020617;
-  --lineBackroundColor: #061247;
-  --textAreaFocusBG: #0b2079;
-  --textAreaBG: #3d4459;
-  --btn: #2563eb;
-   --btnHover: #1d4ed8;
+	--bg: #0f172a;
+	--text: #e5e7eb;
+	--textFocus: rgb(0, 245, 0);
+	--card: #020617;
+	--lineBackroundColor: #061247;
+	--textAreaFocusBG: #0b2079;
+	--textAreaBG: #3d4459;
+	--btn: #2563eb;
+	--btnHover: #1d4ed8;
 
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  transition: 0.3s;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	background: var(--bg);
+	color: var(--text);
+	transition: 0.3s;
 }

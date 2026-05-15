@@ -1,941 +1,922 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>剪貼簿</title>
-  <style>
-
-    .divTop{
-      transition: 0.3s;
-    }
-
-    
-     
-.divBtns{
-  padding-bottom: 3px;
-}
-
-
-    body { font-family: Arial; padding: 0px; }
-    .testImg{width: 100%; 
-        object-fit: contain;
-    }
-    .divTestImgTop{  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--img-size, 150px), 1fr));
-  gap: 3px;
-}
-
-
-
-    .divTestImg{ border: 1px solid #ffffff;
-  padding: 0px;
-  text-align: center;}
-  .divTestImg a {
-  display: block;
-  max-width: 100%;
-  /*
-  overflow: hidden;
-  white-space: wrap;
-  */
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-}
-    
-     /*textarea#input { width: 100%; height: 80px; }*/
-    .toolbar { width: 100%;/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
-    .setbar { margin: 8px 0; display: flex;display: flex;flex-direction: column;}
-    .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
-    .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
-    .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
-    /* time 時間樣式 127x13.5 */
-    .content { border-radius: 8px; width:calc(100% - 10px); height: 80px; overflow: auto; resize: none; 
-        white-space: nowrap;
-    overflow-x: auto;
-    overflow-y: auto;
-   
-    }
-     
-  .contentTop { border-radius: 8px; width:calc(100% - 10px); height: 20px; overflow: auto; resize: none; 
-    white-space: nowrap;
-    overflow-x: auto;
-    overflow-y: auto;
-     transition: 0.3s;
-     margin-top: 3px;
-     
-    }
-   .contentTop:focus { height: 80px;
-     transition: 0.3s;
-    }
-    .expanded {  /*overflow: hidden;*/ }
-    .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
-    .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;   padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside;
-    background-color: var(--lineBackroundColor);
-    }
-    .lineLeftpand{
-      margin-right: 10px;
-    }
-
-    
-    .inlineCol{display: flex;overflow: auto;}
-    /* font-size: 18px; line的影響閱讀 可以做成動態 */
-    .line0:hover { background: #eee; }
-    .line:hover { color: var(--textFocus);
- 
- background-color: var(--textAreaFocusBG, #ddd);
-    }
-    .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
-    .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
-    .bar:hover { opacity: 0.8; }
-    .bar span { position: absolute; left: 5px; font-size: 12px; }
-    .progress { height: 20px; background: #4caf50; }
-    .colOragin {padding-inline-start: 0px;}
-    .col {padding-inline-start: 0px;}
-    
-    .col2 {padding-inline-start: 30px;margin-block-start: 0;margin-block-end: 0;}
-    .buttomStyle1{margin: 2px;}
-
-    .buttomStyle1File{    appearance: none;
-    background-color: initial;
-    cursor: default;
-    align-items: baseline;
-    color: inherit;
-    text-align: start !important;
-    text-overflow: ellipsis !important;
-    padding: initial;
-    border: initial;
-    white-space: pre;}
-
-    input[type="file"] {
-  display: none; /* Hide the actual input */
-}
-
-.custom-file-upload {
-    font-size: 13px;
- appearance: auto;
-    text-rendering: auto;
-    color: buttontext;
-    letter-spacing: normal;
-    word-spacing: normal;
-    line-height: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: center;
-    background-color: buttonface;
-    margin: 0em 0em 0em 0em;
-    padding-block: 1px;
-    padding-inline: 6px;
-    border-style: double;
-    border-color: buttonborder;
-     background: #2563eb;
-      color: white;
-        border: none;
-      border-radius: 6px;
-      cursor: pointer;
-}
-
-    .hide{display: none;}
-
-    .textCenter{
-      display: flex;
-      justify-content: center;
-      margin-block-start: 0em;
-    margin-block-end: 0em;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;}
-    .titleStyle{height:35px ;width: 100%;}
-
-@media (hover: none) and (pointer: coarse) {
-  input, textarea, select {
-    font-size: 16px;
-  }
-  .toolbar {
-    flex-wrap: wrap;
-    
-  }
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>剪貼簿</title>
+      <style>
+         .divTop{
+         transition: 0.3s;
+         }
+         .divBtns{
+         padding-bottom: 3px;
+         }
+         body { font-family: Arial; padding: 0px; }
+         .testImg{width: 100%; 
+         object-fit: contain;
+         }
+         .divTestImgTop{  display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(var(--img-size, 150px), 1fr));
+         gap: 3px;
+         }
+         .divTestImg{ border: 1px solid #ffffff;
+         padding: 0px;
+         text-align: center;}
+         .divTestImg a {
+         display: block;
+         max-width: 100%;
+         /*
+         overflow: hidden;
+         white-space: wrap;
+         */
+         text-overflow: ellipsis;
+         word-wrap: break-word;
+         }
+         /*textarea#input { width: 100%; height: 80px; }*/
+         .toolbar { width: 100%;/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
+         .setbar { margin: 8px 0; display: flex;display: flex;flex-direction: column;}
+         .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
+         .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
+         .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
+         /* time 時間樣式 127x13.5 */
+         .content { border-radius: 8px; width:calc(100% - 10px); height: 80px; overflow: auto; resize: none; 
+         white-space: nowrap;
+         overflow-x: auto;
+         overflow-y: auto;
+         }
+         .contentTop { border-radius: 8px; width:calc(100% - 10px); height: 20px; overflow: auto; resize: none; 
+         white-space: nowrap;
+         overflow-x: auto;
+         overflow-y: auto;
+         transition: 0.3s;
+         margin-top: 3px;
+         }
+         .contentTop:focus { height: 80px;
+         transition: 0.3s;
+         }
+         .expanded {  /*overflow: hidden;*/ }
+         .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
+         .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;   padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside;
+         background-color: var(--lineBackroundColor);
+         }
+         .lineCardExhibit{
+         margin-right: 10px;
+         min-width: 33%;
+         height: 80px;
+         overflow-y: auto;
   
-}
-  </style>
-</head>
-<body>
-<div class="titleStyle">
-<h2 id="titleA" class="textCenter">剪貼簿</h2>
-<div id="usage"></div>
-</div>
-<div class="toolbar ">
-  <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
-  <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
-  <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
-</div>
+         }
 
-<div class="setbar">
-<label class="" style="margin-left: 2px;">
-    <details>
-      <summary>設定</summary>
-      <ol>
-        <li>
-    <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
-  <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
-   <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
-</li>
-   <li>
-    <p>
-    <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
-    </p>
-    </li>
-     <li>
-   <p>逐行卡片展示
-   <input type="checkbox" id="lineCardMode">
-   </p>
-   </li>
-    <li>
-    <p>逐行文字大小
-  <input type="range" min="10" max="50" value="18" id="slider">
-  </p>
-  </li>
-   <li>
-   <p>前綴加https
-   <input type="checkbox" id="addHttpscheckBox">
-   </p>
-   </li>
-   <li>
-  <p>逐行點擊訪問域名
-   <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
-   </p>
-   </li>
-    <li>
-   <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
-   </li>
-    <li>
-   <p>允許一次全部訪問
-   <input type="checkbox" id="allowOPENallurl">
-   </p>
-   </li>
-      <li> <p>全開延遲秒數
-   <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
-      </p></li>
-   
-  <li>
-  <p>IMG訪問
-   <input type="checkbox" id="IMGcheckBox">
-   </p>
-   </li>
-   <li>
-  <p>圖片大小
-  <input type="range" min="50" max="300" value="150" id="sliderIMG">
-  </p>
-  </li>
-  </label>
-  <li>
-  <button class="buttomStyle1" id="exportBtn">資料匯出</button>
-  <label class="custom-file-upload buttomStyle1">資料匯入
-  <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
-  </label>
-</li>
-<li>
-  <p>
-  <input type="datetime-local" id="timeInput">
-<button onclick="removeBeforeTime()">刪除時間段前資料</button>
-  </p>
-</li>
-  </ol>
-  
-  <div class="bar-container" id="bars"></div>
-  </details>
-
-</div>
-
-
-
-<div>
-<ol class="col" id="list"></ol>
-</div>
-<script>
-const input = document.getElementById('input');
-const list = document.getElementById('list');
-const bars = document.getElementById('bars');
-const usage = document.getElementById('usage');
-
-////
-    function auto_grow(el) {
-    el.style.height = "5px"; // 先壓縮
-    el.style.height = el.scrollHeight + "px"; // 再撐開
-    //
-    
-    //
-  }
-
-function applyToAllTextareasRm() {
-  const list = document.getElementsByTagName('textarea');
-  for (let i = 1; i < list.length; i++) {
-    const el = list[i];
-    el.removeAttribute('style');
-  }
-  data.forEach((item) => {
-   
-     keys=Object.keys(item)
-   
-    keys.forEach((key) => {
-      if (item[key]===true) {
-          item[key]=false
-          //console.log(item[key])
+        @media screen and (max-width: 600px) {
+        /*寬 600px 以內時應用 */
+        .lineCardExhibit {
+              min-width: 95%;
+          }
         }
-    })
- 
-  })
-   save();
-  render();
-}
-
-function applyToAllTextareasSet() {
-  const list = document.getElementsByTagName('textarea');
-  for (let i = 1; i < list.length; i++) {
-    const el = list[i];
-    auto_grow(el);
-  }
-   data.forEach((item) => {
-    item.expanded = true;
-    //item.lineMode = true;
-     
-  })
-  save();
-}
-
-function testIMGlink(link){
-  imgTag=document.getElementById('imgTest');
-  
-  if (link) {
-    imgTag.src=link
-  }else{
-    imgTag.removeAttribute('src');
-  }
-}
-
-const pasteButton = document.getElementById('paste-btn');
-
-
-pasteButton.addEventListener('click', async () => {
-  try {
-    const text = await navigator.clipboard.readText();
-    input.value = text;
-    mainaction();
-  } catch (err) {
-  }
-});
-////
-
-let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
-
-data = data.map(item => {
-  if (typeof item === 'string') return { text: item, time: Date.now(), expanded: false, lineMode: false };
-  if (item.lineMode === undefined) item.lineMode = false;
-  return item;
-});
-
-function save() {
-  localStorage.setItem('clipboardData', JSON.stringify(data));
-}
-
-function getSize(obj) {
-  return new Blob([JSON.stringify(obj)]).size;
-}
-
-function renderUsage() {
-  const total = getSize(data);
-  const max = 5 * 1024 * 1024;
-  const percent = (total / max) * 100;
-  const percentage = (total/1024/5120*100).toFixed(1)
-
-  if (percentage>95){
-      usage.innerHTML = `
-    <div style="background:#ddd;width:100%;">
-      <div class="progress" style="width:${percent}%"></div>
-    </div>
-    ${(total/1024).toFixed(1)}KB / 5120KB
-  `;
-  }
-
-  console.log(`當前使用量：${percentage}% | 詳細：${(total/1024).toFixed(1)}KB / 5120KB`)
-}
-
-function renderBars() {
-  bars.innerHTML = '';
-
-  const maxSize = Math.max(...data.map(getSize));
-  const ol = document.createElement('ol');
-  ol.className="col2";
-
-  data.forEach((item, index) => {
-    const size = getSize(item);
-    const percent = (size / maxSize) * 100;
-    const li = document.createElement('li');
-    li.className = 'bar';
-
-    // 🔥 背景比例條
-    li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #577d92 ${percent}%)`;
-
-    // 👉 文字完整顯示
-    li.textContent = `${new Date(item.time).toLocaleString()} - ${item.text.slice(0, 30)} (${(size/1024).toFixed(1)}KB)`;
-
-    li.onclick = () => {
-      document.getElementById(`item-${index}`)
-        .scrollIntoView({ behavior: 'smooth' });
-    };
-
-    ol.appendChild(li);
-  });
-
-  bars.appendChild(ol);
-}
-
-function parseDelimiter(str) {
-  if (!str) return '\n'; // 預設
-
-  return str
-    .replace(/\\n/g, '\n')
-    .replace(/\\t/g, '\t');
-}
-
-
-
-function render() {
-
-  list.innerHTML = '';
-    //////
-  function createBtnClickFun(BtnText,clickFun){
-      const lineBtn = document.createElement('button');
-      lineBtn.textContent = BtnText;
-      lineBtn.className='buttomStyle1'
-      lineBtn.onclick = () => {
-        clickFun();
-      };
-      return lineBtn
-  }
-
-
-  //////
-
-  data.forEach((item, index) => {
-   const divTop = document.createElement('div');
-   divTop.className='divTop'
-    const div = document.createElement('li');
-    div.className = 'item';
-    div.id = `item-${index}`;
-
-    const time = document.createElement('div');
-    time.className = 'time';
-    time.textContent = new Date(item.time).toLocaleString();
-
-    const textarea = document.createElement('textarea');
-    textarea.className = 'content';
-    textarea.value = item.text;
-
-    textarea.oninput = () => {
-      item.text = textarea.value;
-      save();
-      renderBars();
-      renderUsage();
-      if (item.expanded) {
-      auto_grow(textarea);
-      }
-    };
-
-    const toggleBtn = document.createElement('button');
-    toggleBtn.textContent = item.expanded ? '收起' : '展開';
-    toggleBtn.className='buttomStyle1'
-    toggleBtn.onclick = () => {
-      item.expanded = !item.expanded;
-      save();
-      render();
-    };
-
-    const testIMGlinkBtn = document.createElement('button');
-    testIMGlinkBtn.textContent = item.linkToIMG ? '收起IMG' : '顯示IMG';
-    testIMGlinkBtn.className='buttomStyle1'
-    testIMGlinkBtn.onclick = () => {
-      item.linkToIMG = !item.linkToIMG;
-      //save();
-      render();
-    };
-
-    if (item.expanded) {
-      textarea.classList.add('expanded');
-      setTimeout(() => {
-        auto_grow(textarea);
-      }, 0);
-    }
-    ////
-    const toggleBtnToLower = document.createElement('button');
-    toggleBtnToLower.textContent = item.tolowered ? '原文' : '小寫';
-    toggleBtnToLower.className='buttomStyle1'
-    toggleBtnToLower.onclick = () => {
-      item.tolowered = !item.tolowered;
-      //save();
-      render();
-    };
-    if (item.tolowered) {
-      textarea.value=data[index].text.toLowerCase();
-    }
-    ////
-
-    function lineMode(){
-      item.lineMode = !item.lineMode;
-      //save();展開後儲存狀態
-      render();
-    }
-
- 
-
-    function delLine(){
-      console.log(data[index].text)
-      data.splice(index, 1);
-      //save();
-      render();
-      titleChange('重新整理找回：'+time.textContent+"···操作新資料才保存刪除")  
-      recoverTitle();
-    }
-
-    function openALLurl(){
-      if (!allowOPENallurl.checked) {
-        titleChangeUse('先允許全部訪問');
-        return
-      }
-      const rawDelimiter = document.getElementById('delimiterInput').value;
-      const delimiter = parseDelimiter(rawDelimiter);
-      const lines = textarea.value.split(delimiter).filter(l => l.trim());
-      startsleeptime=0
-      sleep=OPENAllwindowTimeset.value*1000
-      lines.forEach(line => {
-         setTimeout(() => {
-        openNewWindow(line);
-         }, startsleeptime);
-         startsleeptime+=sleep
-        // console.log(startsleeptime)
-      })
-       setTimeout(() => {
-      recoverTitle();}
-      , startsleeptime);
-    }
-
-
-    div.appendChild(time);
-
-    const divBtn = document.createElement('div');
-
-    divBtn.className='divBtns'
-    
-    divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
-    divBtn.appendChild(toggleBtn); //展開收起
-    divBtn.appendChild(toggleBtnToLower);//全部小寫
-    divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
-    divBtn.appendChild(testIMGlinkBtn); //IMG訪問
-    divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
-    divBtn.appendChild(createBtnClickFun('刪除',delLine));
-
-    div.appendChild(divBtn);
-    
-    div.appendChild(textarea);
-    
-
-
-    //if function要在按鈕建立之後 不然排版會混亂
-     
-//逐行模式
-   if (item.lineMode) {
-        const ol = document.createElement('ol');
-        
-        ol.className = 'col';
-         if (lineCardMode.checked){
-        ol.className +=' inlineCol hide-scrollbar'
-       
-      }
-  
-      //const lines = item.text.split('\n').filter(l => l.trim());
-      const rawDelimiter = document.getElementById('delimiterInput').value;
-      const delimiter = parseDelimiter(rawDelimiter);
-      const lines = textarea.value.split(delimiter).filter(l => l.trim());
-      lines.forEach(line => {
-        //const ldiv = document.createElement('div');
-        const ldiv = document.createElement('li');
-        ldiv.className = 'line';
+         .inlineCol{display: flex;overflow: auto;}
+         /* font-size: 18px; line的影響閱讀 可以做成動態 */
+         .line0:hover { background: #eee; }
+         .line:hover { color: var(--textFocus);
+         background-color: var(--textAreaFocusBG, #ddd);
+         }
+         .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
+         .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
+         .bar:hover { opacity: 0.8; }
+         .bar span { position: absolute; left: 5px; font-size: 12px; }
+         .progress { height: 20px; background: #4caf50; }
+         .colOragin {padding-inline-start: 0px;}
+         .col {padding-inline-start: 0px;}
+         .col2 {padding-inline-start: 30px;margin-block-start: 0;margin-block-end: 0;}
+         .buttomStyle1{margin: 2px;}
+         .buttomStyle1File{    appearance: none;
+         background-color: initial;
+         cursor: default;
+         align-items: baseline;
+         color: inherit;
+         text-align: start !important;
+         text-overflow: ellipsis !important;
+         padding: initial;
+         border: initial;
+         white-space: pre;}
+         input[type="file"] {
+         display: none; /* Hide the actual input */
+         }
+         .custom-file-upload {
+         font-size: 13px;
+         appearance: auto;
+         text-rendering: auto;
+         color: buttontext;
+         letter-spacing: normal;
+         word-spacing: normal;
+         line-height: normal;
+         text-transform: none;
+         text-indent: 0px;
+         text-shadow: none;
+         display: inline-block;
+         text-align: center;
+         background-color: buttonface;
+         margin: 0em 0em 0em 0em;
+         padding-block: 1px;
+         padding-inline: 6px;
+         border-style: double;
+         border-color: buttonborder;
+         background: #2563eb;
+         color: white;
+         border: none;
+         border-radius: 6px;
+         cursor: pointer;
+         }
+         .hide{display: none;}
+         .textCenter{
+         display: flex;
+         justify-content: center;
+         margin-block-start: 0em;
+         margin-block-end: 0em;
+         width: 100%;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;}
+         .titleStyle{height:35px ;width: 100%;}
+         @media (hover: none) and (pointer: coarse) {
+         input, textarea, select {
+         font-size: 16px;
+         }
+         .toolbar {
+         flex-wrap: wrap;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div class="titleStyle">
+         <h2 id="titleA" class="textCenter">剪貼簿</h2>
+         <div id="usage"></div>
+      </div>
+      <div class="toolbar ">
+         <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
+         <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
+         <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
+      </div>
+      <div class="setbar">
+         <label class="" style="margin-left: 2px;">
+            <details>
+               <summary>設定</summary>
+               <ol>
+                  <li>
+                     <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
+                     <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
+                     <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+                  </li>
+                  <li>
+                     <p>
+                        <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+                     </p>
+                  </li>
+                  <li>
+                     <p>逐行卡片展示
+                        <input type="checkbox" id="lineCardMode">
+                     </p>
+                  </li>
+                  <li>
+                     <p>逐行文字大小
+                        <input type="range" min="10" max="50" value="18" id="slider">
+                     </p>
+                  </li>
+                  <li>
+                     <p>前綴加https
+                        <input type="checkbox" id="addHttpscheckBox">
+                     </p>
+                  </li>
+                  <li>
+                     <p>逐行點擊訪問域名
+                        <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
+                     </p>
+                  </li>
+                  <li>
+                     <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
+                  </li>
+                  <li>
+                     <p>允許一次全部訪問
+                        <input type="checkbox" id="allowOPENallurl">
+                     </p>
+                  </li>
+                  <li>
+                     <p>全開延遲秒數
+                        <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
+                     </p>
+                  </li>
+                  <li>
+                     <p>IMG訪問
+                        <input type="checkbox" id="IMGcheckBox">
+                     </p>
+                  </li>
+                  <li>
+                     <p>圖片大小
+                        <input type="range" min="50" max="300" value="150" id="sliderIMG">
+                     </p>
+                  </li>
+         </label>
+         <li>
+         <button class="buttomStyle1" id="exportBtn">資料匯出</button>
+         <label class="custom-file-upload buttomStyle1">資料匯入
+         <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
+         </label>
+         </li>
+         <li>
+         <p>
+         <input type="datetime-local" id="timeInput">
+         <button onclick="removeBeforeTime()">刪除時間段前資料</button>
+         </p>
+         </li>
+         </ol>
+         <div class="bar-container" id="bars"></div>
+         </details>
+      </div>
+      <div>
+         <ol class="col" id="list"></ol>
+      </div>
+      <script>
+         const input = document.getElementById('input');
+         const list = document.getElementById('list');
+         const bars = document.getElementById('bars');
+         const usage = document.getElementById('usage');
+         
+         ////
+             function auto_grow(el) {
+             el.style.height = "5px"; // 先壓縮
+             el.style.height = el.scrollHeight + "px"; // 再撐開
+             //
+             
+             //
+           }
+         
+         function applyToAllTextareasRm() {
+           const list = document.getElementsByTagName('textarea');
+           for (let i = 1; i < list.length; i++) {
+             const el = list[i];
+             el.removeAttribute('style');
+           }
+           data.forEach((item) => {
+            
+              keys=Object.keys(item)
+            
+             keys.forEach((key) => {
+               if (item[key]===true) {
+                   item[key]=false
+                   //console.log(item[key])
+                 }
+             })
+          
+           })
+            save();
+           render();
+         }
+         
+         function applyToAllTextareasSet() {
+           const list = document.getElementsByTagName('textarea');
+           for (let i = 1; i < list.length; i++) {
+             const el = list[i];
+             auto_grow(el);
+           }
+            data.forEach((item) => {
+             item.expanded = true;
+             //item.lineMode = true;
+              
+           })
+           save();
+         }
+         
+         function testIMGlink(link){
+           imgTag=document.getElementById('imgTest');
            
-
-          if (lineCardMode.checked){
-        ldiv.className += ' lineLeftpand';
-      }
-        ldiv.textContent = line;
-       //ldiv.onclick = () => navigator.clipboard.writeText(line);
-       ///
-       ldiv.onclick = () => {
-         copyText(line,index);
-       ldiv.style.backgroundColor=randomColor();
-        setTimeout(() => {
-          ldiv.style.backgroundColor=''
-      }, 20*1000);
-      //多久恢復顏色
-       if (lineUrlahref.checked) {
-        openNewWindow(line);
-       }
-      }
-       ///
-       ol.appendChild(ldiv);
-       div.appendChild(ol);
-      });
-    }
-/*
-     if (item.linkToIMG) {
-        const img = document.createElement('img');
-        img.className = 'col';
-      img.src=textarea.value
-       div.appendChild(img);
-    }
-  */
-   if (item.linkToIMG) {
-        
-      imgcheckbox=document.getElementById('IMGcheckBox');
-      
-      addHttpscheckBox=document.getElementById('addHttpscheckBox');
-      const rawDelimiter = document.getElementById('delimiterInput').value;
-      const delimiter = parseDelimiter(rawDelimiter);
-      const lines = textarea.value.split(delimiter).filter(l => l.trim());
-       const Topfdiv = document.createElement('div');
-       Topfdiv.className='divTestImgTop'
-      lines.forEach(line => {
-        const fdiv = document.createElement('div');
-        fdiv.className='divTestImg'
-        const img = document.createElement('img');
-        if (imgcheckbox.checked) {
+           if (link) {
+             imgTag.src=link
+           }else{
+             imgTag.removeAttribute('src');
+           }
+         }
+         
+         const pasteButton = document.getElementById('paste-btn');
+         
+         
+         pasteButton.addEventListener('click', async () => {
+           try {
+             const text = await navigator.clipboard.readText();
+             input.value = text;
+             mainaction();
+           } catch (err) {
+           }
+         });
+         ////
+         
+         let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
+         
+         data = data.map(item => {
+           if (typeof item === 'string') return { text: item, time: Date.now(), expanded: false, lineMode: false };
+           if (item.lineMode === undefined) item.lineMode = false;
+           return item;
+         });
+         
+         function save() {
+           localStorage.setItem('clipboardData', JSON.stringify(data));
+         }
+         
+         function getSize(obj) {
+           return new Blob([JSON.stringify(obj)]).size;
+         }
+         
+         function renderUsage() {
+           const total = getSize(data);
+           const max = 5 * 1024 * 1024;
+           const percent = (total / max) * 100;
+           const percentage = (total/1024/5120*100).toFixed(1)
+         
+           if (percentage>95){
+               usage.innerHTML = `
+             <div style="background:#ddd;width:100%;">
+               <div class="progress" style="width:${percent}%"></div>
+             </div>
+             ${(total/1024).toFixed(1)}KB / 5120KB
+           `;
+           }
+         
+           console.log(`當前使用量：${percentage}% | 詳細：${(total/1024).toFixed(1)}KB / 5120KB`)
+         }
+         
+         function renderBars() {
+           bars.innerHTML = '';
+         
+           const maxSize = Math.max(...data.map(getSize));
+           const ol = document.createElement('ol');
+           ol.className="col2";
+         
+           data.forEach((item, index) => {
+             const size = getSize(item);
+             const percent = (size / maxSize) * 100;
+             const li = document.createElement('li');
+             li.className = 'bar';
+         
+             // 🔥 背景比例條
+             li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #577d92 ${percent}%)`;
+         
+             // 👉 文字完整顯示
+             li.textContent = `${new Date(item.time).toLocaleString()} - ${item.text.slice(0, 30)} (${(size/1024).toFixed(1)}KB)`;
+         
+             li.onclick = () => {
+               document.getElementById(`item-${index}`)
+                 .scrollIntoView({ behavior: 'smooth' });
+             };
+         
+             ol.appendChild(li);
+           });
+         
+           bars.appendChild(ol);
+         }
+         
+         function parseDelimiter(str) {
+           if (!str) return '\n'; // 預設
+         
+           return str
+             .replace(/\\n/g, '\n')
+             .replace(/\\t/g, '\t');
+         }
+         
+         
+         
+         function render() {
+         
+           list.innerHTML = '';
+             //////
+           function createBtnClickFun(BtnText,clickFun){
+               const lineBtn = document.createElement('button');
+               lineBtn.textContent = BtnText;
+               lineBtn.className='buttomStyle1'
+               lineBtn.onclick = () => {
+                 clickFun();
+               };
+               return lineBtn
+           }
+         
+         
+           //////
+         
+           data.forEach((item, index) => {
+            const divTop = document.createElement('div');
+            divTop.className='divTop'
+             const div = document.createElement('li');
+             div.className = 'item';
+             div.id = `item-${index}`;
+         
+             const time = document.createElement('div');
+             time.className = 'time';
+             time.textContent = new Date(item.time).toLocaleString();
+         
+             const textarea = document.createElement('textarea');
+             textarea.className = 'content';
+             textarea.value = item.text;
+         
+             textarea.oninput = () => {
+               item.text = textarea.value;
+               save();
+               renderBars();
+               renderUsage();
+               if (item.expanded) {
+               auto_grow(textarea);
+               }
+             };
+         
+             const toggleBtn = document.createElement('button');
+             toggleBtn.textContent = item.expanded ? '收起' : '展開';
+             toggleBtn.className='buttomStyle1'
+             toggleBtn.onclick = () => {
+               item.expanded = !item.expanded;
+               save();
+               render();
+             };
+         
+             const testIMGlinkBtn = document.createElement('button');
+             testIMGlinkBtn.textContent = item.linkToIMG ? '收起IMG' : '顯示IMG';
+             testIMGlinkBtn.className='buttomStyle1'
+             testIMGlinkBtn.onclick = () => {
+               item.linkToIMG = !item.linkToIMG;
+               //save();
+               render();
+             };
+         
+             if (item.expanded) {
+               textarea.classList.add('expanded');
+               setTimeout(() => {
+                 auto_grow(textarea);
+               }, 0);
+             }
+             ////
+             const toggleBtnToLower = document.createElement('button');
+             toggleBtnToLower.textContent = item.tolowered ? '原文' : '小寫';
+             toggleBtnToLower.className='buttomStyle1'
+             toggleBtnToLower.onclick = () => {
+               item.tolowered = !item.tolowered;
+               //save();
+               render();
+             };
+             if (item.tolowered) {
+               textarea.value=data[index].text.toLowerCase();
+             }
+             ////
+         
+             function lineMode(){
+               item.lineMode = !item.lineMode;
+               //save();展開後儲存狀態
+               render();
+             }
+         
+          
+         
+             function delLine(){
+               console.log(data[index].text)
+               data.splice(index, 1);
+               //save();
+               render();
+               titleChange('重新整理找回：'+time.textContent+"···操作新資料才保存刪除")  
+               recoverTitle();
+             }
+         
+             function openALLurl(){
+               if (!allowOPENallurl.checked) {
+                 titleChangeUse('先允許全部訪問');
+                 return
+               }
+               const rawDelimiter = document.getElementById('delimiterInput').value;
+               const delimiter = parseDelimiter(rawDelimiter);
+               const lines = textarea.value.split(delimiter).filter(l => l.trim());
+               startsleeptime=0
+               sleep=OPENAllwindowTimeset.value*1000
+               lines.forEach(line => {
+                  setTimeout(() => {
+                 openNewWindow(line);
+                  }, startsleeptime);
+                  startsleeptime+=sleep
+                 // console.log(startsleeptime)
+               })
+                setTimeout(() => {
+               recoverTitle();}
+               , startsleeptime);
+             }
+         
+         
+             div.appendChild(time);
+         
+             const divBtn = document.createElement('div');
+         
+             divBtn.className='divBtns'
+             
+             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
+             divBtn.appendChild(toggleBtn); //展開收起
+             divBtn.appendChild(toggleBtnToLower);//全部小寫
+             divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
+             divBtn.appendChild(testIMGlinkBtn); //IMG訪問
+             divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
+             divBtn.appendChild(createBtnClickFun('刪除',delLine));
+         
+             div.appendChild(divBtn);
+             
+             div.appendChild(textarea);
+             
+         
+         
+             //if function要在按鈕建立之後 不然排版會混亂
+              
+         //逐行模式
+            if (item.lineMode) {
+                 const ol = document.createElement('ol');
+                 //ol.id = `colScreen-${index}`;
+                 ol.className = 'col';
+                 ol.className += ' colScreen';
+                  if (lineCardMode.checked){
+                 ol.className +=' inlineCol hide-scrollbar'
+                
+               }
            
-       img.src=line
-       img.className='testImg'
-       //img.onerror="this.style.display='none'"
-       img.onerror = function () {
-          this.style.display = 'none';
-        };
-        
-      
-       const ahref = document.createElement('a');
-       
-       if (addHttpscheckBox.checked) {
-       line=urlHttps(line)
-      }
-
-       ahref.href=line
-       ahref.textContent=line
-       ahref.title=line
-       ahref.target="_blank"
-       
-
-       img.onclick = () => copyText(line,index);
-       fdiv.appendChild(ahref)
-       fdiv.appendChild(img);
-       Topfdiv.appendChild(fdiv);
-       }else{
-        titleChangeUse('先允許訪問IMG');
-        const fdiv = document.createElement('p');
-        fdiv.textContent='先允許訪問IMG'
-        Topfdiv.appendChild(fdiv);
-       }
-       
-      });
-      
-      div.appendChild(Topfdiv);
-    }
-    divTop.appendChild(div);
-    list.appendChild(divTop);
-    
-  });
-
-  renderBars();
-  renderUsage();
-}
-///////rander到這裡
-function recoverTitle(){
-        setTimeout(() => {
-          titleOrogin=document.getElementsByTagName('title')[0].textContent;
-        titleChange(titleOrogin+randomFacetext());
-      }, 3000);
-}
-
-
-function titleChange(string){
- titleA=document.getElementById('titleA');
- titleA.textContent=string
-}
-
-function titleChangeUse(string){
-titleChange(string)
-recoverTitle()
-}
-
-function copyText(text,index){
-  
-        navigator.clipboard.writeText(text)
-        text20=text.slice(0, 20)
-        titleChange('已複製：'+text20+"···")  
-        recoverTitle();
-        if (typeof(index)=='number'){
-          nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0] 
-          nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
-      setTimeout(() => {
-          nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
-      }, 3000);
-        }
-}
-//
-//開視窗
-//
-windowsObject=[]
-newWindowConf={
-  x:0,
-  y:0,
-  baseline:60,
-  userScreenMaxWidth:1200,
-  userScreenMaxHeight:1000,
-  windowHeight:200,
-  windowWidth:200
-}
-
-function openNewWindow(url){
-  if (windowHWset.value) {
-    u=windowHWset.value.split(',');
-    u = u.map(Number); 
-    newWindowConf.windowHeight=u[0]
-    newWindowConf.windowWidth=u[1]
-    newWindowConf.userScreenMaxWidth=u[2]
-    newWindowConf.userScreenMaxHeight=u[3]
-    newWindowConf.baseline=u[4]
-  }
-     if (addHttpscheckBox.checked) {
-       url=urlHttps(url)
-      }
-
-  w=window.open(
-            url,
-            '_blank',
-           `height=${newWindowConf.windowHeight},width=${newWindowConf.windowWidth},left=${newWindowConf.x},top=${newWindowConf.y}`
-        ); // 在新的標籤頁或視窗中打開每個連結
-  windowsObject.push(w);
-
-  
-nextWindowPosition(newWindowConf);
-titleChange(`開${windowsObject.length}次視窗${randomFacetext()}`);
-  //console.log('x:',typeof(newWindowConf.x),'y:',newWindowConf.y);
-
-}
-
-function closeMultipleWindows() {
-  windowsObject.forEach(windowO => {
-        if (windowO && !windowO.closed) {
-            windowO.close(); // 关闭有效且尚未关闭的窗口
-        }
-  }  )
-    windowsObject=[]
-    newWindowConf.x=0
-    newWindowConf.y=0
-    titleChangeUse(`關掉所有視窗${randomFacetext()}`);
-}
-
-function urlHttps(url){
-        checkhttp=url.trim().slice(0,4)
-       if (checkhttp!='http') {
-        url='https://'+url
-       }
-       return url
-}
-
-function nextWindowPosition(conf) {
-
-  conf.x += conf.windowWidth;
-
-  // 換行
-  if (
-    conf.x + conf.windowWidth >
-    conf.userScreenMaxWidth
-  ) {
-    conf.x = 0;
-
-    conf.y += (
-      conf.windowHeight +
-      conf.baseline
-    );
-  }
-
-  // 超出高度
-  if (
-    conf.y + conf.windowHeight >
-    conf.userScreenMaxHeight
-  ) {
-    conf.x = 0;
-    conf.y = 0;
-  }
-}
-///
-function randomFacetext(){
-  warFace=[
- " ̿̿ ̿̿ ̿̿ ̿'̿’\̵͇̿̿\з=( ͠° ͟ʖ ͡°)=ε/̵͇̿̿/‘̿̿ ̿ ̿ ̿ ̿ ̿",
- '{:̲̅:̲̅:̲̅:̲̅{ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅{}ڪڪ',
- '⋛⋋( ‘Θ’)⋌⋚',
- '▼・ᴥ・▼',
- '/ᐠ .ᆺ. ᐟ\\ﾉ',
- '/ᐠ｡ꞈ｡ᐟ\\',
- 'ฅ^•ﻌ•^ฅ',
- 'Ꮚ･ꈊ･Ꮚ',
- '((꜆꜄꜆ ˙꒳˙)꜆꜄꜆ｵﾗｵﾗｵﾗｵﾗ',
- 'ｽﾞｲ₍₍ (ง ˘ω˘ )ว ⁾⁾ ⁽⁽ 〪ɾ( ˘ω˘ 〫ɩ ) ₎₎ｽﾞｲ',
- '(′゜ω。‵)',
- '(つ´ω`)つ',
- '⧸⎩⎠⎞͏(・∀・)⎛͏⎝⎭⧹',
- '( ˊ̱˂˃ˋ̱ )',
- '(ꐦ°᷄д°᷅)',
- '⁽⁽٩(๑˃̶͈̀ ᗨ ˂̶͈́)۶⁾⁾',
- '⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄',
- '⸜(* ॑꒳ ॑* )⸝',
- '(◉３◉)',
- '(ノ▼Д▼)ノ',
- '(=^-ω-^=)',
- '(╯✧∇✧)╯',
- '_(┐ ◟;ﾟдﾟ)ノ',
- 'ﾚ(ﾟ∀ﾟ;)ﾍ　ﾍ( ﾟ∀ﾟ;)ﾉ',
- '(｡・ω・｡)',
- '。･ﾟ･(つд`ﾟ)つ⑩))Д´)',
- '(つд⊂)',
- '∑(✘Д✘๑ )',
- '(•ө•)',
- '( ´･･)ﾉ(._.`)',
- '(灬ºωº灬)',
- 'ლ(́◕◞౪◟◕‵ლ)',
- '( ´∀`);y=ｰ(ﾟдﾟ)･∵. ﾀｰﾝ',
- '(´д((☆ミPia!⊂▼(ｏ ‵－′ｏ)▼つPia!彡★))∀`)',
- '٩(◦`꒳´◦)۶',
- '(๑¯∀¯๑)',
- '(ΦωΦ)',
- '( ╯' - ')╯ ┻━┻',
- '༼ つ ◕_◕ ༽つ',
- '( ﾒ∀・)',
- '⊙谷⊙',
- '(╬▼дﾟ)▄︻┻┳═一',
- '(:◎)≡',
- '(〃￣ω￣)人(￣︶￣〃)',
- 'σ`∀´)σ',
- '（’へ’）',
- 'ヽ( ° ▽°)ノ',
- '(☍﹏⁰)'
-  ]
-  
-  return warFace[getRandomInt(warFace.length-1)]
-}
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-
-
-function randomColor(){
-  c=[
-    'red','yellow','orange','green'
-  ]
-  
-  return c[getRandomInt(c.length)]
-}
-
-
-// 匯出
-exportBtn.onclick = () => {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'backup.json';
-  a.click();
-};
-
-// 匯入
-importFile.onchange = (e) => {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    const imported = JSON.parse(reader.result);
-    data = [...imported, ...data];
-    save();
-    render();
-  };
-  reader.readAsText(file);
-};
-
-// paste
-input.addEventListener('paste', () => {
-mainaction();
-});
-
-function mainaction(){
-      setTimeout(() => {
-    const value = input.value.trim();
-    if (value) {
-      data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
-      save();
-      render();
-      titleChange('已貼上：'+value.slice(0, 20)+"···")  
-      recoverTitle();
-      input.value = '';
-    }
-  }, 0);
-}
-
-render();
-///刪除時間前資料
-function removeBeforeTime() {
-
-  const value =
-    document.getElementById('timeInput').value;
-const strTime=new Date(value).toLocaleString()
-  if (!value) {
-    titleChangeUse('請選擇時間');
-    return;
-  }
-
-  if (!confirm(`本次刪除${strTime}前的資料`)){
-    titleChangeUse(`取消本次刪除${strTime}前的資料`);
-    return;
-  }
-
-  // datetime-local -> timestamp
-  const targetTime = new Date(value).getTime();
-  
-  // 保留指定時間後的資料
-  data = data.filter(item => {
-    return item.time >= targetTime;
-  });
-
-   titleChangeUse(`刪除${strTime}前的資料,操作一個新資料之後才save`);
-
-  render();
-
-}
-////
-const slider = document.getElementById('slider');
-// 拉條改文字大小
-
-
-slider.addEventListener('input', (e) => {
-  document.documentElement.style.setProperty('--font-size', e.target.value + 'px');
-});
-
-const sliderIMG = document.getElementById('sliderIMG');
-// 拉條改文字大小
-
-
-sliderIMG.addEventListener('input', (e) => {
-  document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
-});
-
-
-</script>
-<script src="../public/floating-menu.js"></script>
-</body>
-
+               //const lines = item.text.split('\n').filter(l => l.trim());
+               const rawDelimiter = document.getElementById('delimiterInput').value;
+               const delimiter = parseDelimiter(rawDelimiter);
+               const lines = textarea.value.split(delimiter).filter(l => l.trim());
+               lines.forEach(line => {
+                 //const ldiv = document.createElement('div');
+                 const ldiv = document.createElement('li');
+                 ldiv.className = 'line';
+                    
+         
+                   if (lineCardMode.checked){
+                 ldiv.className += ' lineCardExhibit';
+               }
+                 ldiv.textContent = line;
+                //ldiv.onclick = () => navigator.clipboard.writeText(line);
+                ///
+                ldiv.onclick = () => {
+                  copyText(line,index);
+                ldiv.style.backgroundColor=randomColor();
+                 setTimeout(() => {
+                   ldiv.style.backgroundColor=''
+               }, 20*1000);
+               //多久恢復顏色
+                if (lineUrlahref.checked) {
+                 openNewWindow(line);
+                }
+               }
+                ///
+                ol.appendChild(ldiv);
+                div.appendChild(ol);
+               });
+             }
+         /*
+              if (item.linkToIMG) {
+                 const img = document.createElement('img');
+                 img.className = 'col';
+               img.src=textarea.value
+                div.appendChild(img);
+             }
+           */
+            if (item.linkToIMG) {
+                 
+               imgcheckbox=document.getElementById('IMGcheckBox');
+               
+               addHttpscheckBox=document.getElementById('addHttpscheckBox');
+               const rawDelimiter = document.getElementById('delimiterInput').value;
+               const delimiter = parseDelimiter(rawDelimiter);
+               const lines = textarea.value.split(delimiter).filter(l => l.trim());
+                const Topfdiv = document.createElement('div');
+                Topfdiv.className='divTestImgTop'
+               lines.forEach(line => {
+                 const fdiv = document.createElement('div');
+                 fdiv.className='divTestImg'
+                 const img = document.createElement('img');
+                 if (imgcheckbox.checked) {
+                    
+                img.src=line
+                img.className='testImg'
+                //img.onerror="this.style.display='none'"
+                img.onerror = function () {
+                   this.style.display = 'none';
+                 };
+                 
+               
+                const ahref = document.createElement('a');
+                
+                if (addHttpscheckBox.checked) {
+                line=urlHttps(line)
+               }
+         
+                ahref.href=line
+                ahref.textContent=line
+                ahref.title=line
+                ahref.target="_blank"
+                
+         
+                img.onclick = () => copyText(line,index);
+                fdiv.appendChild(ahref)
+                fdiv.appendChild(img);
+                Topfdiv.appendChild(fdiv);
+                }else{
+                 titleChangeUse('先允許訪問IMG');
+                 const fdiv = document.createElement('p');
+                 fdiv.textContent='先允許訪問IMG'
+                 Topfdiv.appendChild(fdiv);
+                }
+                
+               });
+               
+               div.appendChild(Topfdiv);
+             }
+             divTop.appendChild(div);
+             list.appendChild(divTop);
+             
+           });
+         
+           renderBars();
+           renderUsage();
+         }
+         ///////rander到這裡
+         function recoverTitle(){
+                 setTimeout(() => {
+                   titleOrogin=document.getElementsByTagName('title')[0].textContent;
+                 titleChange(titleOrogin+randomFacetext());
+               }, 3000);
+         }
+         
+         
+         function titleChange(string){
+          titleA=document.getElementById('titleA');
+          titleA.textContent=string
+         }
+         
+         function titleChangeUse(string){
+         titleChange(string)
+         recoverTitle()
+         }
+         
+         function copyText(text,index){
+           
+                 navigator.clipboard.writeText(text)
+                 text20=text.slice(0, 20)
+                 titleChange('已複製：'+text20+"···")  
+                 recoverTitle();
+                 if (typeof(index)=='number'){
+                   nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0] 
+                   nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
+               setTimeout(() => {
+                   nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
+               }, 3000);
+                 }
+         }
+         //
+         //開視窗
+         //
+         windowsObject=[]
+         newWindowConf={
+           x:0,
+           y:0,
+           baseline:60,
+           userScreenMaxWidth:1200,
+           userScreenMaxHeight:1000,
+           windowHeight:200,
+           windowWidth:200
+         }
+         
+         function openNewWindow(url){
+           if (windowHWset.value) {
+             u=windowHWset.value.split(',');
+             u = u.map(Number); 
+             newWindowConf.windowHeight=u[0]
+             newWindowConf.windowWidth=u[1]
+             newWindowConf.userScreenMaxWidth=u[2]
+             newWindowConf.userScreenMaxHeight=u[3]
+             newWindowConf.baseline=u[4]
+           }
+              if (addHttpscheckBox.checked) {
+                url=urlHttps(url)
+               }
+         
+           w=window.open(
+                     url,
+                     '_blank',
+                    `height=${newWindowConf.windowHeight},width=${newWindowConf.windowWidth},left=${newWindowConf.x},top=${newWindowConf.y}`
+                 ); // 在新的標籤頁或視窗中打開每個連結
+           windowsObject.push(w);
+         
+           
+         nextWindowPosition(newWindowConf);
+         titleChange(`開${windowsObject.length}次視窗${randomFacetext()}`);
+           //console.log('x:',typeof(newWindowConf.x),'y:',newWindowConf.y);
+         
+         }
+         
+         function closeMultipleWindows() {
+           windowsObject.forEach(windowO => {
+                 if (windowO && !windowO.closed) {
+                     windowO.close(); // 关闭有效且尚未关闭的窗口
+                 }
+           }  )
+             windowsObject=[]
+             newWindowConf.x=0
+             newWindowConf.y=0
+             titleChangeUse(`關掉所有視窗${randomFacetext()}`);
+         }
+         
+         function urlHttps(url){
+                 checkhttp=url.trim().slice(0,4)
+                if (checkhttp!='http') {
+                 url='https://'+url
+                }
+                return url
+         }
+         
+         function nextWindowPosition(conf) {
+         
+           conf.x += conf.windowWidth;
+         
+           // 換行
+           if (
+             conf.x + conf.windowWidth >
+             conf.userScreenMaxWidth
+           ) {
+             conf.x = 0;
+         
+             conf.y += (
+               conf.windowHeight +
+               conf.baseline
+             );
+           }
+         
+           // 超出高度
+           if (
+             conf.y + conf.windowHeight >
+             conf.userScreenMaxHeight
+           ) {
+             conf.x = 0;
+             conf.y = 0;
+           }
+         }
+         ///
+         function randomFacetext(){
+           warFace=[
+          " ̿̿ ̿̿ ̿̿ ̿'̿’\̵͇̿̿\з=( ͠° ͟ʖ ͡°)=ε/̵͇̿̿/‘̿̿ ̿ ̿ ̿ ̿ ̿",
+          '{:̲̅:̲̅:̲̅:̲̅{ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅{}ڪڪ',
+          '⋛⋋( ‘Θ’)⋌⋚',
+          '▼・ᴥ・▼',
+          '/ᐠ .ᆺ. ᐟ\\ﾉ',
+          '/ᐠ｡ꞈ｡ᐟ\\',
+          'ฅ^•ﻌ•^ฅ',
+          'Ꮚ･ꈊ･Ꮚ',
+          '((꜆꜄꜆ ˙꒳˙)꜆꜄꜆ｵﾗｵﾗｵﾗｵﾗ',
+          'ｽﾞｲ₍₍ (ง ˘ω˘ )ว ⁾⁾ ⁽⁽ 〪ɾ( ˘ω˘ 〫ɩ ) ₎₎ｽﾞｲ',
+          '(′゜ω。‵)',
+          '(つ´ω`)つ',
+          '⧸⎩⎠⎞͏(・∀・)⎛͏⎝⎭⧹',
+          '( ˊ̱˂˃ˋ̱ )',
+          '(ꐦ°᷄д°᷅)',
+          '⁽⁽٩(๑˃̶͈̀ ᗨ ˂̶͈́)۶⁾⁾',
+          '⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄',
+          '⸜(* ॑꒳ ॑* )⸝',
+          '(◉３◉)',
+          '(ノ▼Д▼)ノ',
+          '(=^-ω-^=)',
+          '(╯✧∇✧)╯',
+          '_(┐ ◟;ﾟдﾟ)ノ',
+          'ﾚ(ﾟ∀ﾟ;)ﾍ　ﾍ( ﾟ∀ﾟ;)ﾉ',
+          '(｡・ω・｡)',
+          '。･ﾟ･(つд`ﾟ)つ⑩))Д´)',
+          '(つд⊂)',
+          '∑(✘Д✘๑ )',
+          '(•ө•)',
+          '( ´･･)ﾉ(._.`)',
+          '(灬ºωº灬)',
+          'ლ(́◕◞౪◟◕‵ლ)',
+          '( ´∀`);y=ｰ(ﾟдﾟ)･∵. ﾀｰﾝ',
+          '(´д((☆ミPia!⊂▼(ｏ ‵－′ｏ)▼つPia!彡★))∀`)',
+          '٩(◦`꒳´◦)۶',
+          '(๑¯∀¯๑)',
+          '(ΦωΦ)',
+          '( ╯' - ')╯ ┻━┻',
+          '༼ つ ◕_◕ ༽つ',
+          '( ﾒ∀・)',
+          '⊙谷⊙',
+          '(╬▼дﾟ)▄︻┻┳═一',
+          '(:◎)≡',
+          '(〃￣ω￣)人(￣︶￣〃)',
+          'σ`∀´)σ',
+          '（’へ’）',
+          'ヽ( ° ▽°)ノ',
+          '(☍﹏⁰)'
+           ]
+           
+           return warFace[getRandomInt(warFace.length-1)]
+         }
+         
+         function getRandomInt(max) {
+           return Math.floor(Math.random() * max);
+         }
+         
+         
+         function randomColor(){
+           c=[
+             'red','yellow','orange','green'
+           ]
+           
+           return c[getRandomInt(c.length)]
+         }
+         
+         
+         // 匯出
+         exportBtn.onclick = () => {
+           const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+           const url = URL.createObjectURL(blob);
+           const a = document.createElement('a');
+           a.href = url;
+           a.download = 'backup.json';
+           a.click();
+         };
+         
+         // 匯入
+         importFile.onchange = (e) => {
+           const file = e.target.files[0];
+           const reader = new FileReader();
+           reader.onload = () => {
+             const imported = JSON.parse(reader.result);
+             data = [...imported, ...data];
+             save();
+             render();
+           };
+           reader.readAsText(file);
+         };
+         
+         // paste
+         input.addEventListener('paste', () => {
+         mainaction();
+         });
+         
+         function mainaction(){
+               setTimeout(() => {
+             const value = input.value.trim();
+             if (value) {
+               data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
+               save();
+               render();
+               titleChange('已貼上：'+value.slice(0, 20)+"···")  
+               recoverTitle();
+               input.value = '';
+             }
+           }, 0);
+         }
+         
+         render();
+         ///刪除時間前資料
+         function removeBeforeTime() {
+         
+           const value =
+             document.getElementById('timeInput').value;
+         const strTime=new Date(value).toLocaleString()
+           if (!value) {
+             titleChangeUse('請選擇時間');
+             return;
+           }
+         
+           if (!confirm(`本次刪除${strTime}前的資料`)){
+             titleChangeUse(`取消本次刪除${strTime}前的資料`);
+             return;
+           }
+         
+           // datetime-local -> timestamp
+           const targetTime = new Date(value).getTime();
+           
+           // 保留指定時間後的資料
+           data = data.filter(item => {
+             return item.time >= targetTime;
+           });
+         
+            titleChangeUse(`刪除${strTime}前的資料,操作一個新資料之後才save`);
+         
+           render();
+         
+         }
+         ////
+         const slider = document.getElementById('slider');
+         // 拉條改文字大小
+         
+         
+         slider.addEventListener('input', (e) => {
+           document.documentElement.style.setProperty('--font-size', e.target.value + 'px');
+         });
+         
+         const sliderIMG = document.getElementById('sliderIMG');
+         // 拉條改文字大小
+         
+         
+         sliderIMG.addEventListener('input', (e) => {
+           document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
+         });
+         
+         
+      </script>
+      <script src="../public/floating-menu.js"></script>
+   </body>
 </html>

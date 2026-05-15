@@ -1,0 +1,25 @@
+body {    background:#E4E3E4;} /* 1024px以上の幅の場合に適応される */
+@media screen and (max-width: 1024px) {
+/* 1024pxまでの幅の場合に適応される */
+    body {
+        background-color:#2262D1;
+    }
+}
+@media screen and (max-width: 768px) {
+/* 768pxまでの幅の場合に適応される */
+     body {
+        background-color:#f10010;
+    }
+}
+@media screen and (max-width: 480px) {
+/* 480pxまでの幅の場合に適応される */
+    body {
+        background-color:#F9DF2C;
+    }
+}
+@media screen and (max-width: 320px) {
+/* 320pxまでの幅の場合に適応される */
+    body {
+        background-color: #68B876;
+    }
+}

@@ -2,9 +2,9 @@
  * 變數卡牌
  *************************************************/
 function addVar(name = '', value = '') {
-  const div = document.createElement('div');
-  div.className = 'var-block';
-  div.innerHTML = `
+   const div = document.createElement('div');
+   div.className = 'var-block';
+   div.innerHTML = `
     <label>變數名稱</label>
     <input value="${name}">
     <label>變數值</label>
@@ -12,19 +12,19 @@ function addVar(name = '', value = '') {
     <button>❌ 刪除</button>
   `;
 
-  const input = div.querySelector('input');
-  const textarea = div.querySelector('textarea');
-  const btn = div.querySelector('button');
+   const input = div.querySelector('input');
+   const textarea = div.querySelector('textarea');
+   const btn = div.querySelector('button');
 
-  input.addEventListener('input', saveVars);
-  textarea.addEventListener('input', saveVars);
+   input.addEventListener('input', saveVars);
+   textarea.addEventListener('input', saveVars);
 
-  btn.addEventListener('click', () => {
-    div.remove();
-    saveVars();
-  });
+   btn.addEventListener('click', () => {
+      div.remove();
+      saveVars();
+   });
 
-  document.getElementById('vars').appendChild(div);
+   document.getElementById('vars').appendChild(div);
 }
 
 
@@ -32,138 +32,139 @@ function addVar(name = '', value = '') {
  * 指令產生
  *************************************************/
 function splitInput(text) {
-  return text
-    .split(/[\s,]+/)
-    .map(v => v.trim())
-    .filter(Boolean);
+   return text
+      .split(/[\s,]+/)
+      .map(v => v.trim())
+      .filter(Boolean);
 }
 
 function cartesian(arrays) {
-  return arrays.reduce(
-    (a, b) => a.flatMap(x => b.map(y => x.concat([y]))),
-    [[]]
-  );
+   return arrays.reduce(
+      (a, b) => a.flatMap(x => b.map(y => x.concat([y]))),
+      [
+         []
+      ]
+   );
 }
 
 function generate() {
-  const template = document.getElementById('template').value;
-  const blocks = document.querySelectorAll('.var-block');
-  const names = [];
-  const values = [];
-  titleChangeUse(`已產生${template.slice(0, 30)}‧‧‧指令`);
+   const template = document.getElementById('template').value;
+   const blocks = document.querySelectorAll('.var-block');
+   const names = [];
+   const values = [];
+   titleChangeUse(`已產生${template.slice(0, 30)}‧‧‧指令`);
 
-  blocks.forEach(b => {
-    const n = b.querySelector('input').value;
-    const v = splitInput(b.querySelector('textarea').value);
-    if (n && v.length) {
-      names.push(n);
-      values.push(v);
-    }
-  });
+   blocks.forEach(b => {
+      const n = b.querySelector('input').value;
+      const v = splitInput(b.querySelector('textarea').value);
+      if (n && v.length) {
+         names.push(n);
+         values.push(v);
+      }
+   });
 
-  const mode = document.getElementById('mode').value;
-  const results = [];
+   const mode = document.getElementById('mode').value;
+   const results = [];
 
-  if (mode === 'cross') {
-    cartesian(values).forEach(combo => {
-      let cmd = template;
-      combo.forEach((val, i) => {
-        cmd = cmd.replace(
-          new RegExp(`\\$\\{${names[i]}\\}`, 'g'),
-          val
-        );
+   if (mode === 'cross') {
+      cartesian(values).forEach(combo => {
+         let cmd = template;
+         combo.forEach((val, i) => {
+            cmd = cmd.replace(
+               new RegExp(`\\$\\{${names[i]}\\}`, 'g'),
+               val
+            );
+         });
+         results.push(cmd);
       });
-      results.push(cmd);
-    });
-  } else {
-    const len = Math.min(...values.map(v => v.length));
-    for (let i = 0; i < len; i++) {
-      let cmd = template;
-      names.forEach((n, idx) => {
-        cmd = cmd.replace(
-          new RegExp(`\\$\\{${n}\\}`, 'g'),
-          values[idx][i]
-        );
-      });
-      results.push(cmd);
-    }
-    
-  }
+   } else {
+      const len = Math.min(...values.map(v => v.length));
+      for (let i = 0; i < len; i++) {
+         let cmd = template;
+         names.forEach((n, idx) => {
+            cmd = cmd.replace(
+               new RegExp(`\\$\\{${n}\\}`, 'g'),
+               values[idx][i]
+            );
+         });
+         results.push(cmd);
+      }
 
-  const outputText = results.join('\n');
-  document.getElementById('output').textContent = outputText;
+   }
 
-  saveVars();
-  saveHistory(template, outputText);
+   const outputText = results.join('\n');
+   document.getElementById('output').textContent = outputText;
+
+   saveVars();
+   saveHistory(template, outputText);
 }
 //
-function genCopy(){
-  generate()
-  copy()
+function genCopy() {
+   generate()
+   copy()
 }
 //
-function recoverTitle(){
-        setTimeout(() => {
-          titleOrogin=document.getElementsByTagName('title')[0].textContent;
-        titleChange(titleOrogin);
-      }, 3000);
+function recoverTitle() {
+   setTimeout(() => {
+      titleOrogin = document.getElementsByTagName('title')[0].textContent;
+      titleChange(titleOrogin);
+   }, 3000);
 }
 
 
-function titleChange(string){
- titleA=document.getElementById('titleTop');
- titleA.textContent=string
+function titleChange(string) {
+   titleA = document.getElementById('titleTop');
+   titleA.textContent = string
 }
 
-function titleChangeUse(string){
-titleChange(string)
-recoverTitle()
+function titleChangeUse(string) {
+   titleChange(string)
+   recoverTitle()
 }
 //
 
 function copy() {
-  t=document.getElementById('output').textContent
-  navigator.clipboard.writeText(t);
-  titleChangeUse(`已複製結果 ${t.slice(0,30)}`);
+   t = document.getElementById('output').textContent
+   navigator.clipboard.writeText(t);
+   titleChangeUse(`已複製結果 ${t.slice(0,30)}`);
 }
 
 function copytemplate() {
-  t=document.getElementById('template').value
-  navigator.clipboard.writeText(t);
-  titleChangeUse(`已複製模板 ${t.slice(0,30)}`);
+   t = document.getElementById('template').value
+   navigator.clipboard.writeText(t);
+   titleChangeUse(`已複製模板 ${t.slice(0,30)}`);
 }
-
 
 
 /*************************************************
  * Template 套用
  *************************************************/
 function applyTemplate() {
-  const sel = document.getElementById('templateSelect');
-  const opt = sel.options[sel.selectedIndex];
+   const sel = document.getElementById('templateSelect');
+   const opt = sel.options[sel.selectedIndex];
 
-  document.getElementById('template').value = opt.value || '';
-  document.getElementById('commandDesc').innerHTML =
-    opt.dataset.desc || '未填寫說明';
+   document.getElementById('template').value = opt.value || '';
+   document.getElementById('commandDesc').innerHTML =
+      opt.dataset.desc || '未填寫說明';
 
-  const note = document.getElementById('riskNote');
-  if (opt.dataset.risk === 'danger') {
-    note.innerHTML =
-      '<p class="danger">⚠️ 此指令會實際影響線上資源，請確認後再執行</p>';
-  } else if (opt.dataset.risk === 'safe') {
-    note.innerHTML =
-      '<p class="safe">✅ 此指令為只讀操作，不會影響線上</p>';
-  } else {
-    note.innerHTML = '';
-  }
+   const note = document.getElementById('riskNote');
+   if (opt.dataset.risk === 'danger') {
+      note.innerHTML =
+         '<p class="danger">⚠️ 此指令會實際影響線上資源，請確認後再執行</p>';
+   } else if (opt.dataset.risk === 'safe') {
+      note.innerHTML =
+         '<p class="safe">✅ 此指令為只讀操作，不會影響線上</p>';
+   } else {
+      note.innerHTML = '';
+   }
 
-  syncVarsFromTemplate();
+   syncVarsFromTemplate();
 
-  localStorage.setItem(
-    'lastTemplateIndex',
-    sel.selectedIndex
-  );
- 
+   localStorage.setItem(
+      'lastTemplateIndex',
+      sel.selectedIndex
+   );
+
 }
 
 
@@ -171,68 +172,68 @@ function applyTemplate() {
  * Vars 同步邏輯
  *************************************************/
 function loadVarsFromStorage() {
-  const raw = JSON.parse(localStorage.getItem('vars') || '[]');
-  const map = new Map();
+   const raw = JSON.parse(localStorage.getItem('vars') || '[]');
+   const map = new Map();
 
-  raw.forEach(v => {
-    if (v?.name) {
-      map.set(v.name, v.value ?? '');
-    }
-  });
+   raw.forEach(v => {
+      if (v?.name) {
+         map.set(v.name, v.value ?? '');
+      }
+   });
 
-  return map;
+   return map;
 }
 
 function getVarsFromTemplate() {
-  const template = document.getElementById('template').value || '';
-  const matches = [...template.matchAll(/\$\{([\w-]+)\}/g)];  
-  //英文 + 數字 + 底線 + 中線
-  return new Set(matches.map(m => m[1]));
+   const template = document.getElementById('template').value || '';
+   const matches = [...template.matchAll(/\$\{([\w-]+)\}/g)];
+   //英文 + 數字 + 底線 + 中線
+   return new Set(matches.map(m => m[1]));
 }
 
 function getVarsFromDOM() {
-  const map = new Map();
+   const map = new Map();
 
-  document.querySelectorAll('.var-block').forEach(b => {
-    const name = b.querySelector('input')?.value;
-    const value = b.querySelector('textarea')?.value ?? '';
-    if (name) map.set(name, value);
-  });
+   document.querySelectorAll('.var-block').forEach(b => {
+      const name = b.querySelector('input')?.value;
+      const value = b.querySelector('textarea')?.value ?? '';
+      if (name) map.set(name, value);
+   });
 
-  return map;
+   return map;
 }
 
 function syncVarsFromTemplate() {
-  const storageMap = loadVarsFromStorage();
-  const templateSet = getVarsFromTemplate();
-  const domMap = getVarsFromDOM();
+   const storageMap = loadVarsFromStorage();
+   const templateSet = getVarsFromTemplate();
+   const domMap = getVarsFromDOM();
 
-  const finalMap = new Map();
+   const finalMap = new Map();
 
-  storageMap.forEach((value, name) => {
-    if (templateSet.has(name)) {
-      finalMap.set(name, value);
-    }
-  });
+   storageMap.forEach((value, name) => {
+      if (templateSet.has(name)) {
+         finalMap.set(name, value);
+      }
+   });
 
-  templateSet.forEach(name => {
-    if (!finalMap.has(name)) {
-      finalMap.set(name, '');
-    }
-  });
+   templateSet.forEach(name => {
+      if (!finalMap.has(name)) {
+         finalMap.set(name, '');
+      }
+   });
 
-  finalMap.forEach((value, name) => {
-    if (!domMap.has(name)) {
-      addVar(name, value);
-    }
-  });
+   finalMap.forEach((value, name) => {
+      if (!domMap.has(name)) {
+         addVar(name, value);
+      }
+   });
 
-  document.querySelectorAll('.var-block').forEach(b => {
-    const name = b.querySelector('input')?.value;
-    if (name && !finalMap.has(name)) {
-      b.remove();
-    }
-  });
+   document.querySelectorAll('.var-block').forEach(b => {
+      const name = b.querySelector('input')?.value;
+      if (name && !finalMap.has(name)) {
+         b.remove();
+      }
+   });
 }
 
 
@@ -240,58 +241,58 @@ function syncVarsFromTemplate() {
  * Template 選單 / Group
  *************************************************/
 function renderTemplateOptions(arr) {
-  const select = document.getElementById('templateSelect');
-  select.innerHTML = '';
+   const select = document.getElementById('templateSelect');
+   select.innerHTML = '';
 
-  arr.forEach(item => {
-    const opt = document.createElement('option');
-    opt.textContent = item.label;
-    opt.value = item.value;
-    opt.dataset.risk = item.risk || '';
-    if (item.risk==null) {
-    opt.disabled = true;
-    //給禁用選項
-    }
-    opt.dataset.desc = item.desc || '未填寫說明';
-    select.appendChild(opt);
-  });
+   arr.forEach(item => {
+      const opt = document.createElement('option');
+      opt.textContent = item.label;
+      opt.value = item.value;
+      opt.dataset.risk = item.risk || '';
+      if (item.risk == null) {
+         opt.disabled = true;
+         //給禁用選項
+      }
+      opt.dataset.desc = item.desc || '未填寫說明';
+      select.appendChild(opt);
+   });
 
-  const lastIndex = localStorage.getItem('lastTemplateIndex');
-  if (lastIndex !== null && select.options[lastIndex]) {
-    select.selectedIndex = lastIndex;
-  }
-    applyTemplate();
-  
+   const lastIndex = localStorage.getItem('lastTemplateIndex');
+   if (lastIndex !== null && select.options[lastIndex]) {
+      select.selectedIndex = lastIndex;
+   }
+   applyTemplate();
+
 }
 
 const groupSelect = document.getElementById('templateGroup');
 
 function renderGroupSelect() {
-  groupSelect.innerHTML = '';
+   groupSelect.innerHTML = '';
 
-  const placeholder = document.createElement('option');
-  placeholder.textContent = '指令集';
-  placeholder.disabled = true;
-  placeholder.selected = true;
-  groupSelect.appendChild(placeholder);
+   const placeholder = document.createElement('option');
+   placeholder.textContent = '指令集';
+   placeholder.disabled = true;
+   placeholder.selected = true;
+   groupSelect.appendChild(placeholder);
 
-  Object.keys(ALL_TEMPLATE).forEach(key => {
-    const option = document.createElement('option');
-    option.value = key;
-    option.textContent = key.replace('_TEMPLATE_CONFIG', '');
-    groupSelect.appendChild(option);
-  });
+   Object.keys(ALL_TEMPLATE).forEach(key => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = key.replace('_TEMPLATE_CONFIG', '');
+      groupSelect.appendChild(option);
+   });
 }
 
 groupSelect.addEventListener('change', e => {
-  const groupKey = e.target.value;
-  localStorage.setItem('lastGroup', groupKey);
+   const groupKey = e.target.value;
+   localStorage.setItem('lastGroup', groupKey);
 
-  if (ALL_TEMPLATE[groupKey]) {
-    renderTemplateOptions(ALL_TEMPLATE[groupKey]);
-    rendersearch = ALL_TEMPLATE[groupKey];
-    loadsearchkeyword()
-  }
+   if (ALL_TEMPLATE[groupKey]) {
+      renderTemplateOptions(ALL_TEMPLATE[groupKey]);
+      rendersearch = ALL_TEMPLATE[groupKey];
+      loadsearchkeyword()
+   }
    applyTemplate();
 });
 
@@ -306,73 +307,73 @@ let rendersearch = ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG'];
 const select = document.getElementById('cmdSelect');
 const search = document.getElementById('search');
 const textarea = document.getElementById('template');
-const commandDesc =document.getElementById('commandDesc')
+const commandDesc = document.getElementById('commandDesc')
 
 function render(options) {
-  select.innerHTML = '';
-  options.forEach((t, index) => {
-    const opt = document.createElement('option');
-    opt.value = index;
-    opt.textContent = t.label;
-    opt.dataset.command = t.value;
-    if (t.desc==undefined) {
-      opt.dataset.desc = '未填寫說明'
-    }else{
-    opt.dataset.desc = t.desc;
-    }
-    select.appendChild(opt);
-    
-  });
- 
+   select.innerHTML = '';
+   options.forEach((t, index) => {
+      const opt = document.createElement('option');
+      opt.value = index;
+      opt.textContent = t.label;
+      opt.dataset.command = t.value;
+      if (t.desc == undefined) {
+         opt.dataset.desc = '未填寫說明'
+      } else {
+         opt.dataset.desc = t.desc;
+      }
+      select.appendChild(opt);
+
+   });
+
 }
 
 search.addEventListener('input', e => {
-  searchfilter(e.target.value)
-  localStorage.setItem('searchKeyword', e.target.value);
+   searchfilter(e.target.value)
+   localStorage.setItem('searchKeyword', e.target.value);
 });
 
-function searchfilter(e){
-    const keyword = e.toLowerCase();
-  
+function searchfilter(e) {
+   const keyword = e.toLowerCase();
 
-  render(
-    rendersearch.filter(t =>
-      t.label.toLowerCase().includes(keyword) ||
-      (t.desc && t.desc.toLowerCase().includes(keyword))|
-      t.value.toLowerCase().includes(keyword)
-    )
-  );
+
+   render(
+      rendersearch.filter(t =>
+         t.label.toLowerCase().includes(keyword) ||
+         (t.desc && t.desc.toLowerCase().includes(keyword)) |
+         t.value.toLowerCase().includes(keyword)
+      )
+   );
 }
 
 select.addEventListener('change', () => {
-  const option = select.selectedOptions[0];
-  if (option) textarea.value = option.dataset.command;
-  if (option) commandDesc.value = option.dataset.desc
-  if (option) syncVarsFromTemplate()
+   const option = select.selectedOptions[0];
+   if (option) textarea.value = option.dataset.command;
+   if (option) commandDesc.value = option.dataset.desc
+   if (option) syncVarsFromTemplate()
 });
 
 select.addEventListener('dblclick', () => {
-  const option = select.selectedOptions[0];
-  if (option) textarea.value = option.dataset.command;
-  if (option) commandDesc.value = option.dataset.desc
-  if (option) syncVarsFromTemplate()
+   const option = select.selectedOptions[0];
+   if (option) textarea.value = option.dataset.command;
+   if (option) commandDesc.value = option.dataset.desc
+   if (option) syncVarsFromTemplate()
 });
 
-searchdis=document.getElementsByClassName('hiden')[0]
+searchdis = document.getElementsByClassName('hiden')[0]
 
 searchDisploy.addEventListener('click', () => {
-  chengesearchdis()
+   chengesearchdis()
 });
 
-function chengesearchdis(){
-  const searchdisstatus = 'display:none';
-  if (searchdiv.getAttribute('style')!=searchdisstatus) {
-    searchdiv.setAttribute('style',searchdisstatus);
-    localStorage.setItem('searchdisstatus', searchdisstatus);
-  }else{
-    searchdiv.removeAttribute('style')
-    localStorage.removeItem('searchdisstatus');
-  }
+function chengesearchdis() {
+   const searchdisstatus = 'display:none';
+   if (searchdiv.getAttribute('style') != searchdisstatus) {
+      searchdiv.setAttribute('style', searchdisstatus);
+      localStorage.setItem('searchdisstatus', searchdisstatus);
+   } else {
+      searchdiv.removeAttribute('style')
+      localStorage.removeItem('searchdisstatus');
+   }
 }
 
 
@@ -380,25 +381,25 @@ function chengesearchdis(){
  * Vars 儲存 / 還原
  *************************************************/
 function saveVars() {
-  const vars = [];
+   const vars = [];
 
-  document.querySelectorAll('.var-block').forEach(b => {
-    const value = b.querySelector('textarea').value;
-    if (value !== '') {
-      vars.push({
-        name: b.querySelector('input').value,
-        value
-      });
-    }
-  });
+   document.querySelectorAll('.var-block').forEach(b => {
+      const value = b.querySelector('textarea').value;
+      if (value !== '') {
+         vars.push({
+            name: b.querySelector('input').value,
+            value
+         });
+      }
+   });
 
-  localStorage.setItem('vars', JSON.stringify(vars));
+   localStorage.setItem('vars', JSON.stringify(vars));
 }
 
 function loadVars() {
-  vars.innerHTML = '';
-  const saved = JSON.parse(localStorage.getItem('vars') || '[]');
-  saved.forEach(v => addVar(v.name, v.value));
+   vars.innerHTML = '';
+   const saved = JSON.parse(localStorage.getItem('vars') || '[]');
+   saved.forEach(v => addVar(v.name, v.value));
 }
 
 
@@ -408,38 +409,40 @@ function loadVars() {
 const HISTORY_KEY = 'command_history';
 
 function nowString() {
-  return new Date().toLocaleString('zh-TW', { hour12: false });
+   return new Date().toLocaleString('zh-TW', {
+      hour12: false
+   });
 }
 
 function saveHistory(template, output) {
-  if (!output.trim()) return;
+   if (!output.trim()) return;
 
-  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
 
-  history.unshift({
-    time: nowString(),
-    template,
-    output
-  });
+   history.unshift({
+      time: nowString(),
+      template,
+      output
+   });
 
-  localStorage.setItem(
-    HISTORY_KEY,
-    JSON.stringify(history.slice(0, 50))
-  );
+   localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify(history.slice(0, 50))
+   );
 
-  renderHistory();
+   renderHistory();
 }
 
 function renderHistory() {
-  const container = document.getElementById('history');
-  container.innerHTML = '';
+   const container = document.getElementById('history');
+   container.innerHTML = '';
 
-  try {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    //container.setAttribute('class','history');
-    history.forEach(item => {
-      const div = document.createElement('div');
-      div.style.cssText = `
+   try {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      //container.setAttribute('class','history');
+      history.forEach(item => {
+         const div = document.createElement('div');
+         div.style.cssText = `
         border:1px solid #ccc;
         padding:6px;
         margin-bottom:6px;
@@ -448,18 +451,18 @@ function renderHistory() {
         word-wrap: break-word;
       `;
 
-      div.innerHTML = `
+         div.innerHTML = `
         <div style="font-size:12px;color:#666;">${item.time}</div>
         <div style="font-size:13px;">${item.template}</div>
       `;
 
-      div.addEventListener('click', () => {
-        document.getElementById('output').textContent = item.output;
-      });
+         div.addEventListener('click', () => {
+            document.getElementById('output').textContent = item.output;
+         });
 
-      container.appendChild(div);
-    });
-  } catch {}
+         container.appendChild(div);
+      });
+   } catch {}
 }
 
 
@@ -467,69 +470,70 @@ function renderHistory() {
  * 初始化 / 事件
  *************************************************/
 document.addEventListener('DOMContentLoaded', () => {
-  renderGroupSelect();
+   renderGroupSelect();
 
-  const lastGroup = localStorage.getItem('lastGroup');
-  if (lastGroup && ALL_TEMPLATE[lastGroup]) {
-    groupSelect.value = lastGroup;
-    rendersearch = ALL_TEMPLATE[lastGroup];
-    renderTemplateOptions(ALL_TEMPLATE[lastGroup]);
-    
-  } else {
-    renderTemplateOptions(ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG']);
-  }
+   const lastGroup = localStorage.getItem('lastGroup');
+   if (lastGroup && ALL_TEMPLATE[lastGroup]) {
+      groupSelect.value = lastGroup;
+      rendersearch = ALL_TEMPLATE[lastGroup];
+      renderTemplateOptions(ALL_TEMPLATE[lastGroup]);
 
-  loadVars();
-  syncVarsFromTemplate();
-  renderHistory();
-  init2()
+   } else {
+      renderTemplateOptions(ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG']);
+   }
+
+   loadVars();
+   syncVarsFromTemplate();
+   renderHistory();
+   init2()
    loadsearchkeyword()
-  //console.log(localStorage);
-  //localStorage.clear()
+   //console.log(localStorage);
+   //localStorage.clear()
 });
 
 document.getElementById('template')
-  .addEventListener('input', syncVarsFromTemplate);
+   .addEventListener('input', syncVarsFromTemplate);
 
 document.getElementById('clearVarsBtn')
-  .addEventListener('click', () => {
-    if (!confirm('確定要清空所有暫存變數嗎？')) return;
-    localStorage.removeItem('vars');
-    document.getElementById('vars').innerHTML = '';
-    syncVarsFromTemplate();
-  });
+   .addEventListener('click', () => {
+      if (!confirm('確定要清空所有暫存變數嗎？')) return;
+      localStorage.removeItem('vars');
+      document.getElementById('vars').innerHTML = '';
+      syncVarsFromTemplate();
+   });
 
 document.getElementById('clearHistoryBtn')
-  .addEventListener('click', () => {
-    if (!confirm('確定要清空所有歷史紀錄？')) return;
-    localStorage.removeItem(HISTORY_KEY);
-    renderHistory();
-  });
+   .addEventListener('click', () => {
+      if (!confirm('確定要清空所有歷史紀錄？')) return;
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+   });
 
-function init2(){
+function init2() {
 
-document.getElementById('mode')
-  .addEventListener('change', e =>
-    localStorage.setItem('mode', e.target.value)
-  );
+   document.getElementById('mode')
+      .addEventListener('change', e =>
+         localStorage.setItem('mode', e.target.value)
+      );
 
-const savedMode = localStorage.getItem('mode');
-if (savedMode) {
-  document.getElementById('mode').value = savedMode;
+   const savedMode = localStorage.getItem('mode');
+   if (savedMode) {
+      document.getElementById('mode').value = savedMode;
+   }
+
+
+   if (localStorage.getItem('searchdisstatus')) {
+      chengesearchdis();
+   }
+
 }
 
-
-
-  if (localStorage.getItem('searchdisstatus')) {
-    chengesearchdis();
-  }
-
-}
-
-function loadsearchkeyword(){
-  const searchKeyword = localStorage.getItem('searchKeyword');
-if (searchKeyword) {
-  search.value = searchKeyword;
-  searchfilter(searchKeyword)
-}else{searchfilter('')}
+function loadsearchkeyword() {
+   const searchKeyword = localStorage.getItem('searchKeyword');
+   if (searchKeyword) {
+      search.value = searchKeyword;
+      searchfilter(searchKeyword)
+   } else {
+      searchfilter('')
+   }
 }
