@@ -10,6 +10,8 @@
          }
          .divBtns{
          padding-bottom: 3px;
+         max-height: 25px;
+         overflow: auto;
          }
          body { font-family: Arial; padding: 0px; }
          .testImg{width: 100%; 
@@ -177,6 +179,8 @@
                   <li>
                      <p>逐行卡片展示
                         <input type="checkbox" id="lineCardMode">
+                        檢查清單
+                        <input type="checkbox" id="lineCheckMode">
                      </p>
                   </li>
                   <li>
@@ -541,7 +545,7 @@
                const rawDelimiter = document.getElementById('delimiterInput').value;
                const delimiter = parseDelimiter(rawDelimiter);
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
-               lines.forEach(line => {
+               lines.forEach((line,innerIndex) => {
                  //const ldiv = document.createElement('div');
                  const ldiv = document.createElement('li');
                  ldiv.className = 'line';
@@ -550,6 +554,7 @@
                    if (lineCardMode.checked){
                  ldiv.className += ' lineCardExhibit';
                }
+   
                  ldiv.textContent = line;
                 //ldiv.onclick = () => navigator.clipboard.writeText(line);
                 ///
@@ -565,6 +570,13 @@
                 }
                }
                 ///
+                                if (lineCheckMode.checked){
+                 //ldiv.className += ' lineCardExhibit';
+                 const checkBox = document.createElement('input');
+                 checkBox.type='checkbox'
+                 checkBox.id=`ckbox-${index}-${innerIndex}`
+                 ldiv.prepend(checkBox);
+               }
                 ol.appendChild(ldiv);
                 div.appendChild(ol);
                });
