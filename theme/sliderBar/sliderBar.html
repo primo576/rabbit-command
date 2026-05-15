@@ -1,0 +1,107 @@
+<style>
+    #slider {
+  display: flex;
+  gap: 60px;
+
+  overflow-x: auto;
+  scroll-behavior: smooth;
+
+  padding: 40px;
+
+  scroll-snap-type: x mandatory;
+}
+
+#slider li {
+  min-width: 180px;
+  height: 120px;
+
+  background: #333;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
+
+  transform: scale(0.8);
+  opacity: 0.5;
+
+  scroll-snap-align: center;
+}
+
+</style>
+
+<ol class="col inlineCol hide-scrollbar" id="slider">
+  <li class="line lineCardExhibit">text1</li>
+  <li class="line lineCardExhibit">text2</li>
+  <li class="line lineCardExhibit">text3</li>
+  <li class="line lineCardExhibit">text1</li>
+  <li class="line lineCardExhibit">text2</li>
+  <li class="line lineCardExhibit">text3</li>
+  <li class="line lineCardExhibit">text1</li>
+  <li class="line lineCardExhibit">text2</li>
+  <li class="line lineCardExhibit">text3</li>
+  <li class="line lineCardExhibit">text1</li>
+  <li class="line lineCardExhibit">text2</li>
+  <li class="line lineCardExhibit">text3</li>
+</ol>
+
+<script>
+const slider = document.getElementById('slider');
+const items = slider.querySelectorAll('li');
+
+function updateScale() {
+
+  // 容器中心
+  const sliderRect = slider.getBoundingClientRect();
+
+  const center =
+    sliderRect.left +
+    sliderRect.width / 2;
+
+  items.forEach(item => {
+
+    const rect = item.getBoundingClientRect();
+
+    // item中心
+    const itemCenter =
+      rect.left +
+      rect.width / 2;
+
+    // 距離中心
+    const distance =
+      Math.abs(center - itemCenter);
+
+    // 最大距離
+    const maxDistance =
+      sliderRect.width / 2;
+
+    // 0~1
+    const ratio =
+      Math.max(0, 1 - distance / maxDistance);
+
+    // scale
+    const scale =
+      0.8 + ratio * 0.4;
+
+    // opacity
+    const opacity =
+      0.5 + ratio * 0.5;
+
+    item.style.transform =
+      `scale(${scale})`;
+
+    item.style.opacity =
+      opacity;
+  });
+}
+
+slider.addEventListener('scroll', updateScale);
+
+updateScale();
+</script>

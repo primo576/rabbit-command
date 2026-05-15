@@ -61,10 +61,9 @@
          }
          .lineCardExhibit{
          margin-right: 10px;
-         min-width: 33%;
+         min-width: 75%;
          height: 80px;
          overflow-y: auto;
-  
          }
 
         @media screen and (max-width: 600px) {
@@ -73,7 +72,8 @@
               min-width: 95%;
           }
         }
-         .inlineCol{display: flex;overflow: auto;}
+         .horizLine{display: flex;overflow: auto;scroll-snap-type: x mandatory;}
+         .horizLine li{scroll-snap-align: center;} 
          /* font-size: 18px; line的影響閱讀 可以做成動態 */
          .line0:hover { background: #eee; }
          .line:hover { color: var(--textFocus);
@@ -86,6 +86,8 @@
          .progress { height: 20px; background: #4caf50; }
          .colOragin {padding-inline-start: 0px;}
          .col {padding-inline-start: 0px;}
+         .strLine{overflow: auto;max-height: 300px;scroll-snap-type: y mandatory;}
+         .strLine li{scroll-snap-align: center;}
          .col2 {padding-inline-start: 30px;margin-block-start: 0;margin-block-end: 0;}
          .buttomStyle1{margin: 2px;}
          .buttomStyle1File{    appearance: none;
@@ -529,13 +531,12 @@
             if (item.lineMode) {
                  const ol = document.createElement('ol');
                  //ol.id = `colScreen-${index}`;
-                 ol.className = 'col';
-                 ol.className += ' colScreen';
-                  if (lineCardMode.checked){
-                 ol.className +=' inlineCol hide-scrollbar'
-                
+                 ol.className = 'col'; 
+                 if (lineCardMode.checked){
+                ol.className +=' horizLine hide-scrollbar'
+               }else{
+                ol.className += ' strLine';
                }
-           
                //const lines = item.text.split('\n').filter(l => l.trim());
                const rawDelimiter = document.getElementById('delimiterInput').value;
                const delimiter = parseDelimiter(rawDelimiter);
