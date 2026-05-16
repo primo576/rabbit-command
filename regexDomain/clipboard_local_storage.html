@@ -11,7 +11,8 @@
          .divBtns{
          padding-bottom: 3px;
          max-height: 25px;
-         overflow: auto;
+         overflow-y: auto;
+        white-space: nowrap;
          }
          body { font-family: Arial; padding: 0px; }
          .testImg{width: 100%; 
@@ -68,7 +69,8 @@
          .lineCardExhibit{
          margin-right: 10px;
          min-width: 75%;
-         height: 80px;
+         min-height: 80px;
+         max-height: fit-content;
          overflow-y: auto;
          }
 
@@ -175,8 +177,15 @@
                      <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
                      <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
             
-                      <button onclick="sendToinput()">勾選彙整</button>
-                        <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
+     
+                        
+                  </li>
+                  <li><p>
+                          檢查清單
+                        <input type="checkbox" id="lineCheckMode">
+                 <button onclick="sendToinput()">勾選彙整</button>
+                      <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
+                      </p>
                   </li>
                   <li>
                      <p>
@@ -187,8 +196,6 @@
                   <li>
                      <p>逐行卡片展示
                         <input type="checkbox" id="lineCardMode">
-                        檢查清單
-                        <input type="checkbox" id="lineCheckMode">
                      </p>
                   </li>
                   <li>
@@ -197,35 +204,28 @@
                      </p>
                   </li>
                   <li>
-                     <p>前綴加https
-                        <input type="checkbox" id="addHttpscheckBox">
-                     </p>
-                  </li>
-                  <li>
-                     <p>逐行點擊訪問域名
+                     <p>
+                      逐行點擊訪問域名
                         <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
+                    前綴加https
+                        <input type="checkbox" id="addHttpscheckBox">
+                      </p>
+                  </li>
+      
+                  <li>
+                     <p>允許一次全部訪問
+                        <input type="checkbox" id="allowOPENallurl">
+                        全開延遲秒數
+                        <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
                      </p>
                   </li>
                   <li>
                      <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
                   </li>
                   <li>
-                     <p>允許一次全部訪問
-                        <input type="checkbox" id="allowOPENallurl">
-                     </p>
-                  </li>
-                  <li>
-                     <p>全開延遲秒數
-                        <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
-                     </p>
-                  </li>
-                  <li>
                      <p>IMG訪問
                         <input type="checkbox" id="IMGcheckBox">
-                     </p>
-                  </li>
-                  <li>
-                     <p>圖片大小
+                      圖片大小
                         <input type="range" min="50" max="300" value="150" id="sliderIMG">
                      </p>
                   </li>
@@ -235,6 +235,7 @@
          <label class="custom-file-upload buttomStyle1">資料匯入
          <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
          </label>
+         
          </li>
          <li>
          <p>
