@@ -41,21 +41,25 @@
          .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
          .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
          /* time 時間樣式 127x13.5 */
-         .content { border-radius: 8px; width:calc(100% - 10px); height: 80px; overflow: auto; resize: none; 
+         .content { border-radius: 8px; width:calc(100% - 10px); min-height: 80px; overflow: auto; resize: none; 
          white-space: nowrap;
          overflow-x: auto;
          overflow-y: auto;
+         transition: 0.3s;
          }
-         .contentTop { border-radius: 8px; width:calc(100% - 10px); height: 20px; overflow: auto; resize: none; 
+         .fixArea {field-sizing: content; min-height: 0px;}
+         .contentTop { border-radius: 8px; width:calc(100% - 10px); min-height: 20px; overflow: auto; resize: none; 
          white-space: nowrap;
          overflow-x: auto;
          overflow-y: auto;
          transition: 0.3s;
          margin-top: 3px;
          }
-         .contentTop:focus { height: 80px;
+         .contentTop:focus { min-height: 80px;
          transition: 0.3s;
+         field-sizing: content;
          }
+         input{field-sizing: content;min-width: 3px;}
          .expanded {  /*overflow: hidden;*/ }
          .line0 { padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside; font-size: 18px;}
          .line { font-size: var(--font-size, 18px);word-wrap: break-word;border-radius: 8px; margin-top: 10px;   padding: 4px; border-bottom: 1px dashed #ddd; cursor: pointer;list-style-position: inside;
@@ -177,6 +181,7 @@
                   <li>
                      <p>
                         <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+                        <input id="joinStr" placeholder="組合符 預設," >
                      </p>
                   </li>
                   <li>
@@ -252,8 +257,7 @@
          
          ////
              function auto_grow(el) {
-             el.style.height = "5px"; // 先壓縮
-             el.style.height = el.scrollHeight + "px"; // 再撐開
+             el.classList.add('fixArea')
              //
              
              //
@@ -263,7 +267,7 @@
            const list = document.getElementsByTagName('textarea');
            for (let i = 1; i < list.length; i++) {
              const el = list[i];
-             el.removeAttribute('style');
+             el.classList.remove('fixArea')
            }
            data.forEach((item) => {
             
@@ -418,6 +422,14 @@
              .replace(/\\n/g, '\n')
              .replace(/\\t/g, '\t');
          }
+
+           function parseJoinDelimiter(str) {
+           if (!str) return ','; // 預設
+         
+           return str
+             .replace(/\\n/g, '\n')
+             .replace(/\\t/g, '\t');
+         }
 //checkbox取值
 //data-0-0取值 <input type="checkbox" id="ckbox-8-0" value="data-8-0">
 function getDataInner(ckboxIdValue){
@@ -511,10 +523,9 @@ function sendToinput(){
              };
          
              if (item.expanded) {
-               textarea.classList.add('expanded');
-               setTimeout(() => {
-                 auto_grow(textarea);
-               }, 0);
+               textarea.classList.add('fixArea');
+               
+              // setTimeout(() => {auto_grow(textarea);}, 0);
              }
              ////
              const toggleBtnToLower = document.createElement('button');
@@ -529,15 +540,50 @@ function sendToinput(){
                textarea.value=data[index].text.toLowerCase();
              }
              ////
+             const toggleBtnTojoinStr = document.createElement('button');
+             toggleBtnTojoinStr.textContent = item.TojoinStred ? '原文字' : '替換字';
+             toggleBtnTojoinStr.className='buttomStyle1'
+             toggleBtnTojoinStr.title='替換文字由delimiterInput joinStr決定'
+             toggleBtnTojoinStr.onclick = () => {
+               item.TojoinStred = !item.TojoinStred;
+               //save();
+               render();
+             };
+             if (item.TojoinStred) {
+               textarea.value=data[index].text.replaceAll(delimiter,parseJoinDelimiter(joinStr.value));
+             }
+             ////
+             ////倒敘
+             const toggleBtnToReverse = document.createElement('button');
+             toggleBtnToReverse.textContent = item.ToReversed ? '原文' : '倒序';
+             toggleBtnToReverse.className='buttomStyle1'
+             toggleBtnToReverse.title='單行字母倒序 多行陣列倒序'
+             toggleBtnToReverse.onclick = () => {
+               item.ToReversed = !item.ToReversed;
+               //save();
+               render();
+             };
+             if (item.ToReversed) {
+              const lines = textarea.value.split(delimiter)
+              if (lines.length<2){
+               wText=data[index].text   
+               re=[]
+               for (let index = 0; index < wText.length; index++) {
+                re.push(wText[index])
+               }
+               textarea.value=re.reverse().join('')
+              }else{
+                 lines.reverse()
+                 textarea.value=lines.join(delimiter)
+              }
+             }
+             ////
          
              function lineMode(){
                item.lineMode = !item.lineMode;
                //save();展開後儲存狀態
                render();
              }
-         
-          
-         
              function delLine(){
                console.log(data[index].text)
                data.splice(index, 1);
@@ -578,6 +624,9 @@ function sendToinput(){
              divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(toggleBtnToLower);//全部小寫
+              divBtn.appendChild(toggleBtnToReverse);//倒序
+            divBtn.appendChild(toggleBtnTojoinStr);//替換字
+
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
@@ -664,6 +713,7 @@ function sendToinput(){
                     }
                      ldiv.onclick = () => {
                       checkBox.click()
+                       copyText(line,index);
                      }
                 //勾選的時候紀錄 以免刷新
                 //可以再回到data取值
