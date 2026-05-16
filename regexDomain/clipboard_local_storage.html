@@ -170,6 +170,9 @@
                      <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
                      <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
                      <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+            
+                      <button onclick="sendToinput()">勾選彙整</button>
+                        <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
                   </li>
                   <li>
                      <p>
@@ -313,16 +316,45 @@
            } catch (err) {
            }
          });
-         ////
+         //selectCheckBoxData
+
+         let selectCheckBoxData = JSON.parse(localStorage.getItem('selectCheckBoxData')) || [];
+
+         function save_selectCheckBoxData() {
+           localStorage.setItem('selectCheckBoxData', JSON.stringify(selectCheckBoxData));
+           //按照data的資料總量來決定要不要重置整個selectData
+         }
+
+         function clearAllSelect(ask){
+          if (selectCheckBoxData.length>0){
+          if (ask) {
+            if (!confirm('確定要清空所有選取紀錄？')) return;
+          }
+         
+                 setTimeout(() => {
+                 titleChangeUse('清空選取紀錄')
+               }, 1000);
+             
+              localStorage.removeItem('selectCheckBoxData');
+              selectCheckBoxData=[]
+              render();
+              }
+         }
+
+ 
+//selectCheckBoxData
+         
+         ////data處理區
          
          let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
          
+/*
          data = data.map(item => {
            if (typeof item === 'string') return { text: item, time: Date.now(), expanded: false, lineMode: false };
            if (item.lineMode === undefined) item.lineMode = false;
            return item;
          });
-         
+         */
          function save() {
            localStorage.setItem('clipboardData', JSON.stringify(data));
          }
@@ -386,10 +418,39 @@
              .replace(/\\n/g, '\n')
              .replace(/\\t/g, '\t');
          }
-         
+//checkbox取值
+//data-0-0取值 <input type="checkbox" id="ckbox-8-0" value="data-8-0">
+function getDataInner(ckboxIdValue){
+const rawDelimiter = document.getElementById('delimiterInput').value;
+const delimiter = parseDelimiter(rawDelimiter);
+a=ckboxIdValue.value.split('-')
+return data[a[1]]['text'].split(delimiter)[a[2]]
+}
+
+function getAllckboxText(){
+  texts=[]
+  boxs=document.getElementsByClassName('ckboxCodeTarget');
+  [...boxs].forEach(dataNum=> {
+    if(dataNum.checked){
+    texts.push(getDataInner(dataNum))
+}
+  })
+  return texts
+}
+
+function sendToinput(){
+  s=getAllckboxText();
+  s=s.join('\n')
+  input.value=s
+  auto_grow(input)
+}
+//checkbox取值
          
          
          function render() {
+
+          const rawDelimiter = document.getElementById('delimiterInput').value;
+          const delimiter = parseDelimiter(rawDelimiter);
          
            list.innerHTML = '';
              //////
@@ -491,8 +552,7 @@
                  titleChangeUse('先允許全部訪問');
                  return
                }
-               const rawDelimiter = document.getElementById('delimiterInput').value;
-               const delimiter = parseDelimiter(rawDelimiter);
+
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
                startsleeptime=0
                sleep=OPENAllwindowTimeset.value*1000
@@ -542,8 +602,7 @@
                 ol.className += ' strLine';
                }
                //const lines = item.text.split('\n').filter(l => l.trim());
-               const rawDelimiter = document.getElementById('delimiterInput').value;
-               const delimiter = parseDelimiter(rawDelimiter);
+
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
                lines.forEach((line,innerIndex) => {
                  //const ldiv = document.createElement('div');
@@ -555,7 +614,7 @@
                  ldiv.className += ' lineCardExhibit';
                }
    
-                 ldiv.textContent = line;
+                 //
                 //ldiv.onclick = () => navigator.clipboard.writeText(line);
                 ///
                 ldiv.onclick = () => {
@@ -569,14 +628,51 @@
                  openNewWindow(line);
                 }
                }
-                ///
-                                if (lineCheckMode.checked){
+                ///checkBox項目區
+                if (lineCheckMode.checked){
                  //ldiv.className += ' lineCardExhibit';
                  const checkBox = document.createElement('input');
                  checkBox.type='checkbox'
-                 checkBox.id=`ckbox-${index}-${innerIndex}`
+                 //checkBox.id=`ckbox-${index}-${innerIndex}`
+                  checkBox.className=`ckboxCodeTarget`
+                  dataInnerIndex=`data-${index}-${innerIndex}`
+                checkBox.value=dataInnerIndex
+                //勾選的時候紀錄 以免刷新
+                checkBox.onchange = () => {
+                    const item = selectCheckBoxData.find(
+                        item => item.box === checkBox.value
+                    );
+
+                    if (item) {
+                        item.select = checkBox.checked;
+                    } else {
+                        selectCheckBoxData.unshift({
+                            box: checkBox.value,
+                            select: checkBox.checked
+                        });
+                    }
+                     save_selectCheckBoxData();
+                }
+                //取得勾選紀錄
+                 const item = selectCheckBoxData.find(
+                        item => item.box === checkBox.value
+                    );
+                   if (item) {
+                    if (item.select) {
+                        checkBox.checked=true ;
+                    }
+                    }
+                     ldiv.onclick = () => {
+                      checkBox.click()
+                     }
+                //勾選的時候紀錄 以免刷新
+                //可以再回到data取值
+                 const label = document.createElement('label');
+                 label.textContent=line
+                 ldiv.append(label)
                  ldiv.prepend(checkBox);
-               }
+                ///checkBox項目區
+               }else{ldiv.textContent = line;}
                 ol.appendChild(ldiv);
                 div.appendChild(ol);
                });
@@ -594,8 +690,7 @@
                imgcheckbox=document.getElementById('IMGcheckBox');
                
                addHttpscheckBox=document.getElementById('addHttpscheckBox');
-               const rawDelimiter = document.getElementById('delimiterInput').value;
-               const delimiter = parseDelimiter(rawDelimiter);
+
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
                 const Topfdiv = document.createElement('div');
                 Topfdiv.className='divTestImgTop'
@@ -868,7 +963,7 @@
          });
          
          function mainaction(){
-               setTimeout(() => {
+               //setTimeout(() => {
              const value = input.value.trim();
              if (value) {
                data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
@@ -877,8 +972,9 @@
                titleChange('已貼上：'+value.slice(0, 20)+"···")  
                recoverTitle();
                input.value = '';
+              // clearAllSelect();
              }
-           }, 0);
+          // }, 0);
          }
          
          render();
