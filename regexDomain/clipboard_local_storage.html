@@ -37,7 +37,7 @@
          }
          /*textarea#input { width: 100%; height: 80px; }*/
          .toolbar { width: 100%;/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
-         .setbar { margin: 8px 0; display: flex;display: flex;flex-direction: column;}
+         .setbar { margin: 0px; display: flex;flex-direction: column;}
          .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
          .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
          .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex;width:95%; }
@@ -88,12 +88,12 @@
          background-color: var(--textAreaFocusBG, #ddd);
          }
          .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
-         .bar { height: 20px; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
+         .bar { height: fit-content; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
          .bar:hover { opacity: 0.8; }
          .bar span { position: absolute; left: 5px; font-size: 12px; }
          .progress { height: 20px; background: #4caf50; }
          .colOragin {padding-inline-start: 0px;}
-         .col {padding-inline-start: 0px;}
+         .col {padding-inline-start: 0px;margin:0px;}
          .strLine{overflow: auto;max-height: 300px;scroll-snap-type: y mandatory;}
          .strLine li{scroll-snap-align: center;}
          .col2 {padding-inline-start: 30px;margin-block-start: 0;margin-block-end: 0;}
@@ -146,28 +146,41 @@
          white-space: nowrap;
          overflow: hidden;
          text-overflow: ellipsis;}
-         .titleStyle{height:35px ;width: 100%;}
+         .titleStyle{height:fit-content ;width: 100%;}
          @media (hover: none) and (pointer: coarse) {
-         input, textarea, select {
-         font-size: 16px;
-         }
          .toolbar {
          flex-wrap: wrap;
          }
          }
+         input, textarea, select {
+         /* font-size: 16px;*/
+         font-size: var(--font-size, 13px);
+         }
+/* 讓導覽列緊貼在視窗頂部 */
+.sticky-navbar {
+  position: sticky;
+  top: 0;
+  /*background-color: #333;  背景色，避免頁面內容穿透 */
+  z-index: 1000; /* 確保導覽列層級最高，蓋在其他內容上方 */
+}
+
+.sticky-navbar-right{z-index: 1001;
+    width: 50%;
+    right: 10px;
+    top:0px;
+    position: fixed;}
+    
       </style>
    </head>
    <body>
+    <div class="sticky-navbar-right">
       <div class="titleStyle">
-         <h2 id="titleA" class="textCenter">剪貼簿</h2>
+         <p id="titleA" class="textCenter">剪貼簿</p>
          <div id="usage"></div>
-      </div>
-      <div class="toolbar ">
-         <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
-         <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
-         <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
-      </div>
-      <div class="setbar">
+         </div >
+      </div >
+      <div class="sticky-navbar">
+         <div class="setbar">
          <label class="" style="margin-left: 2px;">
             <details>
                <summary>設定</summary>
@@ -176,9 +189,6 @@
                      <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
                      <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
                      <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
-            
-     
-                        
                   </li>
                   <li><p>
                           檢查清單
@@ -195,12 +205,12 @@
                   </li>
                   <li>
                      <p>逐行卡片展示
-                        <input type="checkbox" id="lineCardMode">
+                        <input type="checkbox" id="lineCardMode" checked="true">
                      </p>
                   </li>
                   <li>
-                     <p>逐行文字大小
-                        <input type="range" min="10" max="50" value="18" id="slider">
+                     <p>文字大小
+                        <input type="range" min="10" max="50" value="16" id="slider">
                      </p>
                   </li>
                   <li>
@@ -247,6 +257,13 @@
          <div class="bar-container" id="bars"></div>
          </details>
       </div>
+      </div>
+      <div class="toolbar ">
+         <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
+         <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
+         <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
+      </div>
+   <hr>
       <div>
          <ol class="col" id="list"></ol>
       </div>
@@ -573,6 +590,7 @@ function sendToinput(){
                 re.push(wText[index])
                }
                textarea.value=re.reverse().join('')
+               //單行重新分割
               }else{
                  lines.reverse()
                  textarea.value=lines.join(delimiter)
@@ -645,11 +663,15 @@ function sendToinput(){
             if (item.lineMode) {
                  const ol = document.createElement('ol');
                  //ol.id = `colScreen-${index}`;
-                 ol.className = 'col'; 
+                 //ol.className = 'col'; 
+                 ol.classList.add('col')
+                 ol.classList.add('hide-scrollbar');
                  if (lineCardMode.checked){
-                ol.className +=' horizLine hide-scrollbar'
+                //ol.className +=' horizLine '
+                ol.classList.add('horizLine');
+                
                }else{
-                ol.className += ' strLine';
+                ol.classList.add('strLine');
                }
                //const lines = item.text.split('\n').filter(l => l.trim());
 
@@ -1014,7 +1036,7 @@ function sendToinput(){
          });
          
          function mainaction(){
-               //setTimeout(() => {
+               setTimeout(() => {
              const value = input.value.trim();
              if (value) {
                data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
@@ -1025,7 +1047,7 @@ function sendToinput(){
                input.value = '';
               // clearAllSelect();
              }
-          // }, 0);
+           }, 0);
          }
          
          render();

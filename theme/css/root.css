@@ -39,7 +39,7 @@ input :focus {
 	input,
 	textarea,
 	select {
-		font-size: 16px;
+        font-size: var(--font-size, 16px);
 	}
 
 	.lineCardExhibit {
