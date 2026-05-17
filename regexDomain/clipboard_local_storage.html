@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
    <head>
@@ -94,6 +95,7 @@
          .progress { height: 20px; background: #4caf50; }
          .colOragin {padding-inline-start: 0px;}
          .col {padding-inline-start: 0px;margin:0px;}
+          .colTop {padding-inline-start: 0px;margin:0px;}
          .strLine{overflow: auto;max-height: 300px;scroll-snap-type: y mandatory;}
          .strLine li{scroll-snap-align: center;}
          .col2 {padding-inline-start: 30px;margin-block-start: 0;margin-block-end: 0;}
@@ -165,25 +167,42 @@
   z-index: 1000; /* 確保導覽列層級最高，蓋在其他內容上方 */
 }
 
-.sticky-navbar-right{z-index: 1001;
-    width: 50%;
-    right: 10px;
-    top:0px;
-  padding-top: env(safe-area-inset-top);
-    position: fixed;
-  }
+  @media screen and (min-width: 900px) {
+        /*寬 600px 以內時應用 */
+        .colTop {
+             display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+          }
+          .item{
+            margin: 5px;
+          }
+          .divBtns {
+    max-height: fit-content;
+    overflow: auto;
+    white-space: unset; 
+}
+
+     .lineCardExhibit{
+       
+         min-width: 90%;
+        }
+   
+        }
+
+        
     
     
       </style>
    </head>
    <body>
-    <div class="sticky-navbar-right">
+
+      <div class="sticky-navbar">
+            <div class="">
       <div class="titleStyle">
          <p id="titleA" class="textCenter">剪貼簿</p>
          <div id="usage"></div>
          </div >
       </div >
-      <div class="sticky-navbar">
          <div class="setbar">
          <label class="" style="margin-left: 2px;">
             <details>
@@ -269,7 +288,7 @@
       </div>
    <hr>
       <div>
-         <ol class="col" id="list"></ol>
+         <ol class="colTop" id="list"></ol>
       </div>
       <script>
          const input = document.getElementById('input');
