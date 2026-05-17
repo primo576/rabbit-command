@@ -87,7 +87,7 @@
          .line:hover { color: var(--textFocus);
          background-color: var(--textAreaFocusBG, #ddd);
          }
-         .bar-container { margin-top: 00px; height: 100px; overflow: auto;}
+         .bar-container { margin-top: 0px; height: 300px; overflow: auto;}
          .bar { height: fit-content; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
          .bar:hover { opacity: 0.8; }
          .bar span { position: absolute; left: 5px; font-size: 12px; }
@@ -160,6 +160,7 @@
 .sticky-navbar {
   position: sticky;
   top: 0;
+  padding-top: env(safe-area-inset-top);
   /*background-color: #333;  背景色，避免頁面內容穿透 */
   z-index: 1000; /* 確保導覽列層級最高，蓋在其他內容上方 */
 }
@@ -168,7 +169,10 @@
     width: 50%;
     right: 10px;
     top:0px;
-    position: fixed;}
+  padding-top: env(safe-area-inset-top);
+    position: fixed;
+  }
+    
     
       </style>
    </head>
@@ -210,7 +214,7 @@
                   </li>
                   <li>
                      <p>文字大小
-                        <input type="range" min="10" max="50" value="16" id="slider">
+                        <input type="range" min="10" max="25" value="16" id="slider">
                      </p>
                   </li>
                   <li>
