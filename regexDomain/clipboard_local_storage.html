@@ -296,6 +296,7 @@
          <button onclick="removeBeforeTime()">刪除時間段前資料</button>
          </p>
          </li>
+         <li><input placeholder="搜索列表" type="search" id="searchBars"></li>
          </ol>
          <div class="bar-container" id="bars"></div>
          </div>
@@ -462,9 +463,14 @@
          
              // 🔥 背景比例條
              li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #577d92 ${percent}%)`;
-         
+            itemTitle=' - '
              // 👉 文字完整顯示
-             li.textContent = `${new Date(item.time).toLocaleString()} - ${item.text.slice(0, 30)} (${(size/1024).toFixed(1)}KB)`;
+             if (item.title){
+                itemTitle+=item.title.slice(0,30)
+             }else{
+              itemTitle=''
+             }
+             li.textContent = `${new Date(item.time).toLocaleString()}${itemTitle} - ${item.text.slice(0, 15)} (${(size/1024).toFixed(1)}KB)`;
          
              li.onclick = () => {
                document.getElementById(`item-${index}`)
@@ -476,6 +482,63 @@
          
            bars.appendChild(ol);
          }
+//
+/*
+<li class="bar" style="background: linear-gradient(to right, rgb(76, 175, 80) 0.800416%, rgb(87, 125, 146) 0.800416%);">2026/5/17 下午12:14:37 - 域名 - 1x.club
+234hp55 (0.2KB)</li>
+*/
+
+  searchBars.addEventListener('input', (e) => {
+          renderBarsV2(searchBars.value)
+         });
+
+  function renderBarsV2(filter = '') {
+    if (filter=='') {
+        renderBars();
+        return
+      }
+     data.forEach((item, index) => {
+    item.index = index;
+  });
+    bars.innerHTML = '';
+    const ol = document.createElement('ol');
+     ol.className="col2";
+     const maxSize = Math.max(...data.map(getSize));
+    const f = filter.toLowerCase();
+      //
+      //console.log(data)
+      //
+    d = data.filter(l => 
+    (l.text && l.text.toLowerCase().includes(f.toLowerCase())) ||
+    (l.title && l.title.toLowerCase().includes(f.toLowerCase()))
+)
+      .map((item) => {
+               const size = getSize(item);
+             const percent = (size / maxSize) * 100;
+                 const li = document.createElement('div');
+             li.className = 'bar';
+         
+             // 🔥 背景比例條
+             li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #577d92 ${percent}%)`;
+            itemTitle=''
+             // 👉 文字完整顯示
+             if (item.title){
+                itemTitle+=`${item.title.slice(0,30)} - `
+             }else{
+              itemTitle=''
+             }
+             li.textContent = ` ${item.index}. ${itemTitle}${item.text.slice(0, 15)} - ${new Date(item.time).toLocaleString()} (${(size/1024).toFixed(1)}KB)`;
+         
+             li.onclick = () => {
+               document.getElementById(`item-${item.index}`)
+                 .scrollIntoView({ behavior: 'smooth' });
+             };
+         
+             ol.appendChild(li);
+      })
+    
+       bars.appendChild(ol);
+  }
          
          function parseDelimiter(str) {
            if (!str) return '\n'; // 預設
@@ -560,7 +623,7 @@ function sendToinput(){
 
           inputTitle.onclick = () => {
               const input = document.createElement('input');
-
+              
               input.value = item.title || '點擊輸入';
               input.className = 'titleInput';
 
