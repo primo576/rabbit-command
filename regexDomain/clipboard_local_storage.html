@@ -148,7 +148,7 @@
          white-space: nowrap;
          overflow: hidden;
          text-overflow: ellipsis;}
-         .titleStyle{height:fit-content ;width: 100%;}
+         .titleStyle{height:25px ;overflow: hidden;width: 100%;}
          @media (hover: none) and (pointer: coarse) {
          .toolbar {
          flex-wrap: wrap;
@@ -201,6 +201,15 @@
     overflow: auto;
 }
     
+    .divtitle{
+      display: grid;
+    grid-template-columns: 1fr 2fr;
+    }
+    .divinline{
+
+    display: inline-block;
+
+    }
     
       </style>
    </head>
@@ -430,7 +439,7 @@
                usage.innerHTML = `
              <div style="background:#ddd;width:100%;">
                <div class="progress" style="width:${percent}%"></div>
-             </div>
+             </div>空間用量 
              ${(total/1024).toFixed(1)}KB / 5120KB
            `;
            }
@@ -542,8 +551,49 @@ function sendToinput(){
              const time = document.createElement('div');
              time.className = 'time';
              time.textContent = new Date(item.time).toLocaleString();
-            const inputTitle = document.createElement('input');
-            time.appendChild(inputTitle)
+
+         /**/
+         const inputTitle = document.createElement('div');
+
+          inputTitle.textContent = item.title || '點擊輸入';
+          inputTitle.className = 'title';
+
+          inputTitle.onclick = () => {
+              const input = document.createElement('input');
+
+              input.value = item.title || '點擊輸入';
+              input.className = 'titleInput';
+
+              // 替換 div → input
+              inputTitle.replaceWith(input);
+
+              input.focus();
+              input.select();
+
+              const saveTitle = () => {
+                  item.title = input.value;
+
+                  inputTitle.textContent = input.value || '點擊輸入';
+
+                  save();
+
+                  // 換回 div
+                  input.replaceWith(inputTitle);
+              };
+
+              // Enter 儲存
+              input.onkeydown = (e) => {
+                  if (e.key === 'Enter') {
+                      saveTitle();
+                  }
+              };
+
+              // 點外面也儲存
+              input.onblur = saveTitle;
+              };
+              
+         //
+            
              const textarea = document.createElement('textarea');
              textarea.className = 'content';
              textarea.value = item.text;
@@ -605,6 +655,7 @@ function sendToinput(){
              };
              if (item.TojoinStred) {
                textarea.value=data[index].text.replaceAll(delimiter,parseJoinDelimiter(joinStr.value));
+               
              }
              ////
              ////倒敘
@@ -668,15 +719,19 @@ function sendToinput(){
                recoverTitle();}
                , startsleeptime);
              }
-         
-         
-             div.appendChild(time);
-         
+             const divinline = document.createElement('div');
+             const divtitle = document.createElement('div');
+             divtitle.className='divtitle'
+             divtitle.appendChild(inputTitle)
+             divtitle.appendChild(time);
+             divinline.appendChild(divtitle)
+             divinline.className='divinline'
+              div.appendChild(divinline)
              const divBtn = document.createElement('div');
          
              divBtn.className='divBtns'
              
-             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
+             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value)));
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(toggleBtnToLower);//全部小寫
               divBtn.appendChild(toggleBtnToReverse);//倒序
@@ -877,13 +932,16 @@ function sendToinput(){
                  text20=text.slice(0, 20)
                  titleChange('已複製：'+text20+"···")  
                  recoverTitle();
+                 /*
                  if (typeof(index)=='number'){
                    nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0] 
                    nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
                setTimeout(() => {
                    nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
                }, 3000);
+              
                  }
+                */
          }
          //
          //開視窗
