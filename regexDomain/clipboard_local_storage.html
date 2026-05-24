@@ -193,8 +193,8 @@
          }
          .divtitle{
          display: grid;
-         grid-template-columns: 1fr 2fr 1fr;
-         column-gap: 10px;
+         grid-template-columns: 1fr 1fr 2fr;
+         /*column-gap: 10px;*/
          }
          .divinline{
          display: inline-block;
@@ -241,7 +241,7 @@
                         </li>
                         <li>
                            <p>逐行卡片展示
-                              <input type="checkbox" id="lineCardMode" checked="true">
+                              <input type="checkbox" id="lineCardMode" >
                            </p>
                         </li>
                         <li>
@@ -833,7 +833,20 @@
                titleChange('重新整理找回：'+time.textContent+"···操作新資料才保存刪除")  
                recoverTitle();
              }
-         
+
+             function cpoyLine(){
+               console.log(data[index])
+               newdata=data[index]
+               newdata.time=Date.now()
+               //console.log(newdata.time)
+               data.unshift( newdata );
+               //data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
+               save();
+               render();
+               titleChange('複製區塊：'+time.textContent+"···")  
+               recoverTitle();
+             }
+
              function openALLurl(){
                if (!allowOPENallurl.checked) {
                  titleChangeUse('先允許全部訪問');
@@ -858,8 +871,9 @@
              const divtitle = document.createElement('div');
              divtitle.className='divtitle'
              divtitle.appendChild(inputTitle)
+             divtitle.appendChild(inputEmoji)
              divtitle.appendChild(time);
-              divtitle.appendChild(inputEmoji)
+              
              divinline.appendChild(divtitle)
              divinline.className='divinline'
               div.appendChild(divinline)
@@ -876,6 +890,7 @@
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
+              divBtn.appendChild(createBtnClickFun('複製區塊',cpoyLine));
              divBtn.appendChild(createBtnClickFun('刪除',delLine));
          
              div.appendChild(divBtn);
