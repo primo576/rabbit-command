@@ -220,6 +220,12 @@
           column-gap: 5px;
           width: 95%;
          }
+         .opacity{
+          opacity: 0.3;
+         }
+         .co-gray{
+          color: gray;
+         }
       </style>
    </head>
    <body>
@@ -321,6 +327,8 @@
       <div>
          <ol class="colTop" id="list"></ol>
       </div>
+            <script src="../public/js/emoji.js"></script>
+        <script src="../public/js/warface.js"></script>
       <script>
          const input = document.getElementById('input');
          const list = document.getElementById('list');
@@ -506,18 +514,25 @@
          
          });
 
-        
-        window.addEventListener('load', function() {
-          emoji.forEach((i,index)=>{
-              if (index>30) {
-                return
-              }
-                const option = document.createElement('option');
-                option.textContent=i
-                option.value=i
+        //遍歷物件加入item現有的表情
+
+        function searchEmojiSelect(){
+          existEmoji=new Set()
+           data.forEach((item, index) => {
+            if (item.emoji) {
+              existEmoji.add(item.emoji)
+            }
+           })
+           searchEmoji.innerHTML=''
+           function addOption(str){
+            const option = document.createElement('option');
+                option.textContent=str
+                option.value=str
                 searchEmoji.appendChild(option)
-              })
-        });
+           }
+           existEmoji.forEach((item) => addOption(item))
+
+        }
 
           
          
@@ -657,6 +672,10 @@
          
           inputTitle.textContent = item.title || '點擊輸入';
           inputTitle.className = 'title';
+
+           if (!item.title) {
+            inputTitle.classList.add('co-gray')
+          }
          
           inputTitle.onclick = () => {
               const input = document.createElement('input');
@@ -695,25 +714,43 @@
         /*點擊輸入標題*/
          /*點擊輸入表情*/
          const inputEmoji = document.createElement('div');
-         
-          inputEmoji.textContent = item.emoji || '😀';
+         reEmoji=randomObject(emoji)
+          inputEmoji.textContent = item.emoji || reEmoji;
           inputEmoji.className = 'emoji';
+          if (!item.emoji) {
+            inputEmoji.classList.add('opacity')
+          }
          
           inputEmoji.onclick = () => {
               const input = document.createElement('select');
               
-              input.value = item.emoji || '😀';
+              input.value = item.emoji || inputEmoji.textContent;
               input.className = 'emoji';
+             
+                  
+                    
+                function addOption(str,a){
+                const optionNull = document.createElement('option');
+                
+                
+                optionNull.value=str
+                if (a) {
+                  str='N'
+                }
+                optionNull.textContent=str
+                input.appendChild(optionNull)
+                }
+                
+                addOption(inputEmoji.textContent)
+                addOption('','N')
+
                     emoji.forEach((i,index)=>{
               if (index>30) {
                 return
               }
-                const option = document.createElement('option');
-                
-                option.textContent=i
-                option.value=i
-                input.appendChild(option)
+                addOption(i)
               }
+
             )
          
               // 替換 div → input
@@ -725,12 +762,13 @@
               const saveTitle = () => {
                   item.emoji = input.value;
          
-                  inputEmoji.textContent = input.value || '😀';
+                  inputEmoji.textContent = input.value || reEmoji;
          
                   save();
-         
+                
                   // 換回 div
                   input.replaceWith(inputEmoji);
+                 render()
               };
          
               // Enter 儲存
@@ -1101,7 +1139,7 @@
              list.appendChild(divTop);
              
            });
-         
+           searchEmojiSelect();
            renderBars();
            renderUsage();
          }
@@ -1335,8 +1373,7 @@
          
          
       </script>
-       <script src="../public/js/emoji.js"></script>
-        <script src="../public/js/warface.js"></script>
+ 
       <script src="../public/floating-menu.js"></script>
    </body>
 </html>
