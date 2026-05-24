@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
    <head>
@@ -13,7 +12,7 @@
          padding-bottom: 3px;
          max-height: 25px;
          overflow-y: auto;
-        white-space: nowrap;
+         white-space: nowrap;
          }
          body { font-family: Arial; padding: 0px; }
          .testImg{width: 100%; 
@@ -74,13 +73,12 @@
          max-height: fit-content;
          overflow-y: auto;
          }
-
-        @media screen and (max-width: 600px) {
-        /*寬 600px 以內時應用 */
-        .lineCardExhibit {
-              min-width: 95%;
-          }
-        }
+         @media screen and (max-width: 600px) {
+         /*寬 600px 以內時應用 */
+         .lineCardExhibit {
+         min-width: 95%;
+         }
+         }
          .horizLine{display: flex;overflow: auto;scroll-snap-type: x mandatory;}
          .horizLine li{scroll-snap-align: center;} 
          /* font-size: 18px; line的影響閱讀 可以做成動態 */
@@ -95,7 +93,7 @@
          .progress { height: 20px; background: #4caf50; }
          .colOragin {padding-inline-start: 0px;}
          .col {padding-inline-start: 0px;margin:0px;}
-          .colTop {padding-inline-start: 0px;margin:0px;}
+         .colTop {padding-inline-start: 0px;margin:0px;}
          .strLine{overflow: auto;max-height: 300px;scroll-snap-type: y mandatory;}
          .strLine li{scroll-snap-align: center;}
          .col2 {padding-inline-start: 0px;/*margin-block-start: 0;margin-block-end: 0;*/}
@@ -158,157 +156,152 @@
          /* font-size: 16px;*/
          font-size: var(--font-size, 13px);
          }
-/* 讓導覽列緊貼在視窗頂部 */
-.sticky-navbar {
-  position: sticky;
-  top: 0;
-  padding-top: env(safe-area-inset-top);
-  /*background-color: #333;  背景色，避免頁面內容穿透 */
-  z-index: 1000; /* 確保導覽列層級最高，蓋在其他內容上方 */
-}
-
-  @media screen and (min-width: 900px) {
-        /*寬 600px 以內時應用 */
-        .colTop {
-             display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-          }
-          .item{
-            margin: 5px;
-          }
-          .divBtns {
-    max-height: fit-content;
-    overflow: auto;
-    white-space: unset; 
-}
-
-     .lineCardExhibit{
-       
+         /* 讓導覽列緊貼在視窗頂部 */
+         .sticky-navbar {
+         position: sticky;
+         top: 0;
+         padding-top: env(safe-area-inset-top);
+         /*background-color: #333;  背景色，避免頁面內容穿透 */
+         z-index: 1000; /* 確保導覽列層級最高，蓋在其他內容上方 */
+         }
+         @media screen and (min-width: 900px) {
+         /*寬 600px 以內時應用 */
+         .colTop {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+         }
+         .item{
+         margin: 5px;
+         }
+         .divBtns {
+         max-height: fit-content;
+         overflow: auto;
+         white-space: unset; 
+         }
+         .lineCardExhibit{
          min-width: 90%;
-        }
-
-             .col2 {
-             display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          }
-   
-.bar {margin: 4px;}
-
-        }
-
-.topSummary{
-  height: 75dvh;
-    overflow: auto;
-}
-    
-    .divtitle{
-      display: grid;
-    grid-template-columns: 1fr 2fr;
-    }
-    .divinline{
-
-    display: inline-block;
-
-    }
-    
+         }
+         .col2 {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         }
+         .bar {margin: 4px;}
+         }
+         .topSummary{
+         height: 75dvh;
+         overflow: auto;
+         }
+         .divtitle{
+         display: grid;
+         grid-template-columns: 1fr 2fr 1fr;
+         column-gap: 10px;
+         }
+         .divinline{
+         display: inline-block;
+         }
+         .lndiv{
+         display: grid;
+         grid-template-columns: 1fr 1fr;
+         column-gap: 10px;
+         }
       </style>
    </head>
    <body>
-
       <div class="sticky-navbar">
-            <div class="">
-      <div class="titleStyle">
-         <p id="titleA" class="textCenter">剪貼簿</p>
-         <div id="usage"></div>
+         <div class="">
+            <div class="titleStyle">
+               <p id="titleA" class="textCenter">剪貼簿</p>
+               <div id="usage"></div>
+            </div >
          </div >
-      </div >
          <div class="setbar">
-         <label class="" style="margin-left: 2px;">
-            <details>
-               <summary>設定</summary>
-               <div class="topSummary">
-               <ol>
-                  <li>
-                     <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
-                     <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
-                     <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
-                  </li>
-                  <li><p>
-                          檢查清單
-                        <input type="checkbox" id="lineCheckMode">
-                 <button onclick="sendToinput()">勾選彙整</button>
-                      <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
-                      </p>
-                  </li>
-                  <li>
-                     <p>
-                        <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
-                        <input id="joinStr" placeholder="組合符 預設," >
-                     </p>
-                  </li>
-                  <li>
-                     <p>逐行卡片展示
-                        <input type="checkbox" id="lineCardMode" checked="true">
-                     </p>
-                  </li>
-                  <li>
-                     <p>文字大小
-                        <input type="range" min="10" max="25" value="16" id="slider">
-                     </p>
-                  </li>
-                  <li>
-                     <p>
-                      逐行點擊訪問域名
-                        <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
-                    前綴加https
-                        <input type="checkbox" id="addHttpscheckBox">
-                      </p>
-                  </li>
-      
-                  <li>
-                     <p>允許一次全部訪問
-                        <input type="checkbox" id="allowOPENallurl">
-                        全開延遲秒數
-                        <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
-                     </p>
-                  </li>
-                  <li>
-                     <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
-                  </li>
-                  <li>
-                     <p>IMG訪問
-                        <input type="checkbox" id="IMGcheckBox">
-                      圖片大小
-                        <input type="range" min="50" max="300" value="150" id="sliderIMG">
-                     </p>
-                  </li>
-         </label>
-         <li>
-         <button class="buttomStyle1" id="exportBtn">資料匯出</button>
-         <label class="custom-file-upload buttomStyle1">資料匯入
-         <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
-         </label>
-         
-         </li>
-         <li>
-         <p>
-         <input type="datetime-local" id="timeInput">
-         <button onclick="removeBeforeTime()">刪除時間段前資料</button>
-         </p>
-         </li>
-         <li><input placeholder="搜索列表" type="search" id="searchBars"></li>
-         </ol>
-         <div class="bar-container" id="bars"></div>
+            <label class="" style="margin-left: 2px;">
+               <details>
+                  <summary>設定</summary>
+                  <div class="topSummary">
+                     <ol>
+                        <li>
+                           <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
+                           <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
+                           <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+                        </li>
+                        <li>
+                           <p>
+                              檢查清單
+                              <input type="checkbox" id="lineCheckMode">
+                              <button onclick="sendToinput()">勾選彙整</button>
+                              <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+                              <input id="joinStr" placeholder="組合符 預設," >
+                           </p>
+                        </li>
+                        <li>
+                           <p>逐行卡片展示
+                              <input type="checkbox" id="lineCardMode" checked="true">
+                           </p>
+                        </li>
+                        <li>
+                           <p>文字大小
+                              <input type="range" min="10" max="25" value="16" id="slider">
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              逐行點擊訪問域名
+                              <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
+                              前綴加https
+                              <input type="checkbox" id="addHttpscheckBox">
+                           </p>
+                        </li>
+                        <li>
+                           <p>允許一次全部訪問
+                              <input type="checkbox" id="allowOPENallurl">
+                              全開延遲秒數
+                              <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
+                           </p>
+                        </li>
+                        <li>
+                           <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
+                        </li>
+                        <li>
+                           <p>IMG訪問
+                              <input type="checkbox" id="IMGcheckBox">
+                              圖片大小
+                              <input type="range" min="50" max="300" value="150" id="sliderIMG">
+                           </p>
+                        </li>
+            </label>
+                        <li>
+                          <button class="buttomStyle1" id="exportBtn">資料匯出</button>
+                          <label class="custom-file-upload buttomStyle1">資料匯入
+                          <input type="file" class="buttomStyle1File buttomStyle1" id="importFile"/>
+                          </label>
+                        </li>
+                        <li>
+                          <p>
+                              <input type="datetime-local" id="timeInput">
+                              <button onclick="removeBeforeTime()">刪除時間段前資料</button>
+                          </p>
+                        </li>
+                        <li><input placeholder="搜索列表" type="search" id="searchBars">
+                       <select id="searchEmoji"><option value="">搜索表情</option></select>
+                        </li>
+                      </ol>
+                    <div class="bar-container" id="bars"></div>
+              </div>
+            </details>
          </div>
-         </details>
-      </div>
       </div>
       <div class="toolbar ">
          <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
          <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
          <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
       </div>
-   <hr>
+      <hr>
       <div>
          <ol class="colTop" id="list"></ol>
       </div>
@@ -384,14 +377,14 @@
            }
          });
          //selectCheckBoxData
-
+         
          let selectCheckBoxData = JSON.parse(localStorage.getItem('selectCheckBoxData')) || [];
-
+         
          function save_selectCheckBoxData() {
            localStorage.setItem('selectCheckBoxData', JSON.stringify(selectCheckBoxData));
            //按照data的資料總量來決定要不要重置整個selectData
          }
-
+         
          function clearAllSelect(ask){
           if (selectCheckBoxData.length>0){
           if (ask) {
@@ -407,15 +400,15 @@
               render();
               }
          }
-
- 
-//selectCheckBoxData
+         
+         
+         //selectCheckBoxData
          
          ////data處理區
          
          let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
          
-/*
+         /*
          data = data.map(item => {
            if (typeof item === 'string') return { text: item, time: Date.now(), expanded: false, lineMode: false };
            if (item.lineMode === undefined) item.lineMode = false;
@@ -482,37 +475,56 @@
          
            bars.appendChild(ol);
          }
-//
-/*
-<li class="bar" style="background: linear-gradient(to right, rgb(76, 175, 80) 0.800416%, rgb(87, 125, 146) 0.800416%);">2026/5/17 下午12:14:37 - 域名 - 1x.club
-234hp55 (0.2KB)</li>
-*/
-
-  searchBars.addEventListener('input', (e) => {
+         //
+         /*
+         <li class="bar" style="background: linear-gradient(to right, rgb(76, 175, 80) 0.800416%, rgb(87, 125, 146) 0.800416%);">2026/5/17 下午12:14:37 - 域名 - 1x.club
+         234hp55 (0.2KB)</li>
+         */
+         
+         searchBars.addEventListener('input', (e) => {
           renderBarsV2(searchBars.value)
          });
 
-  function renderBarsV2(filter = '') {
-    if (filter=='') {
-        renderBars();
-        return
-      }
-     data.forEach((item, index) => {
-    item.index = index;
-  });
-    bars.innerHTML = '';
-    const ol = document.createElement('ol');
-     ol.className="col2";
-     const maxSize = Math.max(...data.map(getSize));
-    const f = filter.toLowerCase();
-      //
-      //console.log(data)
-      //
-    d = data.filter(l => 
-    (l.text && l.text.toLowerCase().includes(f.toLowerCase())) ||
-    (l.title && l.title.toLowerCase().includes(f.toLowerCase()))
-)
-      .map((item) => {
+          searchEmoji.addEventListener('change', (e) => {
+          renderBarsV2(searchEmoji.value)
+         
+         });
+
+        
+        window.addEventListener('load', function() {
+          emoji.forEach((i,index)=>{
+              if (index>30) {
+                return
+              }
+                const option = document.createElement('option');
+                option.textContent=i
+                option.value=i
+                searchEmoji.appendChild(option)
+              })
+        });
+
+          
+         
+         function renderBarsV2(filter = '') {
+         if (filter=='') {
+         renderBars();
+         return
+         }
+         
+         bars.innerHTML = '';
+         const ol = document.createElement('ol');
+         ol.className="col2";
+         const maxSize = Math.max(...data.map(getSize));
+         const f = filter.toLowerCase();
+         //
+         //console.log(data)
+         //
+         d = data.filter(l => 
+         (l.text && l.text.toLowerCase().includes(f.toLowerCase())) ||
+         (l.emoji && l.emoji.includes(f)) ||
+         (l.title && l.title.toLowerCase().includes(f.toLowerCase()))
+         )
+         .map((item) => {
                const size = getSize(item);
              const percent = (size / maxSize) * 100;
                  const li = document.createElement('div');
@@ -521,13 +533,19 @@
              // 🔥 背景比例條
              li.style.background = `linear-gradient(to right, #4caf50 ${percent}%, #577d92 ${percent}%)`;
             itemTitle=''
+            itemEmoji=''
              // 👉 文字完整顯示
              if (item.title){
                 itemTitle+=`${item.title.slice(0,30)} - `
              }else{
               itemTitle=''
              }
-             li.textContent = ` ${item.index}. ${itemTitle}${item.text.slice(0, 15)} - ${new Date(item.time).toLocaleString()} (${(size/1024).toFixed(1)}KB)`;
+            if (item.emoji){
+                itemEmoji+=`${item.emoji} - `
+             }else{
+              itemEmoji=''
+             }
+             li.textContent = ` ${item.index+1}.${itemEmoji} ${itemTitle}${item.text.slice(0, 15)} - ${new Date(item.time).toLocaleString()} (${(size/1024).toFixed(1)}KB)`;
          
              li.onclick = () => {
                document.getElementById(`item-${item.index}`)
@@ -535,10 +553,10 @@
              };
          
              ol.appendChild(li);
-      })
-    
-       bars.appendChild(ol);
-  }
+         })
+         
+         bars.appendChild(ol);
+         }
          
          function parseDelimiter(str) {
            if (!str) return '\n'; // 預設
@@ -547,7 +565,7 @@
              .replace(/\\n/g, '\n')
              .replace(/\\t/g, '\t');
          }
-
+         
            function parseJoinDelimiter(str) {
            if (!str) return ','; // 預設
          
@@ -555,37 +573,40 @@
              .replace(/\\n/g, '\n')
              .replace(/\\t/g, '\t');
          }
-//checkbox取值
-//data-0-0取值 <input type="checkbox" id="ckbox-8-0" value="data-8-0">
-function getDataInner(ckboxIdValue){
-const rawDelimiter = document.getElementById('delimiterInput').value;
-const delimiter = parseDelimiter(rawDelimiter);
-a=ckboxIdValue.value.split('-')
-return data[a[1]]['text'].split(delimiter)[a[2]]
-}
-
-function getAllckboxText(){
-  texts=[]
-  boxs=document.getElementsByClassName('ckboxCodeTarget');
-  [...boxs].forEach(dataNum=> {
-    if(dataNum.checked){
-    texts.push(getDataInner(dataNum))
-}
-  })
-  return texts
-}
-
-function sendToinput(){
-  s=getAllckboxText();
-  s=s.join('\n')
-  input.value=s
-  auto_grow(input)
-}
-//checkbox取值
+         //checkbox取值
+         //data-0-0取值 <input type="checkbox" id="ckbox-8-0" value="data-8-0">
+         function getDataInner(ckboxIdValue){
+         const rawDelimiter = document.getElementById('delimiterInput').value;
+         const delimiter = parseDelimiter(rawDelimiter);
+         a=ckboxIdValue.value.split('-')
+         return data[a[1]]['text'].split(delimiter)[a[2]]
+         }
+         
+         function getAllckboxText(){
+         texts=[]
+         boxs=document.getElementsByClassName('ckboxCodeTarget');
+         [...boxs].forEach(dataNum=> {
+         if(dataNum.checked){
+         texts.push(getDataInner(dataNum))
+         }
+         })
+         return texts
+         }
+         
+         function sendToinput(){
+         s=getAllckboxText();
+         s=s.join('\n')
+         input.value=s
+         auto_grow(input)
+         }
+         //checkbox取值
          
          
          function render() {
-
+          data.forEach((item, index) => {
+         item.index = index;
+         });
+         
           const rawDelimiter = document.getElementById('delimiterInput').value;
           const delimiter = parseDelimiter(rawDelimiter);
          
@@ -614,48 +635,99 @@ function sendToinput(){
              const time = document.createElement('div');
              time.className = 'time';
              time.textContent = new Date(item.time).toLocaleString();
-
-         /**/
+         
+         /*點擊輸入標題*/
          const inputTitle = document.createElement('div');
-
+         
           inputTitle.textContent = item.title || '點擊輸入';
           inputTitle.className = 'title';
-
+         
           inputTitle.onclick = () => {
               const input = document.createElement('input');
               
               input.value = item.title || '點擊輸入';
               input.className = 'titleInput';
-
+         
               // 替換 div → input
               inputTitle.replaceWith(input);
-
+         
               input.focus();
               input.select();
-
+         
               const saveTitle = () => {
                   item.title = input.value;
-
+         
                   inputTitle.textContent = input.value || '點擊輸入';
-
+         
                   save();
-
+         
                   // 換回 div
                   input.replaceWith(inputTitle);
               };
-
+         
               // Enter 儲存
               input.onkeydown = (e) => {
                   if (e.key === 'Enter') {
                       saveTitle();
                   }
               };
-
+         
               // 點外面也儲存
               input.onblur = saveTitle;
               };
               
-         //
+        /*點擊輸入標題*/
+         /*點擊輸入表情*/
+         const inputEmoji = document.createElement('div');
+         
+          inputEmoji.textContent = item.emoji || '表情符號';
+          inputEmoji.className = 'title';
+         
+          inputEmoji.onclick = () => {
+              const input = document.createElement('select');
+              
+              input.value = item.emoji || '表情符號';
+              input.className = 'titleInput';
+                    emoji.forEach((i,index)=>{
+              if (index>30) {
+                return
+              }
+                const option = document.createElement('option');
+                option.textContent=i
+                option.value=i
+                input.appendChild(option)
+              }
+            )
+         
+              // 替換 div → input
+              inputEmoji.replaceWith(input);
+
+              //input.focus();
+              //input.select();
+         
+              const saveTitle = () => {
+                  item.emoji = input.value;
+         
+                  inputEmoji.textContent = input.value || '表情符號';
+         
+                  save();
+         
+                  // 換回 div
+                  input.replaceWith(inputEmoji);
+              };
+         
+              // Enter 儲存
+              input.onkeydown = (e) => {
+                  if (e.key === 'Enter') {
+                      saveTitle();
+                  }
+              };
+         
+              // 點外面也儲存
+              input.onblur = saveTitle;
+              };
+              
+        /*點擊輸入標題*/
             
              const textarea = document.createElement('textarea');
              textarea.className = 'content';
@@ -767,7 +839,7 @@ function sendToinput(){
                  titleChangeUse('先允許全部訪問');
                  return
                }
-
+         
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
                startsleeptime=0
                sleep=OPENAllwindowTimeset.value*1000
@@ -787,6 +859,7 @@ function sendToinput(){
              divtitle.className='divtitle'
              divtitle.appendChild(inputTitle)
              divtitle.appendChild(time);
+              divtitle.appendChild(inputEmoji)
              divinline.appendChild(divtitle)
              divinline.className='divinline'
               div.appendChild(divinline)
@@ -794,12 +867,12 @@ function sendToinput(){
          
              divBtn.className='divBtns'
              
-             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value)));
+             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(toggleBtnToLower);//全部小寫
               divBtn.appendChild(toggleBtnToReverse);//倒序
             divBtn.appendChild(toggleBtnTojoinStr);//替換字
-
+         
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
@@ -816,6 +889,34 @@ function sendToinput(){
          //逐行模式
             if (item.lineMode) {
                  const ol = document.createElement('ol');
+                            if (lineCardMode.checked){
+        
+                 
+                 const next = document.createElement('button');
+                 const last = document.createElement('button');
+                 const lndiv = document.createElement('div');
+                 lndiv.className = 'lndiv'
+                 next.textContent = '>>'
+                 last.textContent = '<<'
+                 lndiv.appendChild(last);
+                 lndiv.appendChild(next)
+                 div.appendChild(lndiv)
+                next.onclick = () => {
+               ol.scrollBy({
+                top: 0,
+                left: 100,
+                behavior: "smooth",
+              });
+                }
+                last.onclick = () => {
+                 ol.scrollBy({
+                top: 0,
+                left: -100,
+                behavior: "smooth",
+              });
+                }
+                 
+               }
                  //ol.id = `colScreen-${index}`;
                  //ol.className = 'col'; 
                  ol.classList.add('col')
@@ -828,7 +929,7 @@ function sendToinput(){
                 ol.classList.add('strLine');
                }
                //const lines = item.text.split('\n').filter(l => l.trim());
-
+         
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
                lines.forEach((line,innerIndex) => {
                  //const ldiv = document.createElement('div');
@@ -837,9 +938,11 @@ function sendToinput(){
                     
          
                    if (lineCardMode.checked){
-                 ldiv.className += ' lineCardExhibit';
+        
+                 ldiv.classList.add('lineCardExhibit')
+          
                }
-   
+         
                  //
                 //ldiv.onclick = () => navigator.clipboard.writeText(line);
                 ///
@@ -868,7 +971,7 @@ function sendToinput(){
                     const item = selectCheckBoxData.find(
                         item => item.box === checkBox.value
                     );
-
+         
                     if (item) {
                         item.select = checkBox.checked;
                     } else {
@@ -917,7 +1020,7 @@ function sendToinput(){
                imgcheckbox=document.getElementById('IMGcheckBox');
                
                addHttpscheckBox=document.getElementById('addHttpscheckBox');
-
+         
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
                 const Topfdiv = document.createElement('div');
                 Topfdiv.className='divTestImgTop'
@@ -995,16 +1098,17 @@ function sendToinput(){
                  text20=text.slice(0, 20)
                  titleChange('已複製：'+text20+"···")  
                  recoverTitle();
-                 /*
+                 
                  if (typeof(index)=='number'){
-                   nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0] 
+                   nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0].childNodes[0].childNodes[1]
+                
                    nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
                setTimeout(() => {
                    nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
                }, 3000);
               
                  }
-                */
+                
          }
          //
          //開視窗
@@ -1095,64 +1199,7 @@ function sendToinput(){
            }
          }
          ///
-         function randomFacetext(){
-           warFace=[
-          " ̿̿ ̿̿ ̿̿ ̿'̿’\̵͇̿̿\з=( ͠° ͟ʖ ͡°)=ε/̵͇̿̿/‘̿̿ ̿ ̿ ̿ ̿ ̿",
-          '{:̲̅:̲̅:̲̅:̲̅{ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅ ̲̅{}ڪڪ',
-          '⋛⋋( ‘Θ’)⋌⋚',
-          '▼・ᴥ・▼',
-          '/ᐠ .ᆺ. ᐟ\\ﾉ',
-          '/ᐠ｡ꞈ｡ᐟ\\',
-          'ฅ^•ﻌ•^ฅ',
-          'Ꮚ･ꈊ･Ꮚ',
-          '((꜆꜄꜆ ˙꒳˙)꜆꜄꜆ｵﾗｵﾗｵﾗｵﾗ',
-          'ｽﾞｲ₍₍ (ง ˘ω˘ )ว ⁾⁾ ⁽⁽ 〪ɾ( ˘ω˘ 〫ɩ ) ₎₎ｽﾞｲ',
-          '(′゜ω。‵)',
-          '(つ´ω`)つ',
-          '⧸⎩⎠⎞͏(・∀・)⎛͏⎝⎭⧹',
-          '( ˊ̱˂˃ˋ̱ )',
-          '(ꐦ°᷄д°᷅)',
-          '⁽⁽٩(๑˃̶͈̀ ᗨ ˂̶͈́)۶⁾⁾',
-          '⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄',
-          '⸜(* ॑꒳ ॑* )⸝',
-          '(◉３◉)',
-          '(ノ▼Д▼)ノ',
-          '(=^-ω-^=)',
-          '(╯✧∇✧)╯',
-          '_(┐ ◟;ﾟдﾟ)ノ',
-          'ﾚ(ﾟ∀ﾟ;)ﾍ　ﾍ( ﾟ∀ﾟ;)ﾉ',
-          '(｡・ω・｡)',
-          '。･ﾟ･(つд`ﾟ)つ⑩))Д´)',
-          '(つд⊂)',
-          '∑(✘Д✘๑ )',
-          '(•ө•)',
-          '( ´･･)ﾉ(._.`)',
-          '(灬ºωº灬)',
-          'ლ(́◕◞౪◟◕‵ლ)',
-          '( ´∀`);y=ｰ(ﾟдﾟ)･∵. ﾀｰﾝ',
-          '(´д((☆ミPia!⊂▼(ｏ ‵－′ｏ)▼つPia!彡★))∀`)',
-          '٩(◦`꒳´◦)۶',
-          '(๑¯∀¯๑)',
-          '(ΦωΦ)',
-          '( ╯' - ')╯ ┻━┻',
-          '༼ つ ◕_◕ ༽つ',
-          '( ﾒ∀・)',
-          '⊙谷⊙',
-          '(╬▼дﾟ)▄︻┻┳═一',
-          '(:◎)≡',
-          '(〃￣ω￣)人(￣︶￣〃)',
-          'σ`∀´)σ',
-          '（’へ’）',
-          'ヽ( ° ▽°)ノ',
-          '(☍﹏⁰)'
-           ]
-           
-           return warFace[getRandomInt(warFace.length-1)]
-         }
-         
-         function getRandomInt(max) {
-           return Math.floor(Math.random() * max);
-         }
+   
          
          
          function randomColor(){
@@ -1256,6 +1303,8 @@ function sendToinput(){
          
          
       </script>
+       <script src="../public/js/emoji.js"></script>
+        <script src="../public/js/warface.js"></script>
       <script src="../public/floating-menu.js"></script>
    </body>
 </html>
