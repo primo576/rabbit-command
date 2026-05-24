@@ -147,10 +147,18 @@
          white-space: nowrap;
          overflow: hidden;
          text-overflow: ellipsis;}
+          .inlineflex{
+          display: inline-flex;
+          column-gap: 5px;
+          width: 95%;
+         }
          .titleStyle{height:25px ;overflow: hidden;width: 100%;}
          @media (hover: none) and (pointer: coarse) {
          .toolbar {
          flex-wrap: wrap;
+         }
+         .inlineflex{
+          width: 90%;
          }
          }
          input, textarea, select {
@@ -215,11 +223,7 @@
          column-gap: 10px;
          }
       
-         .inlineflex{
-          display: inline-flex;
-          column-gap: 5px;
-          width: 95%;
-         }
+    
          .opacity{
           opacity: 0.3;
          }
