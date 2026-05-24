@@ -5,6 +5,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <title>剪貼簿</title>
       <style>
+      
          .divTop{
          transition: 0.3s;
          }
@@ -40,7 +41,7 @@
          .setbar { margin: 0px; display: flex;flex-direction: column;}
          .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
          .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
-         .time { font-size: 12px; color: gray;  height: 16px ;overflow: hidden;display: inline-flex; }
+         .time {  white-space:nowrap;font-size: 12px; color: gray;  height: 16px ;overflow: unset;display: inline-flex; }
          /* time 時間樣式 127x13.5 */
          .content { border-radius: 8px; width:calc(100% - 10px); min-height: 80px; overflow: auto; resize: none; 
          white-space: nowrap;
@@ -164,8 +165,13 @@
          /*background-color: #333;  背景色，避免頁面內容穿透 */
          z-index: 1000; /* 確保導覽列層級最高，蓋在其他內容上方 */
          }
+            .emoji{
+          field-sizing: content;
+          font-size: xx-large;
+         }
          @media screen and (min-width: 900px) {
          /*寬 600px 以內時應用 */
+            
          .colTop {
          display: grid;
          grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -186,6 +192,9 @@
          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
          }
          .bar {margin: 4px;}
+          .emoji{
+          font-size: -webkit-xxx-large;
+         }
          }
          .topSummary{
          height: 75dvh;
@@ -198,11 +207,18 @@
          }
          .divinline{
          display: inline-block;
+         overflow-y: auto;
          }
          .lndiv{
          display: grid;
          grid-template-columns: 1fr 1fr;
          column-gap: 10px;
+         }
+      
+         .inlineflex{
+          display: inline-flex;
+          column-gap: 5px;
+          width: 95%;
          }
       </style>
    </head>
@@ -680,19 +696,20 @@
          /*點擊輸入表情*/
          const inputEmoji = document.createElement('div');
          
-          inputEmoji.textContent = item.emoji || '表情符號';
-          inputEmoji.className = 'title';
+          inputEmoji.textContent = item.emoji || '😀';
+          inputEmoji.className = 'emoji';
          
           inputEmoji.onclick = () => {
               const input = document.createElement('select');
               
-              input.value = item.emoji || '表情符號';
-              input.className = 'titleInput';
+              input.value = item.emoji || '😀';
+              input.className = 'emoji';
                     emoji.forEach((i,index)=>{
               if (index>30) {
                 return
               }
                 const option = document.createElement('option');
+                
                 option.textContent=i
                 option.value=i
                 input.appendChild(option)
@@ -701,14 +718,14 @@
          
               // 替換 div → input
               inputEmoji.replaceWith(input);
-
+              //input.click();
               //input.focus();
               //input.select();
          
               const saveTitle = () => {
                   item.emoji = input.value;
          
-                  inputEmoji.textContent = input.value || '表情符號';
+                  inputEmoji.textContent = input.value || '😀';
          
                   save();
          
@@ -717,10 +734,10 @@
               };
          
               // Enter 儲存
-              input.onkeydown = (e) => {
-                  if (e.key === 'Enter') {
+              input.onchange = (e) => {
+                 
                       saveTitle();
-                  }
+                 
               };
          
               // 點外面也儲存
@@ -835,14 +852,9 @@
              }
 
              function cpoyLine(){
-               console.log(data[index])
-               newdata=data[index]
-               newdata.time=Date.now()
-               //console.log(newdata.time)
-               data.unshift( newdata );
-               //data.unshift({ text: value, time: Date.now(), expanded: false, lineMode: false  });
-               save();
-               render();
+              data.unshift({ text: data[index].text, time: Date.now(), title:`複製 ${data[index].title||''}`, emoji:`${data[index].emoji||''}`});
+              save();
+              render();
                titleChange('複製區塊：'+time.textContent+"···")  
                recoverTitle();
              }
@@ -870,13 +882,15 @@
              const divinline = document.createElement('div');
              const divtitle = document.createElement('div');
              divtitle.className='divtitle'
+
              divtitle.appendChild(inputTitle)
-             divtitle.appendChild(inputEmoji)
+             //divtitle.appendChild(inputEmoji)
              divtitle.appendChild(time);
               
              divinline.appendChild(divtitle)
              divinline.className='divinline'
-              div.appendChild(divinline)
+             const divlineAndBtns=document.createElement('div');
+              divlineAndBtns.appendChild(divinline)
              const divBtn = document.createElement('div');
          
              divBtn.className='divBtns'
@@ -892,9 +906,12 @@
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
               divBtn.appendChild(createBtnClickFun('複製區塊',cpoyLine));
              divBtn.appendChild(createBtnClickFun('刪除',delLine));
-         
-             div.appendChild(divBtn);
+            divlineAndBtns.className='inlineflex'
+             divinline.appendChild(divBtn);
+             divlineAndBtns.appendChild(inputEmoji)
              
+             div.appendChild(divlineAndBtns);
+
              div.appendChild(textarea);
              
          
@@ -1113,7 +1130,7 @@
                  text20=text.slice(0, 20)
                  titleChange('已複製：'+text20+"···")  
                  recoverTitle();
-                 
+                 /*
                  if (typeof(index)=='number'){
                    nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0].childNodes[0].childNodes[1]
                 
@@ -1122,7 +1139,7 @@
                    nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
                }, 3000);
               
-                 }
+                 }*/
                 
          }
          //
