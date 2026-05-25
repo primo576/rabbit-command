@@ -5,7 +5,12 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <title>剪貼簿</title>
       <style>
-      
+        .divNum{
+          text-align: center;
+        }
+        .title{
+          white-space: nowrap;
+        }
          .divTop{
          transition: 0.3s;
          }
@@ -40,17 +45,21 @@
          .toolbar { width: 100%;/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
          .setbar { margin: 0px; display: flex;flex-direction: column;}
          .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
-         .item {  margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
+         .item { list-style: none; margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
+         
+         li ::marker{
+          white-space: nowrap; 
+        }
          .time {  white-space:nowrap;font-size: 12px; color: gray;  height: 16px ;overflow: unset;display: inline-flex; }
          /* time 時間樣式 127x13.5 */
-         .content { border-radius: 8px; width:calc(100% - 10px); min-height: 80px; overflow: auto; resize: none; 
+         .content { border-radius: 8px; width:-webkit-fill-available; min-height: 80px; overflow: auto; resize: none; 
          white-space: nowrap;
          overflow-x: auto;
          overflow-y: auto;
          transition: 0.3s;
          }
          .fixArea {field-sizing: content; min-height: 0px;}
-         .contentTop { border-radius: 8px; width:calc(100% - 10px); min-height: 20px; overflow: auto; resize: none; 
+         .contentTop { border-radius: 8px; width:-webkit-fill-available; min-height: 20px; overflow: auto; resize: none; 
          white-space: nowrap;
          overflow-x: auto;
          overflow-y: auto;
@@ -150,16 +159,16 @@
           .inlineflex{
           display: inline-flex;
           column-gap: 5px;
-          width: 95%;
+          width: 100%;
+          justify-content: space-evenly;
+          flex-direction: row-reverse;
          }
          .titleStyle{height:25px ;overflow: hidden;width: 100%;}
          @media (hover: none) and (pointer: coarse) {
          .toolbar {
          flex-wrap: wrap;
          }
-         .inlineflex{
-          width: 90%;
-         }
+
          }
          input, textarea, select {
          /* font-size: 16px;*/
@@ -209,9 +218,10 @@
          overflow: auto;
          }
          .divtitle{
-         display: grid;
-         grid-template-columns: 1fr 1fr 2fr;
-         /*column-gap: 10px;*/
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 10px;
+      
          }
          .divinline{
          display: inline-block;
@@ -333,6 +343,7 @@
       </div>
             <script src="../public/js/emoji.js"></script>
         <script src="../public/js/warface.js"></script>
+         <script src="../public/js/randomColor.js"></script>
       <script>
          const input = document.getElementById('input');
          const list = document.getElementById('list');
@@ -453,6 +464,7 @@
          
          function renderUsage() {
            const total = getSize(data);
+           
            const max = 5 * 1024 * 1024;
            const percent = (total / max) * 100;
            const percentage = (total/1024/5120*100).toFixed(1)
@@ -466,7 +478,7 @@
            `;
            }
          
-           console.log(`當前使用量：${percentage}% | 詳細：${(total/1024).toFixed(1)}KB / 5120KB`)
+           //console.log(`當前使用量：${percentage}% | 詳細：${(total/1024).toFixed(1)}KB / 5120KB`)
          }
          
          function renderBars() {
@@ -767,11 +779,13 @@
                   item.emoji = input.value;
          
                   inputEmoji.textContent = input.value || reEmoji;
-         
-                  save();
+                 save()
+                  
+                  
                 
                   // 換回 div
-                  input.replaceWith(inputEmoji);
+                 // input.replaceWith(inputEmoji);
+                //setTimeout(() => render(), 1000);
                  render()
               };
          
@@ -921,6 +935,9 @@
                recoverTitle();}
                , startsleeptime);
              }
+             const divNum = document.createElement('div');
+             divNum.textContent=item.index
+             divNum.className='divNum'
              const divinline = document.createElement('div');
              const divtitle = document.createElement('div');
              divtitle.className='divtitle'
@@ -928,6 +945,7 @@
              divtitle.appendChild(inputTitle)
              //divtitle.appendChild(inputEmoji)
              divtitle.appendChild(time);
+             divtitle.appendChild(divNum);
               
              divinline.appendChild(divtitle)
              divinline.className='divinline'
@@ -939,14 +957,14 @@
              
              divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
              divBtn.appendChild(toggleBtn); //展開收起
+             divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(toggleBtnToLower);//全部小寫
               divBtn.appendChild(toggleBtnToReverse);//倒序
             divBtn.appendChild(toggleBtnTojoinStr);//替換字
-         
-             divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
+             divBtn.appendChild(createBtnClickFun('複製區塊',cpoyLine));
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
-              divBtn.appendChild(createBtnClickFun('複製區塊',cpoyLine));
+              
              divBtn.appendChild(createBtnClickFun('刪除',delLine));
             divlineAndBtns.className='inlineflex'
              divinline.appendChild(divBtn);
@@ -1023,6 +1041,7 @@
                 ldiv.onclick = () => {
                   copyText(line,index);
                 ldiv.style.backgroundColor=randomColor();
+                console.log(ldiv)
                  setTimeout(() => {
                    ldiv.style.backgroundColor=''
                }, 20*1000);
@@ -1172,16 +1191,16 @@
                  text20=text.slice(0, 20)
                  titleChange('已複製：'+text20+"···")  
                  recoverTitle();
-                 /*
+                 
                  if (typeof(index)=='number'){
-                   nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0].childNodes[0].childNodes[1]
+                   nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0].childNodes[0].childNodes[0].childNodes[1]
                 
                    nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
                setTimeout(() => {
                    nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
                }, 3000);
               
-                 }*/
+                 }
                 
          }
          //
@@ -1276,13 +1295,7 @@
    
          
          
-         function randomColor(){
-           c=[
-             'red','yellow','orange','green'
-           ]
-           
-           return c[getRandomInt(c.length)]
-         }
+
          
          
          // 匯出
