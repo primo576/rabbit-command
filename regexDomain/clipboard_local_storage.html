@@ -50,7 +50,7 @@
          li ::marker{
           white-space: nowrap; 
         }
-         .time {  white-space:nowrap;font-size: 12px; color: gray;  height: -webkit-fill-available;overflow: unset;display: inline-flex; }
+         .time { align-items: center; white-space:nowrap;font-size: 12px; color: gray;  height: -webkit-fill-available;overflow: unset;display: inline-flex; }
          /* time 時間樣式 127x13.5 */
          .content { border-radius: 8px; width:-webkit-fill-available; min-height: 80px; overflow: auto; resize: none; 
          white-space: nowrap;
@@ -223,7 +223,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         column-gap: 10px;
-      
+      align-items: center;
          }
          .divinline{
          display: inline-block;
@@ -245,8 +245,14 @@
          .grid1fr1fr{
               display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: center;
          }
-          .deleteButtom{background-color: var(--red)}
+       
+          .grid1fr1fr1fr{
+              display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+         }
       </style>
    </head>
    <body>
@@ -599,10 +605,16 @@
              }else{
               itemEmoji=''
              }
-             li.textContent = ` ${item.index+1}.${itemEmoji} ${itemTitle}${item.text.slice(0, 15)} - ${new Date(item.time).toLocaleString()} (${(size/1024).toFixed(1)}KB)`;
+             li.textContent = ` ${item.index}.${itemEmoji} ${itemTitle}${item.text.slice(0, 15)} - ${new Date(item.time).toLocaleString()} (${(size/1024).toFixed(1)}KB)`;
          
              li.onclick = () => {
-               document.getElementById(`item-${item.index}`)
+              
+              t=item.index-1
+              if (t<0) {
+                t++
+              }
+console.log(`item-${t}`)
+               document.getElementById(`item-${t}`)
                  .scrollIntoView({ behavior: 'smooth' });
              };
          
@@ -995,10 +1007,13 @@
              divtitle.appendChild(inputTitle)
              //divtitle.appendChild(inputEmoji)
              divtitle.appendChild(time);
-             const divNumAndDeline = document.createElement('div');
-             divNumAndDeline.className='grid1fr1fr'
-             divNumAndDeline.appendChild(divNum);
-             divtitle.appendChild(divNumAndDeline);
+             const divNumAndOther = document.createElement('div');
+             const divOther = document.createElement('div');
+             divOther.className='grid1fr1fr1fr'
+             divNumAndOther.className='grid1fr1fr'
+             divNumAndOther.appendChild(divNum);
+             divNumAndOther.appendChild(divOther);
+             divtitle.appendChild(divNumAndOther);
               
              divinline.appendChild(divtitle)
              divinline.className='divinline'
@@ -1014,13 +1029,13 @@
              divBtn.appendChild(toggleBtnToLower);//全部小寫
              divBtn.appendChild(toggleBtnToReverse);//倒序
              divBtn.appendChild(toggleBtnTojoinStr);//替換字
-             divBtn.appendChild(createBtnClickFun('複製區塊',cpoyLine));
-             divBtn.appendChild(createBtnClickFun('分享',cpoyShare));
+             divOther.appendChild(createBtnClickFun('⏎',cpoyLine));
+             divOther.appendChild(createBtnClickFun('🔗',cpoyShare));
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
               
              //divBtn.appendChild(createBtnClickFun('X',delLine));
-              divNumAndDeline.appendChild(createBtnClickFun('X',delLine,'background: red;'));
+              divOther.appendChild(createBtnClickFun('❌',delLine));
             divlineAndBtns.className='inlineflex'
              divinline.appendChild(divBtn);
              divlineAndBtns.appendChild(inputEmoji)
