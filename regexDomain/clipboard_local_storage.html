@@ -162,6 +162,7 @@
           width: 100%;
           justify-content: space-evenly;
           flex-direction: row-reverse;
+          align-items: center;
          }
          .titleStyle{height:25px ;overflow: hidden;width: 100%;}
          @media (hover: none) and (pointer: coarse) {
@@ -915,6 +916,41 @@
                recoverTitle();
              }
 
+             function cpoyShare(){
+            shareText=[]
+
+            function returnModelText(text){
+              return `【${text}】`
+            }
+             const shareList = ['text', 'time', 'title', 'emoji']
+             
+              keys=Object.keys(item)
+
+               keys.forEach((key) => {
+                
+                if(!shareList.includes(key)) {
+                  return
+                }
+
+                itemName=key
+                itemVaule=item[key]
+                
+                if (itemName=="text") {
+                  itemVaule=`\n--START--\n${itemVaule}\n--END--`
+                }
+
+                if (itemName=="time") {
+                  itemVaule=new Date(itemVaule).toLocaleString()
+                }
+
+                shareText.push(`${returnModelText(itemName)}: ${itemVaule}`)
+               
+              })
+              //console.log(a)
+              shareText =shareText.sort().reverse().join('\n')
+              copyText(shareText)
+             }
+
              function openALLurl(){
                if (!allowOPENallurl.checked) {
                  titleChangeUse('先允許全部訪問');
@@ -959,9 +995,10 @@
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(toggleBtnToLower);//全部小寫
-              divBtn.appendChild(toggleBtnToReverse);//倒序
-            divBtn.appendChild(toggleBtnTojoinStr);//替換字
+             divBtn.appendChild(toggleBtnToReverse);//倒序
+             divBtn.appendChild(toggleBtnTojoinStr);//替換字
              divBtn.appendChild(createBtnClickFun('複製區塊',cpoyLine));
+             divBtn.appendChild(createBtnClickFun('分享',cpoyShare));
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
               
