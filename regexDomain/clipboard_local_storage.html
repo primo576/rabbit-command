@@ -50,7 +50,7 @@
          li ::marker{
           white-space: nowrap; 
         }
-         .time {  white-space:nowrap;font-size: 12px; color: gray;  height: 16px ;overflow: unset;display: inline-flex; }
+         .time {  white-space:nowrap;font-size: 12px; color: gray;  height: -webkit-fill-available;overflow: unset;display: inline-flex; }
          /* time 時間樣式 127x13.5 */
          .content { border-radius: 8px; width:-webkit-fill-available; min-height: 80px; overflow: auto; resize: none; 
          white-space: nowrap;
@@ -108,6 +108,7 @@
          .strLine li{scroll-snap-align: center;}
          .col2 {padding-inline-start: 0px;/*margin-block-start: 0;margin-block-end: 0;*/}
          .buttomStyle1{margin: 2px;}
+         
          .buttomStyle1File{    appearance: none;
          background-color: initial;
          cursor: default;
@@ -241,6 +242,11 @@
          .co-gray{
           color: gray;
          }
+         .grid1fr1fr{
+              display: grid;
+    grid-template-columns: 1fr 1fr;
+         }
+          .deleteButtom{background-color: var(--red)}
       </style>
    </head>
    <body>
@@ -254,7 +260,7 @@
          <div class="setbar">
             <label class="" style="margin-left: 2px;">
                <details>
-                  <summary>設定</summary>
+                  <summary>☰</summary>
                   <div class="topSummary">
                      <ol>
                         <li>
@@ -335,7 +341,7 @@
       </div>
       <div class="toolbar ">
          <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
-         <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存文字</button>
+         <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存✎</button>
          <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
       </div>
       <hr>
@@ -660,10 +666,16 @@
          
            list.innerHTML = '';
              //////
-           function createBtnClickFun(BtnText,clickFun){
+           function createBtnClickFun(BtnText,clickFun,style){
                const lineBtn = document.createElement('button');
                lineBtn.textContent = BtnText;
-               lineBtn.className='buttomStyle1'
+               if (style) {
+                lineBtn.style=style
+                
+               }
+                lineBtn.className='buttomStyle1'
+             
+               
                lineBtn.onclick = () => {
                  clickFun();
                };
@@ -943,7 +955,7 @@
                   itemVaule=new Date(itemVaule).toLocaleString()
                 }
 
-                shareText.push(`${returnModelText(itemName)}: ${itemVaule}`)
+                shareText.push(`${returnModelText(itemName)}:${itemVaule}`)
                
               })
               //console.log(a)
@@ -976,12 +988,17 @@
              divNum.className='divNum'
              const divinline = document.createElement('div');
              const divtitle = document.createElement('div');
+             
+             
              divtitle.className='divtitle'
 
              divtitle.appendChild(inputTitle)
              //divtitle.appendChild(inputEmoji)
              divtitle.appendChild(time);
-             divtitle.appendChild(divNum);
+             const divNumAndDeline = document.createElement('div');
+             divNumAndDeline.className='grid1fr1fr'
+             divNumAndDeline.appendChild(divNum);
+             divtitle.appendChild(divNumAndDeline);
               
              divinline.appendChild(divtitle)
              divinline.className='divinline'
@@ -1002,7 +1019,8 @@
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
               
-             divBtn.appendChild(createBtnClickFun('刪除',delLine));
+             //divBtn.appendChild(createBtnClickFun('X',delLine));
+              divNumAndDeline.appendChild(createBtnClickFun('X',delLine,'background: red;'));
             divlineAndBtns.className='inlineflex'
              divinline.appendChild(divBtn);
              divlineAndBtns.appendChild(inputEmoji)
@@ -1228,16 +1246,17 @@
                  text20=text.slice(0, 20)
                  titleChange('已複製：'+text20+"···")  
                  recoverTitle();
-                 
+                 /*
                  if (typeof(index)=='number'){
                    nodeTimeTitle=document.getElementById(`item-${index}`).childNodes[0].childNodes[0].childNodes[0].childNodes[1]
                 
                    nodeTimeTitle.textContent='已複製：'+text20+"···"+randomFacetext()
                setTimeout(() => {
-                   nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()+"···"+randomFacetext()
+                   nodeTimeTitle.textContent=new Date(data[index].time).toLocaleString()//+"···"+randomFacetext()
                }, 3000);
               
                  }
+               */
                 
          }
          //

@@ -13,6 +13,7 @@ body {
 	--textAreaFocusBG: #bebebe;
 	--textAreaBG: #ddd;
 	--lineBackroundColor: #ddd;
+	--red: red;
 }
 
 textarea:focus,
