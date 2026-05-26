@@ -276,10 +276,26 @@
                   <summary>設定</summary>
                   <div class="topSummary">
                      <ol id="setMenuol">
-                        <li>
+                     
+                          <li><input placeholder="搜索列表" type="search" id="searchBars">
+                       <select id="searchEmoji"><option value="">搜索表情</option></select>
+                        </li>
+                          
+                          <li>
+                           <p>
+                              <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+                              <input id="joinStr" placeholder="組合符 預設," >
+                           </p>
+                        </li>
+                         <li>
                            <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
                            <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
                            <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+                        </li>
+                        <li>
+                           <p>逐行卡片展示
+                              <input type="checkbox" id="lineCardMode" >
+                           </p>
                         </li>
                         <li>
                            <p>
@@ -289,17 +305,7 @@
                               <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
                            </p>
                         </li>
-                        <li>
-                           <p>
-                              <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
-                              <input id="joinStr" placeholder="組合符 預設," >
-                           </p>
-                        </li>
-                        <li>
-                           <p>逐行卡片展示
-                              <input type="checkbox" id="lineCardMode" >
-                           </p>
-                        </li>
+                      
                         <li>
                            <p>文字大小
                               <input type="range" min="10" max="25" value="16" id="slider">
@@ -343,9 +349,7 @@
                               <button onclick="removeBeforeTime()">刪除時間段前資料</button>
                           </p>
                         </li>
-                        <li><input placeholder="搜索列表" type="search" id="searchBars">
-                       <select id="searchEmoji"><option value="">搜索表情</option></select>
-                        </li>
+                      
                       </ol>
                     <div class="bar-container" id="bars"></div>
               </div>
@@ -1071,7 +1075,8 @@ console.log(`item-${t}`)
          //逐行模式
             if (item.lineMode) {
                  const ol = document.createElement('ol');
-                      
+                const lastdiv = document.createElement('div');
+                lastdiv.style='margin-top: 10px;'
                  //ol.id = `colScreen-${index}`;
                  //ol.className = 'col'; 
                  ol.classList.add('col')
@@ -1083,28 +1088,7 @@ console.log(`item-${t}`)
                 //滾動軸
                 const lndiv = document.createElement('div');
                  lndiv.className = 'lndiv'
-                 /*
-                 const next = document.createElement('button');
-                 const last = document.createElement('button');
-                 
-                 next.textContent = '>>'
-                 last.textContent = '<<'
-                 lndiv.appendChild(last);
-                 lndiv.appendChild(next)
-                
-                 //
-                 function bindMoveScroll(clickdiv,targetScroll,adjTop,adjLeft){
-                    clickdiv.onclick = () => {
-               targetScroll.scrollBy({
-                top: adjTop,
-                left: adjLeft,
-                behavior: "smooth",
-              });
-                }
-                 }
-                 bindMoveScroll(next,ol,0,100)
-                  bindMoveScroll(last,ol,0,-100)
-                  */
+             
 
                   //拉條
                 const inputRange = document.createElement('input');
@@ -1176,6 +1160,9 @@ console.log(`item-${t}`)
                         "pointerdown",
                         allChildrenlength
                     );
+                      
+
+                    
               inputPage.oninput = () => {
 
                       const index =
@@ -1202,7 +1189,7 @@ console.log(`item-${t}`)
                 lndiv.appendChild(inputPage)
                
                   //
-                 div.appendChild(lndiv)
+                 lastdiv.appendChild(lndiv)
                  //滾動軸
               
                }else{
@@ -1284,19 +1271,21 @@ console.log(`item-${t}`)
                  ldiv.append(label)
                  ldiv.prepend(checkBox);
                 ///checkBox項目區
-               }else{ldiv.textContent = line;}
-                ol.appendChild(ldiv);
-                div.appendChild(ol);
+               }else{
+                ldiv.textContent = line;
 
+               }
+                ol.appendChild(ldiv);
+                ////組裝
+                div.appendChild(ol);
+               if (lineCardMode.checked) {
+                
+                div.appendChild(lastdiv);
+               }
                });
              }
          /*
-              if (item.linkToIMG) {
-                 const img = document.createElement('img');
-                 img.className = 'col';
-               img.src=textarea.value
-                div.appendChild(img);
-             }
+          
            */
             if (item.linkToIMG) {
                  
