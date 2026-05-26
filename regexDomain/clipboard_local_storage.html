@@ -48,7 +48,7 @@
          .toolbar { width: 100%;/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */}
          .setbar { margin: 0px; display: flex;flex-direction: column;}
          .itemO { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; }
-         .item { list-style: none; margin-top: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
+         .item { list-style: none; margin-top: 10px; padding: 8px;/*border-bottom: 1px solid #ccc;*/ border-top: 1px solid #ccc; border-radius: 8px;list-style-position: inside; font-size: 12px;  }
          
          li ::marker{
           white-space: nowrap; 
@@ -107,7 +107,7 @@
          .colOragin {padding-inline-start: 0px;}
          .col {padding-inline-start: 0px;margin:0px;}
          .colTop {padding-inline-start: 0px;margin:0px;}
-         .strLine{overflow: auto;max-height: 300px;scroll-snap-type: y mandatory;}
+         .strLine{overflow: auto;max-height: 50dvh;scroll-snap-type: y mandatory;}
          .strLine li{scroll-snap-align: center;}
          .col2 {padding-inline-start: 0px;/*margin-block-start: 0;margin-block-end: 0;*/}
          .buttomStyle1{margin: 2px;}
@@ -193,13 +193,14 @@
          }
          @media screen and (min-width: 900px) {
          /*寬 600px 以內時應用 */
-            
+           
          .colTop {
          display: grid;
          grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
          }
          .item{
          margin: 5px;
+         border: 1px solid #ccc;
          }
          .divBtns {
          max-height: fit-content;
@@ -954,7 +955,7 @@ console.log(`item-${t}`)
             function returnModelText(text){
               return `【${text}】`
             }
-             const shareList = ['text', 'time', 'title', 'emoji']
+             const shareList = ['text', 'time', 'title']
              
               keys=Object.keys(item)
 
@@ -968,11 +969,18 @@ console.log(`item-${t}`)
                 itemVaule=item[key]
                 
                 if (itemName=="text") {
-                  itemVaule=`\n--START--\n${itemVaule}\n--END--`
+                  itemVaule=`\n${itemVaule}\n`
+                  // itemVaule=`\n--START--\n${itemVaule}\n--END--`
                 }
 
                 if (itemName=="time") {
                   itemVaule=new Date(itemVaule).toLocaleString()
+                }
+
+                if (itemName=="title") {
+                  if (item['emoji']) {
+                  itemVaule=`${item['emoji']} ${itemVaule}`
+                  }
                 }
 
                 shareText.push(`${returnModelText(itemName)}:${itemVaule}`)
@@ -1059,10 +1067,15 @@ console.log(`item-${t}`)
          //逐行模式
             if (item.lineMode) {
                  const ol = document.createElement('ol');
-                            if (lineCardMode.checked){
-        
-                 
-                 const next = document.createElement('button');
+                      
+                 //ol.id = `colScreen-${index}`;
+                 //ol.className = 'col'; 
+                 ol.classList.add('col')
+                 ol.classList.add('hide-scrollbar');
+                 if (lineCardMode.checked){
+                //ol.className +=' horizLine '
+                ol.classList.add('horizLine');
+                             const next = document.createElement('button');
                  const last = document.createElement('button');
                  const lndiv = document.createElement('div');
                  lndiv.className = 'lndiv'
@@ -1071,30 +1084,20 @@ console.log(`item-${t}`)
                  lndiv.appendChild(last);
                  lndiv.appendChild(next)
                  div.appendChild(lndiv)
-                next.onclick = () => {
-               ol.scrollBy({
-                top: 0,
-                left: 100,
+                 //
+                 function bindMoveScroll(clickdiv,targetScroll,adjTop,adjLeft){
+                    clickdiv.onclick = () => {
+               targetScroll.scrollBy({
+                top: adjTop,
+                left: adjLeft,
                 behavior: "smooth",
               });
                 }
-                last.onclick = () => {
-                 ol.scrollBy({
-                top: 0,
-                left: -100,
-                behavior: "smooth",
-              });
-                }
-                 
-               }
-                 //ol.id = `colScreen-${index}`;
-                 //ol.className = 'col'; 
-                 ol.classList.add('col')
-                 ol.classList.add('hide-scrollbar');
-                 if (lineCardMode.checked){
-                //ol.className +=' horizLine '
-                ol.classList.add('horizLine');
-                
+                 }
+                 bindMoveScroll(next,ol,0,100)
+                  bindMoveScroll(last,ol,0,-100)
+                 //
+              
                }else{
                 ol.classList.add('strLine');
                }
