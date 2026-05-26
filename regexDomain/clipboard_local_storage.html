@@ -237,7 +237,7 @@
          }
          .lndiv{
          display: grid;
-         grid-template-columns: 1fr 1fr;
+         grid-template-columns: 1fr 10dvh;
          column-gap: 10px;
          }
       
@@ -427,7 +427,7 @@
          const pasteButton = document.getElementById('paste-btn');
          
          
-         pasteButton.addEventListener('click', async () => {
+         pasteButton.addEventListener('pointerdown', async () => {
            try {
              const text = await navigator.clipboard.readText();
              input.value = text;
@@ -805,7 +805,7 @@ console.log(`item-${t}`)
          
               // 替換 div → input
               inputEmoji.replaceWith(input);
-              //input.click();
+              //input.pointerdown();
               //input.focus();
               //input.select();
          
@@ -1074,18 +1074,22 @@ console.log(`item-${t}`)
                  //ol.className = 'col'; 
                  ol.classList.add('col')
                  ol.classList.add('hide-scrollbar');
+                 //卡片模式
                  if (lineCardMode.checked){
                 //ol.className +=' horizLine '
                 ol.classList.add('horizLine');
-                             const next = document.createElement('button');
-                 const last = document.createElement('button');
-                 const lndiv = document.createElement('div');
+                //滾動軸
+                const lndiv = document.createElement('div');
                  lndiv.className = 'lndiv'
+                 /*
+                 const next = document.createElement('button');
+                 const last = document.createElement('button');
+                 
                  next.textContent = '>>'
                  last.textContent = '<<'
                  lndiv.appendChild(last);
                  lndiv.appendChild(next)
-                 div.appendChild(lndiv)
+                
                  //
                  function bindMoveScroll(clickdiv,targetScroll,adjTop,adjLeft){
                     clickdiv.onclick = () => {
@@ -1098,11 +1102,111 @@ console.log(`item-${t}`)
                  }
                  bindMoveScroll(next,ol,0,100)
                   bindMoveScroll(last,ol,0,-100)
-                 //
+                  */
+
+                  //拉條
+                const inputRange = document.createElement('input');
+
+                inputRange.type = 'range';
+                inputRange.min = '0';
+                inputRange.max = '-1';
+                inputRange.step = '1';
+                inputRange.value = '0';
+
+
+                function bindRangeScroll(range,targetScroll){
+
+                    function updateRange(){
+                      if (range.max!='-1') {
+                        return
+                      }
+                        range.min = 0;
+
+                        range.max =
+                            Math.max(
+                                0,
+                                targetScroll.scrollWidth
+                                - targetScroll.clientWidth
+                            );
+
+                        range.value =
+                            targetScroll.scrollLeft;
+
+                    }
+
+                    
+
+                    range.oninput = () => {
+
+                        targetScroll.scrollTo({
+                            left:Number(range.value),
+                            //behavior:"smooth"
+                        });
+
+                    };
+
+                    
+
+                    targetScroll.onscroll = () => {
+
+                        range.value =
+                            targetScroll.scrollLeft;
+                        updateRange();
+                    };
+
+                      range.addEventListener(
+                        "pointerdown",
+                        updateRange
+                    );
+
+                }
+
+                bindRangeScroll(inputRange,ol);
+
+                lndiv.appendChild(inputRange);
+                const inputPage = document.createElement('input');
+
+                inputPage.placeholder = `快速跳轉`
+                function allChildrenlength(){
+                   inputPage.placeholder = `項目:${ol.children.length}`
+                }
+                   inputPage.addEventListener(
+                        "pointerdown",
+                        allChildrenlength
+                    );
+              inputPage.oninput = () => {
+
+                      const index =
+                          Number(inputPage.value)-1;
+                      
+                       target =
+                          ol.children[index];
+                    console.log( )
+                    if (index>ol.children.length) {
+                      num=ol.children.length-1
+                      target =  ol.children[num];
+                    }
+                      if(target){
+
+                          ol.scrollTo({
+                              left:target.offsetLeft,
+                              behavior:'smooth'
+                          });
+
+                      }
+
+                  };
+
+                lndiv.appendChild(inputPage)
+               
+                  //
+                 div.appendChild(lndiv)
+                 //滾動軸
               
                }else{
                 ol.classList.add('strLine');
                }
+               //卡片模式
                //const lines = item.text.split('\n').filter(l => l.trim());
          
                const lines = textarea.value.split(delimiter).filter(l => l.trim());
@@ -1168,7 +1272,7 @@ console.log(`item-${t}`)
                     }
                     }
                      ldiv.onclick = () => {
-                      checkBox.click()
+                      checkBox.pointerdown()
                        copyText(line,index);
                      }
                 //勾選的時候紀錄 以免刷新
@@ -1181,6 +1285,7 @@ console.log(`item-${t}`)
                }else{ldiv.textContent = line;}
                 ol.appendChild(ldiv);
                 div.appendChild(ol);
+
                });
              }
          /*
@@ -1395,7 +1500,7 @@ console.log(`item-${t}`)
            const a = document.createElement('a');
            a.href = url;
            a.download = 'backup.json';
-           a.click();
+           a.pointerdown();
          };
          
          // 匯入
