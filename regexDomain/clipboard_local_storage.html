@@ -275,7 +275,7 @@
                <details>
                   <summary>設定</summary>
                   <div class="topSummary">
-                     <ol>
+                     <ol id="setMenuol">
                         <li>
                            <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
                            <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
@@ -676,6 +676,8 @@ console.log(`item-${t}`)
          
          
          function render() {
+          oclass=['setMenuol']
+          
           data.forEach((item, index) => {
          item.index = index;
          });
@@ -1348,14 +1350,16 @@ console.log(`item-${t}`)
              }
              divTop.appendChild(div);
              list.appendChild(divTop);
-             addClassName([inputTitle,time],'overflowAuto')
+             oclass.push(inputTitle,time)
+             
              
            });
            
            searchEmojiSelect();
            renderBars();
            renderUsage();
-
+           oclass=addClassName(oclass,'overflowAuto')
+          
          }
          ///////rander到這裡///////rander到這裡///////rander到這裡///////rander到這裡///////rander到這裡///////rander到這裡
          function recoverTitle(){
@@ -1366,7 +1370,19 @@ console.log(`item-${t}`)
          }
          
          function addClassName(o,className){
-          o.forEach(i=>i.classList.add(className))
+          o.forEach(i=>{
+           
+            if (typeof i == 'string') {
+              i=document.getElementById(i)
+            }
+          
+             if (![...i.classList].includes(className)) {
+             
+                 i.classList.add(className)
+             }
+         })
+        
+          return null
          }
          
          function titleChange(string){
