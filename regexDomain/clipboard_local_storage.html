@@ -5,6 +5,9 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <title>剪貼簿</title>
       <style>
+        .overflowAuto{
+          overflow: auto;
+        }
         .divNum{
           text-align: center;
         }
@@ -50,7 +53,7 @@
          li ::marker{
           white-space: nowrap; 
         }
-         .time { align-items: center; white-space:nowrap;font-size: 12px; color: gray;  height: fit-content;overflow: unset;display: inline-flex; }
+         .time { align-items: center; white-space:nowrap;font-size: 12px; color: gray;  height: fit-content;display: inline-flex; }
          /* time 時間樣式 127x13.5 */
          .content { border-radius: 8px; width:-webkit-fill-available; min-height: 80px; overflow: auto; resize: none; 
          white-space: nowrap;
@@ -246,6 +249,7 @@
               display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
+    column-gap: 3px;
          }
        
           .grid1fr1fr1fr{
@@ -266,7 +270,7 @@
          <div class="setbar">
             <label class="" style="margin-left: 2px;">
                <details>
-                  <summary>☰</summary>
+                  <summary>設定</summary>
                   <div class="topSummary">
                      <ol>
                         <li>
@@ -678,12 +682,14 @@ console.log(`item-${t}`)
          
            list.innerHTML = '';
              //////
-           function createBtnClickFun(BtnText,clickFun,style){
+           function createBtnClickFun(BtnText,clickFun,title,style){
                const lineBtn = document.createElement('button');
                lineBtn.textContent = BtnText;
                if (style) {
                 lineBtn.style=style
-                
+               }
+               if (title){
+                lineBtn.title=title
                }
                 lineBtn.className='buttomStyle1'
              
@@ -801,9 +807,11 @@ console.log(`item-${t}`)
               //input.select();
          
               const saveTitle = () => {
+                
                   item.emoji = input.value;
          
                   inputEmoji.textContent = input.value || reEmoji;
+                  if (input.value=='') delete item.emoji
                  save()
                   
                   
@@ -1023,19 +1031,19 @@ console.log(`item-${t}`)
          
              divBtn.className='divBtns'
              
-             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index)));
+             divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index),'複製內容'));
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(toggleBtnToLower);//全部小寫
              divBtn.appendChild(toggleBtnToReverse);//倒序
              divBtn.appendChild(toggleBtnTojoinStr);//替換字
-             divOther.appendChild(createBtnClickFun('⏎',cpoyLine));
-             divOther.appendChild(createBtnClickFun('🔗',cpoyShare));
+             divOther.appendChild(createBtnClickFun('⏎',cpoyLine,'複製整個區塊'));
+             divOther.appendChild(createBtnClickFun('🔗',cpoyShare,'模板分享'));
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
               
              //divBtn.appendChild(createBtnClickFun('X',delLine));
-              divOther.appendChild(createBtnClickFun('❌',delLine));
+              divOther.appendChild(createBtnClickFun('❌',delLine,'刪除'));
             divlineAndBtns.className='inlineflex'
              divinline.appendChild(divBtn);
              divlineAndBtns.appendChild(inputEmoji)
@@ -1230,13 +1238,16 @@ console.log(`item-${t}`)
              }
              divTop.appendChild(div);
              list.appendChild(divTop);
+             addClassName([inputTitle,time],'overflowAuto')
              
            });
+           
            searchEmojiSelect();
            renderBars();
            renderUsage();
+
          }
-         ///////rander到這裡
+         ///////rander到這裡///////rander到這裡///////rander到這裡///////rander到這裡///////rander到這裡///////rander到這裡
          function recoverTitle(){
                  setTimeout(() => {
                    titleOrogin=document.getElementsByTagName('title')[0].textContent;
@@ -1244,6 +1255,9 @@ console.log(`item-${t}`)
                }, 3000);
          }
          
+         function addClassName(o,className){
+          o.forEach(i=>i.classList.add(className))
+         }
          
          function titleChange(string){
           titleA=document.getElementById('titleA');
