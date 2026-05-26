@@ -99,7 +99,7 @@
          .line:hover { color: var(--textFocus);
          background-color: var(--textAreaFocusBG, #ddd);
          }
-         .bar-container { margin-top: 0px;  height: 30%; overflow: auto;}
+         .bar-container { margin-top: 0px;  overflow: auto;}
          .bar { list-style-position: inside;height: fit-content; margin: 4px 0; background: #ccc; cursor: pointer; position: relative; }
          .bar:hover { opacity: 0.8; }
          .bar span { position: absolute; left: 5px; font-size: 12px; }
@@ -221,7 +221,9 @@
          }
          .topSummary{
          height: 75dvh;
-         overflow: auto;
+       
+        display: grid;
+        grid-template-columns: 1fr;
          }
          .divtitle{
         display: grid;
