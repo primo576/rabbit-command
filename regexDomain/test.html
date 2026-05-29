@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<style>
+
+body{
+
+    margin:0;
+
+    padding:20px;
+
+    background:#f5f5f5;
+
+    font-family:sans-serif;
+
+}
+
+.page{
+
+    max-width:900px;
+
+    margin:auto;
+
+}
+
+.topBar{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+button{
+
+    padding:10px 16px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+input{
+
+    flex:1;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    border:1px solid #ccc;
+
+}
+
+.cardList{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.card{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:16px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+
+}
+
+.cardTop{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:10px;
+
+}
+
+.cardTitle{
+
+    font-size:18px;
+
+    font-weight:bold;
+}
+
+.cardText{
+
+    color:#444;
+
+    line-height:1.5;
+}
+
+.cardBtns{
+
+    display:flex;
+
+    gap:8px;
+}
+
+.popup{
+
+    margin-top:10px;
+
+    border-top:1px solid #eee;
+
+    padding-top:10px;
+}
+
+.hide{
+    display:none;
+}
+
+textarea{
+
+    width:100%;
+
+    min-height:100px;
+
+    box-sizing:border-box;
+
+    margin-top:10px;
+
+    resize:vertical;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/*
+========================
+STATE
+========================
+*/
+
+const state={
+
+    nextId:4,
+
+    items:[
+
+        {
+            id:1,
+            title:'記事 1',
+            text:'內容 AAA'
+        },
+
+        {
+            id:2,
+            title:'記事 2',
+            text:'內容 BBB'
+        },
+
+        {
+            id:3,
+            title:'記事 3',
+            text:'內容 CCC'
+        }
+
+    ]
+
+};
+
+/*
+========================
+DOM MAP
+========================
+*/
+
+const domMap={};
+
+/*
+========================
+UI ROOT
+========================
+*/
+
+const ui={};
+
+init();
+
+/*
+========================
+INIT
+========================
+*/
+
+function init(){
+
+    ui.page=document.createElement('div');
+    ui.page.className='page';
+
+    ui.topBar=createTopBar();
+
+    ui.list=document.createElement('div');
+    ui.list.className='cardList';
+
+    ui.page.append(
+        ui.topBar,
+        ui.list
+    );
+
+    app.append(ui.page);
+
+    renderAll();
+
+}
+
+/*
+========================
+TOP BAR
+========================
+*/
+
+function createTopBar(){
+
+    const bar=document.createElement('div');
+
+    bar.className='topBar';
+
+    const input=document.createElement('input');
+
+    input.placeholder='輸入新卡片內容';
+
+    const btn=document.createElement('button');
+
+    btn.textContent='新增';
+
+    btn.onclick=()=>{
+
+        if(!input.value.trim()) return;
+
+        addItem(input.value);
+
+        input.value='';
+
+    };
+
+    bar.append(
+        input,
+        btn
+    );
+
+    return bar;
+
+}
+
+/*
+========================
+CARD FACTORY
+========================
+*/
+
+function createCard(item){
+
+    const root=document.createElement('div');
+    root.className='card';
+
+    const top=document.createElement('div');
+    top.className='cardTop';
+
+    const title=document.createElement('div');
+    title.className='cardTitle';
+
+    const btnWrap=document.createElement('div');
+    btnWrap.className='cardBtns';
+
+    const toggleBtn=document.createElement('button');
+    toggleBtn.textContent='功能';
+
+    const deleteBtn=document.createElement('button');
+    deleteBtn.textContent='刪除';
+
+    const text=document.createElement('div');
+    text.className='cardText';
+
+    /*
+    ========================
+    popup
+    ========================
+    */
+
+    const popup=document.createElement('div');
+    popup.className='popup hide';
+
+    const textarea=document.createElement('textarea');
+
+    const saveBtn=document.createElement('button');
+    saveBtn.textContent='儲存';
+
+    popup.append(
+        textarea,
+        saveBtn
+    );
+
+    btnWrap.append(
+        toggleBtn,
+        deleteBtn
+    );
+
+    top.append(
+        title,
+        btnWrap
+    );
+
+    root.append(
+        top,
+        text,
+        popup
+    );
+
+    /*
+    ========================
+    events
+    ========================
+    */
+
+    toggleBtn.onclick=()=>{
+
+        popup.classList.toggle('hide');
+
+    };
+
+    deleteBtn.onclick=()=>{
+
+        removeItem(item.id);
+
+    };
+
+    saveBtn.onclick=()=>{
+
+        updateItem(
+            item.id,
+            textarea.value
+        );
+
+    };
+
+    /*
+    ========================
+    update method
+    ========================
+    */
+
+    function update(data){
+
+        title.textContent=data.title;
+
+        text.textContent=data.text;
+
+        if(
+            textarea.value!==data.text
+        ){
+            textarea.value=data.text;
+        }
+
+    }
+
+    /*
+    ========================
+    initial render
+    ========================
+    */
+
+    update(item);
+
+    /*
+    ========================
+    save dom refs
+    ========================
+    */
+
+    domMap[item.id]={
+
+        root,
+        title,
+        text,
+        textarea,
+        update
+
+    };
+
+    return root;
+
+}
+
+/*
+========================
+RENDER
+========================
+*/
+
+function renderAll(){
+
+    ui.list.innerHTML='';
+
+    state.items.forEach(item=>{
+
+        const card=createCard(item);
+
+        ui.list.append(card);
+
+    });
+
+}
+
+/*
+========================
+ADD
+========================
+*/
+
+function addItem(text){
+
+    const item={
+
+        id:state.nextId++,
+
+        title:'記事 '+Date.now(),
+
+        text
+
+    };
+
+    state.items.push(item);
+
+    const card=createCard(item);
+
+    ui.list.append(card);
+
+}
+
+/*
+========================
+UPDATE
+========================
+*/
+
+function updateItem(id,newText){
+
+    const item=state.items.find(
+        v=>v.id===id
+    );
+
+    if(!item) return;
+
+    item.text=newText;
+
+    /*
+    只更新指定DOM
+    */
+
+    domMap[id].update(item);
+
+}
+
+/*
+========================
+REMOVE
+========================
+*/
+
+function removeItem(id){
+
+    const index=state.items.findIndex(
+        v=>v.id===id
+    );
+
+    if(index===-1) return;
+
+    state.items.splice(index,1);
+
+    /*
+    移除DOM
+    */
+
+    domMap[id].root.remove();
+
+    /*
+    移除參考
+    */
+
+    delete domMap[id];
+
+}
+
+</script>
+
+</body>
+</html>

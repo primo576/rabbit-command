@@ -283,9 +283,22 @@
                           
                           <li>
                            <p>
+                           
+                            <input
+                              id="delimInput"
+                              list="delimList"
+                              placeholder="輸入後保存分隔符替換符"
+                            />
+
+                            <datalist id="delimList">
+
+                              
+
+                            </datalist>
                               <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
                               <input id="joinStr" placeholder="組合符 預設," >
-                           </p>
+                              <button onclick="deletehistory()">清除歷史</button>
+                            </p>
                         </li>
                          <li>
                            <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
@@ -554,7 +567,121 @@
          
          });
 
+
         //遍歷物件加入item現有的表情
+
+        //選取預設分割符號
+   delimInput.addEventListener('click', (e) => {
+          
+           
+          delimInput.value=''
+          
+        
+         });
+
+        delimInput.addEventListener('change', (e) => {
+          
+           
+          function delimInputChange(v){
+            if (v=='' || v=='default') {
+            delimiterInput.value=''
+            joinStr.value=''
+            }else{
+            v=v.split(',')
+            delimiterInput.value=v[0]
+            joinStr.value=v[1]
+          }
+          }
+          
+          delimInputChange(delimInput.value);
+          
+        
+         });
+
+         const STORAGE_KEY='delim-history';
+
+         
+
+          function init(){
+
+            const history=
+                JSON.parse(
+                  localStorage.getItem(
+                      STORAGE_KEY
+                  ) || '["default", " ,|"]'
+                );
+
+            history.forEach(addOption);
+
+          }
+           init();
+
+           delimInput.onchange=()=>{
+
+   saveHistory(
+      delimInput.value
+   );
+
+}
+
+function deletehistory(){
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+function saveHistory(value){
+
+   if(!value.trim()) return;
+
+   const history=
+      JSON.parse(
+         localStorage.getItem(
+            STORAGE_KEY
+         ) || '["default", " ,|"]'
+      );
+
+
+
+   /*
+   去重
+   */
+
+   const set=new Set(history);
+
+   set.add(value);
+
+   const arr=[...set];
+
+   localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(arr)
+   );
+
+   refreshDataList(arr);
+
+}
+
+function refreshDataList(arr){
+
+   delimList.innerHTML='';
+
+   arr.forEach(addOption);
+
+}
+
+function addOption(value){
+
+   const option=
+      document.createElement(
+         'option'
+      );
+
+   option.value=value;
+
+   delimList.append(option);
+
+}
+
+          //選取預設分割符號
 
         function searchEmojiSelect(){
           existEmoji=new Set()
