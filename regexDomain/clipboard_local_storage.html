@@ -287,18 +287,19 @@
                             <input
                               id="delimInput"
                               list="delimList"
-                              placeholder="輸入後保存分隔符替換符"
+                              placeholder="輸入後保存分隔符替換符用&&切割"
                             />
 
                             <datalist id="delimList">
-
-                              
-
                             </datalist>
-                              <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
-                              <input id="joinStr" placeholder="組合符 預設," >
                               <button onclick="deletehistory()">清除歷史</button>
                             </p>
+                        </li>
+                        <li>
+                          <p>
+                              <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+                              <input id="joinStr" placeholder="組合符 預設,逗號" >
+                          </p>
                         </li>
                          <li>
                            <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
@@ -575,7 +576,7 @@
           
            
           delimInput.value=''
-          
+
         
          });
 
@@ -587,9 +588,9 @@
             delimiterInput.value=''
             joinStr.value=''
             }else{
-            v=v.split(',')
-            delimiterInput.value=v[0]
-            joinStr.value=v[1]
+            v=v.split('&&')
+            delimiterInput.value=v[0]||''
+            joinStr.value=v[1]||''
           }
           }
           
@@ -608,7 +609,7 @@
                 JSON.parse(
                   localStorage.getItem(
                       STORAGE_KEY
-                  ) || '["default", " ,|"]'
+                  ) || `["default","\\\\n&&,"]`
                 );
 
             history.forEach(addOption);
@@ -625,7 +626,9 @@
 }
 
 function deletehistory(){
+  if (!confirm('確定要清空所有暫存切割變數嗎？')) return;
   localStorage.removeItem(STORAGE_KEY)
+  saveHistory('default');
 }
 
 function saveHistory(value){
@@ -636,7 +639,7 @@ function saveHistory(value){
       JSON.parse(
          localStorage.getItem(
             STORAGE_KEY
-         ) || '["default", " ,|"]'
+         ) ||  `["default","\\\\n&&,"]`
       );
 
 
