@@ -279,6 +279,7 @@
                      
                           <li><input placeholder="搜索列表" type="search" id="searchBars">
                        <select id="searchEmoji"><option value="">搜索表情</option></select>
+                        <input type="checkbox" id="displayEmojiAnswer" >過濾表情標籤
                         </li>
                           
                           <li>
@@ -565,11 +566,24 @@
 
           searchEmoji.addEventListener('change', (e) => {
           renderBarsV2(searchEmoji.value)
+           
+           if (displayEmojiAnswer.checked) {
+            render();
+           }
          
          });
 
 
         //遍歷物件加入item現有的表情
+        //
+         displayEmojiAnswer.addEventListener('change', (e) => {
+          
+           
+         render();
+
+        
+         });
+        //
 
         //選取預設分割符號
    delimInput.addEventListener('click', (e) => {
@@ -687,6 +701,10 @@ function addOption(value){
           //選取預設分割符號
 
         function searchEmojiSelect(){
+          if (displayEmojiAnswer.checked) {
+            titleChangeUse('勾選過濾下不更新表情列表');
+            return
+          }
           existEmoji=new Set()
            data.forEach((item, index) => {
             if (item.emoji) {
@@ -843,6 +861,13 @@ console.log(`item-${t}`)
            //////
          
            data.forEach((item, index) => {
+            //過濾表情標籤
+            if (displayEmojiAnswer.checked) {
+              if (item.emoji!=searchEmoji.value) {
+                return;
+              }
+            }
+            //過濾表情標籤
             const divTop = document.createElement('div');
             divTop.className='divTop'
              const div = document.createElement('li');
