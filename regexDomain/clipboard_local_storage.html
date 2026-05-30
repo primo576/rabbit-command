@@ -609,7 +609,7 @@
                 JSON.parse(
                   localStorage.getItem(
                       STORAGE_KEY
-                  ) || `["default","\\\\n&&,"]`
+                  ) || `["default",",&&\\\\n"]`
                 );
 
             history.forEach(addOption);
@@ -639,7 +639,7 @@ function saveHistory(value){
       JSON.parse(
          localStorage.getItem(
             STORAGE_KEY
-         ) ||  `["default","\\\\n&&,"]`
+         ) ||  `["default",",&&\\\\n"]`
       );
 
 
@@ -1667,6 +1667,7 @@ console.log(`item-${t}`)
                recoverTitle();
                input.value = '';
               // clearAllSelect();
+              window.location.href='#'
              }
            }, 0);
          }
