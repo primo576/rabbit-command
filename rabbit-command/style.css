@@ -148,8 +148,12 @@
   column-gap: 10px;
 }
 .teatareaDesc{
-  height: -webkit-fill-available;
-    width: -webkit-fill-available;
+ height: -webkit-fill-available; 
+  width: -webkit-fill-available;
+  /*
+  field-sizing: content;
+  max-height: 20dvh;
+  */
 }
 .buttomBox{
   display: flex;
@@ -168,11 +172,8 @@
           
         }
 
-
-        .teatareaDesc{
-  field-sizing: content;
+.teatareaDesc{
+ min-height: 20dvh;field-sizing: content;
 }
         
-
-
-         }
+}
