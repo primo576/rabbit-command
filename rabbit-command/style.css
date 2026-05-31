@@ -2,7 +2,9 @@
     field-sizing: content;
    
 }
-
+.centerBackround{
+background: var(--card);
+}
   body {
       font-family: monospace;
       background: #f6f6f6;
@@ -19,7 +21,7 @@
     select {
     
       padding: 6px;
-      margin-bottom: 8px;
+      /*margin-bottom: 8px;*/
       
       font-family: monospace;
     }
@@ -158,11 +160,12 @@
 .buttomBox{
   display: flex;
   white-space: nowrap;
-  max-width: 100dvh;
+  /*max-width: 100dvh;*/
 }
 
 .align-items-center{
  text-align: center;
+ align-items: center;
 }
  @media screen and (max-width: 500px) {
          /*寬 700px 以內時應用 */
