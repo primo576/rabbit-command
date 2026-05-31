@@ -955,14 +955,16 @@ console.log(`item-${t}`)
                 addOption(inputEmoji.textContent)
                 addOption('','N')
 
-                    emoji.forEach((i,index)=>{
-              if (index>30) {
-                return
-              }
-                addOption(i)
-              }
+                for (let index = 0; index < 30; index++) {
+                  const element = emoji[index];
+                     if (index<10) {
+                addOption(element)
+              }else{addOption(randomObject(emoji)
+              )
 
-            )
+              }
+             
+                }
          
               // 替換 div → input
               inputEmoji.replaceWith(input);
@@ -979,11 +981,15 @@ console.log(`item-${t}`)
                  save()
                   
                   
-                
+                     if (item.emoji) {
+            inputEmoji.classList.remove('opacity')
+                 }else{
+                  inputEmoji.classList.add('opacity')
+                 }
                   // 換回 div
-                 // input.replaceWith(inputEmoji);
+                  input.replaceWith(inputEmoji);
                 //setTimeout(() => render(), 1000);
-                 render()
+                //render()
               };
          
               // Enter 儲存

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Jenkins Curl Builder</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-top:10px;
+}
+
+.inline-flex {
+    display:inline-flex;
+}
+
+input,textarea,select{
+    width:100%;
+    padding:8px;
+    margin-top:4px;
+    box-sizing:border-box;
+}
+
+button{
+    padding:8px 12px;
+    margin:4px;
+    cursor:pointer;
+}
+
+.paramRow{
+    display:flex;
+    gap:10px;
+    margin-bottom:5px;
+}
+
+.paramRow input{
+    flex:1;
+}
+
+.paramRow button{
+    flex:none;
+}
+
+pre{
+    background:#111;
+    color:#0f0;
+    padding:15px;
+    overflow:auto;
+    white-space:pre-wrap;
+}
+
+.historyItem{
+    border:1px solid #ddd;
+    padding:10px;
+    margin-bottom:5px;
+}
+
+.historyTitle{
+    font-weight:bold;
+}
+
+.flex{
+    display:flex;
+    gap:20px;
+}
+
+.left{
+    flex:2;
+}
+
+.right{
+    flex:1;
+}
+
+.small{
+    font-size:12px;
+    color:#666;
+}
+
+.hide{
+  display: none;
+}
+.overflowAuto{
+  overflow: auto;
+  height: 50dvh;
+}
+
+   @media screen and (max-width: 700px) {
+         /*寬 600px 以內時應用 */
+         body{
+          background-color: rgb(0, 0, 0);
+         }
+         .flex{
+          flex-direction: column-reverse;
+         }
+          .overflowAuto{height: 20dvh;}
+         }
+        
+</style>
+</head>
+<body>
+
+<h1>Jenkins Curl Builder</h1>
+
+<div class="flex">
+
+<div class="left">
+
+<div class="card">
+
+<label>Jenkins job URL</label>
+<input id="jenkinsUrl"
+placeholder="https://jenkins.example.com/job/jobName">
+
+<div class="">
+<label>保存標題</label>
+<input id="jobName"
+placeholder="保存時標題寫這個">
+</div>
+<label>Build Type</label>
+
+<label class="inline-flex ">
+<input type="radio"
+name="buildType"
+value="build"
+>
+build
+</label>
+
+<label class="inline-flex ">
+<input type="radio"
+name="buildType"
+value="buildWithParameters" checked>
+buildWithParameters
+</label>
+
+<label>Username</label>
+<input id="username">
+
+<label>API Token</label>
+<input id="apiToken">
+
+<div class="hide">
+<label>Trigger Token</label>
+<input id="triggerToken">
+</div>
+
+<label>Delay</label>
+<input id="delay"
+placeholder="0sec">
+
+</div>
+
+<div class="card">
+
+<h3>Parameters</h3>
+
+<div id="paramList"></div>
+
+<button onclick="addParam()">
++ 新增參數
+</button>
+
+</div>
+
+<div class="card">
+
+<button onclick="generateCurl()">
+產生 CURL
+</button>
+
+<button onclick="copyText('curlOutput')">
+複製
+</button>
+
+<button onclick="saveHistory()">
+儲存設定
+</button>
+
+<button onclick="exportConfig()">
+匯出 JSON
+</button>
+
+<input
+type="file"
+id="importFile"
+style="display:none"
+onchange="importConfig(event)"
+>
+
+<button onclick="importFile.click()">
+匯入 JSON
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>Generated CURL</h3>
+
+<pre id="curlOutput"></pre>
+
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="card">
+
+<h3>History</h3>
+
+<div id="historyList" class="overflowAuto"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function addParam(name='', value=''){
+
+    const row=document.createElement('div');
+    row.className='paramRow';
+
+    row.innerHTML=`
+        <input class="paramName"
+               placeholder="Parameter Name"
+               value="${name}">
+
+        <input class="paramValue"
+               placeholder="Parameter Value"
+               value="${value}">
+
+        <button onclick="this.parentNode.remove();generateCurl()">
+        X
+        </button>
+    `;
+
+    document
+        .getElementById('paramList')
+        .appendChild(row);
+}
+
+function getConfig(){
+
+    const params=[...document.querySelectorAll('.paramRow')]
+        .map(row=>({
+
+            name:row.querySelector('.paramName').value,
+
+            value:row.querySelector('.paramValue').value
+
+        }))
+        .filter(v=>v.name);
+
+    return {
+
+        jenkinsUrl:
+            jenkinsUrl.value.trim(),
+
+        jobName:
+            jobName.value.trim(),
+
+        buildType:
+            document.querySelector(
+                'input[name=buildType]:checked'
+            ).value,
+
+        username:
+            username.value.trim(),
+
+        apiToken:
+            apiToken.value.trim(),
+
+        triggerToken:
+            triggerToken.value.trim(),
+
+        delay:
+            delay.value.trim(),
+
+        params
+    };
+}
+
+function generateCurl(){
+
+    const cfg=getConfig();
+
+    let url=
+//`${cfg.jenkinsUrl}/job/${cfg.jobName}/${cfg.buildType}`;
+`${cfg.jenkinsUrl}job/${cfg.buildType}`;
+
+    const query=[];
+
+    if(cfg.triggerToken)
+        query.push(
+            `token=${encodeURIComponent(cfg.triggerToken)}`
+        );
+
+    if(cfg.delay)
+        query.push(
+            `delay=${encodeURIComponent(cfg.delay)}`
+        );
+
+    let dataPart='';
+
+    if(cfg.buildType==='buildWithParameters'){
+
+        cfg.params.forEach(p=>{
+
+            dataPart+=
+` \\
+--data-urlencode "${p.name}=${p.value}"`;
+//伺服器將收到email=user%2Btest%40gmail.com&message=Hello%20World%21
+
+        });
+    }
+
+    if(query.length){
+
+        url+='?'+query.join('&');
+    }
+
+    let auth='';
+
+    if(cfg.username && cfg.apiToken){
+
+        auth=
+`--user "${cfg.username}:${cfg.apiToken}"`;
+    }
+
+    const curl=
+`curl -X POST \\
+${auth}
+${dataPart}
+"${url}"`;
+
+    curlOutput.textContent=curl;
+}
+
+function copyText(elementId){
+      navigator.clipboard.writeText(document.getElementById(elementId).textContent)
+      
+}
+
+function saveHistory(){
+
+    const cfg=getConfig();
+
+    cfg.time=
+        new Date().toLocaleString();
+
+    const history=
+        JSON.parse(
+            localStorage.getItem('jenkinsHistory')
+            || '[]'
+        );
+
+    history.unshift(cfg);
+
+    localStorage.setItem(
+        'jenkinsHistory',
+        JSON.stringify(history.slice(0,50))
+    );
+
+    loadHistory();
+}
+
+function loadHistory(){
+
+    const history=
+        JSON.parse(
+            localStorage.getItem('jenkinsHistory')
+            || '[]'
+        );
+
+    historyList.innerHTML='';
+
+    history.forEach((item,index)=>{
+
+        const div=document.createElement('div');
+
+        div.className='historyItem';
+
+        div.innerHTML=`
+            <div class="historyTitle">
+            ${item.jobName}
+            </div>
+
+            <div class="small">
+            ${item.time}
+            </div>
+
+            <button onclick="loadConfig(${index})">
+            載入
+            </button>
+
+            <button onclick="deleteHistory(${index})">
+            刪除
+            </button>
+        `;
+
+        historyList.appendChild(div);
+
+    });
+}
+
+function loadConfig(index){
+
+    const history=
+        JSON.parse(
+            localStorage.getItem('jenkinsHistory')
+            || '[]'
+        );
+
+    const cfg=history[index];
+
+    jenkinsUrl.value=cfg.jenkinsUrl;
+    jobName.value=cfg.jobName;
+    username.value=cfg.username;
+    apiToken.value=cfg.apiToken;
+    triggerToken.value=cfg.triggerToken;
+    delay.value=cfg.delay;
+
+    document.querySelector(
+        `input[value="${cfg.buildType}"]`
+    ).checked=true;
+
+    paramList.innerHTML='';
+
+    cfg.params.forEach(p=>{
+
+        addParam(p.name,p.value);
+
+    });
+
+    generateCurl();
+}
+
+function deleteHistory(index){
+
+    const history=
+        JSON.parse(
+            localStorage.getItem('jenkinsHistory')
+            || '[]'
+        );
+
+    history.splice(index,1);
+
+    localStorage.setItem(
+        'jenkinsHistory',
+        JSON.stringify(history)
+    );
+
+    loadHistory();
+}
+
+function exportConfig(){
+
+    const cfg=getConfig();
+
+    const blob=
+        new Blob(
+            [JSON.stringify(cfg,null,2)],
+            {type:'application/json'}
+        );
+
+    const a=
+        document.createElement('a');
+
+    a.href=
+        URL.createObjectURL(blob);
+
+    a.download=
+        `${cfg.jobName||'jenkins'}.json`;
+
+    a.click();
+}
+
+function importConfig(event){
+
+    const file=
+        event.target.files[0];
+
+    if(!file) return;
+
+    const reader=
+        new FileReader();
+
+    reader.onload=()=>{
+
+        const cfg=
+            JSON.parse(reader.result);
+
+        jenkinsUrl.value=cfg.jenkinsUrl||'';
+        jobName.value=cfg.jobName||'';
+        username.value=cfg.username||'';
+        apiToken.value=cfg.apiToken||'';
+        triggerToken.value=cfg.triggerToken||'';
+        delay.value=cfg.delay||'';
+
+        document.querySelector(
+            `input[value="${cfg.buildType}"]`
+        ).checked=true;
+
+        paramList.innerHTML='';
+
+        (cfg.params||[])
+            .forEach(p=>
+                addParam(
+                    p.name,
+                    p.value
+                )
+            );
+
+        generateCurl();
+    };
+
+    reader.readAsText(file);
+}
+
+document.addEventListener(
+    'input',
+    generateCurl
+);
+
+addParam('branch','main');
+
+loadHistory();
+
+generateCurl();
+
+</script>
+ <script src="../public/floating-menu.js"></script>
+
+</body>
+</html>
