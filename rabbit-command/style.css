@@ -1,3 +1,8 @@
+  .fixArea {
+    field-sizing: content;
+   
+}
+
   body {
       font-family: monospace;
       background: #f6f6f6;
@@ -12,9 +17,10 @@
     textarea,
     input,
     select {
-      width: 100%;
+    
       padding: 6px;
       margin-bottom: 8px;
+      
       font-family: monospace;
     }
 
@@ -26,9 +32,7 @@
         word-wrap: break-word;
     }
 
-    textarea {
-      height: 60px;
-    }
+  
 
     button {
       padding: 6px 12px;
@@ -60,14 +64,21 @@
       gap: 20px;
     }
 
+    .overflowAuto{
+  overflow: auto;
+  max-height: 50dvh;
+}
+
     .left,
     .right {
       flex: 1;
     }
 
     .section {
+      /*
       position: relative;
       padding-top: 16px;
+      */
     }
 
     .section::before {
@@ -130,3 +141,38 @@
 .box1 {
   max-width: 640px;
 }
+
+.centerBox{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+}
+.teatareaDesc{
+  height: -webkit-fill-available;
+    width: -webkit-fill-available;
+}
+.buttomBox{
+  display: flex;
+  white-space: nowrap;
+  max-width: 100dvh;
+}
+
+.align-items-center{
+ text-align: center;
+}
+ @media screen and (max-width: 500px) {
+         /*寬 700px 以內時應用 */
+         .centerBox{
+          
+          grid-template-columns: 1fr;
+          
+        }
+
+
+        .teatareaDesc{
+  field-sizing: content;
+}
+        
+
+
+         }

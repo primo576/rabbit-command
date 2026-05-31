@@ -98,7 +98,7 @@ pre{
 }
 .overflowAuto{
   overflow: auto;
-  height: 50dvh;
+  max-height: 50dvh;
 }
 
    @media screen and (max-width: 700px) {
@@ -109,7 +109,7 @@ pre{
          .flex{
           flex-direction: column-reverse;
          }
-          .overflowAuto{height: 20dvh;}
+          .overflowAuto{max-height: 20dvh;}
          }
         
 </style>
@@ -170,12 +170,13 @@ placeholder="0sec">
 <div class="card">
 
 <h3>Parameters</h3>
-
-<div id="paramList"></div>
-
 <button onclick="addParam()">
 + 新增參數
 </button>
+
+<div id="paramList" class="overflowAuto"></div>
+
+
 
 </div>
 

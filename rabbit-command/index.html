@@ -7,19 +7,22 @@
       <title>🐇兔rabbit-command🔧</title>
    </head>
    <body>
-      <div class="layout">
-         <div class="section left">
-            <p id="titleTop">🐇 兔rabbit-command🔧</p>
+      <div class="centerBox overflowAuto align-items-center">
+         <div class="section ">
+            <div id="titleTop">🐇 兔rabbit-command🔧</div>
          </div>
-         <div class="section right">
-            <select id="templateGroup"></select>
+         <div class="section  ">
+            <select class="teatareaDesc" id="templateGroup"></select>
          </div>
       </div>
       <hr />
+      <div class="buttomBox overflowAuto">
       <button onclick="genCopy()">🚀 產生複製</button>
       <button onclick="generate()">🚀 產生指令</button>
       <button onclick="copy()">📋 複製結果</button>
       <button onclick="copytemplate()">📋 複製模板</button>
+      </div>
+ <div class="buttomBox overflowAuto">
       <details>
          <summary>更多</summary>
          <button onclick="addVar()">➕ 新增變數</button>
@@ -33,14 +36,15 @@
             <option value="zip">一對一對應</option>
          </select>
       </details>
-      <hr>
-      <div class="layout">
+</div>
+      
+      <div class="centerBox overflowAuto">
          <div class="section left">
             <div class="box1">
                <label>📦 常用指令模板</label>
                <select id="templateSelect" onchange="applyTemplate()"></select>
                <label>✏️ 指令模板</label>
-               <textarea id="template"></textarea>
+               <textarea id="template" class="fixArea"></textarea>
                <div  id="searchdiv"  >
                   <input id="search" placeholder="搜尋指令（log / ingress / crash）">
                   <select id="cmdSelect" size="10"></select>
@@ -49,7 +53,7 @@
             </div>
          </div>
          <div class="section right">
-            <textarea id="commandDesc" style="height: 90%;"></textarea>
+            <textarea id="commandDesc" class="teatareaDesc"></textarea>
          </div>
       </div>
       <hr />
@@ -60,7 +64,7 @@
 可以直接在模板內加入新變數
 組合方式 使用時要注意</pre>
       <h3>🕘 指令產生歷史</h3>
-      <div id="history" class="history"></div>
+      <div id="history" class="history overflowAuto"></div>
    </body>
 </html>
 <script src="rabbit-command-data.js"></script>
