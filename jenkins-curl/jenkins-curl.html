@@ -98,25 +98,38 @@ pre{
 }
 .overflowAuto{
   overflow: auto;
-  max-height: 50dvh;
+  max-height: 20dvh;
 }
 
+.widthUnset{
+    width: unset;
+}
+
+
+.disflex{
+    display:flex;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+.overflowWhiteNowrap{
+    white-space: nowrap;
+    overflow: auto;
+}
    @media screen and (max-width: 700px) {
          /*寬 600px 以內時應用 */
-         body{
-          background-color: rgb(0, 0, 0);
-         }
+        
          .flex{
           flex-direction: column-reverse;
          }
-          .overflowAuto{max-height: 20dvh;}
+          
          }
         
 </style>
 </head>
 <body>
 
-<h1>Jenkins Curl Builder</h1>
+<h1 id="title">Jenkins Curl Builder</h1>
 
 <div class="flex">
 
@@ -134,22 +147,21 @@ placeholder="https://jenkins.example.com/job/jobName">
 placeholder="保存時標題寫這個">
 </div>
 <label>Build Type</label>
-
-<label class="inline-flex ">
-<input type="radio"
+<div class="disflex">
+<label>
+<input class="widthUnset" type="radio"
 name="buildType"
 value="build"
 >
 build
 </label>
-
-<label class="inline-flex ">
-<input type="radio"
+<label>
+<input class="widthUnset" type="radio"
 name="buildType"
 value="buildWithParameters" checked>
 buildWithParameters
 </label>
-
+</div>
 <label>Username</label>
 <input id="username">
 
@@ -169,11 +181,12 @@ placeholder="0sec">
 
 <div class="card">
 
+<div class="disflex">
 <h3>Parameters</h3>
 <button onclick="addParam()">
 + 新增參數
 </button>
-
+</div>
 <div id="paramList" class="overflowAuto"></div>
 
 
@@ -181,6 +194,7 @@ placeholder="0sec">
 </div>
 
 <div class="card">
+<div class="overflowWhiteNowrap">
 
 <button onclick="generateCurl()">
 產生 CURL
@@ -208,7 +222,7 @@ onchange="importConfig(event)"
 <button onclick="importFile.click()">
 匯入 JSON
 </button>
-
+</div>
 </div>
 
 <div class="card">
@@ -360,8 +374,21 @@ ${dataPart}
 
 function copyText(elementId){
       navigator.clipboard.writeText(document.getElementById(elementId).textContent)
+      titlchange(' 複製 '+elementId)
       
 }
+
+function titlchange(text){
+    tar=document.getElementById('title');
+    b=tar.textContent
+    tar.textContent=text
+
+    setTimeout(() => {
+      tar.textContent=b
+   }, 3000);
+}
+
+
 
 function saveHistory(){
 
