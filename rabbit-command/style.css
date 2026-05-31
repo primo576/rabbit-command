@@ -1,6 +1,6 @@
   .fixArea {
-    field-sizing: content;
-   
+    field-sizing: fixed;
+   white-space: nowrap;
 }
 .centerBackround{
 background: var(--card);
@@ -176,7 +176,7 @@ background: var(--card);
         }
 
 .teatareaDesc{
- min-height: 20dvh;field-sizing: content;
+ min-height: 10px;field-sizing: content;
 }
         
 }

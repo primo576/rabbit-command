@@ -116,6 +116,9 @@ pre{
     white-space: nowrap;
     overflow: auto;
 }
+.maxWidth50dvh{
+    max-width: 50dvh;
+}
    @media screen and (max-width: 700px) {
          /*寬 600px 以內時應用 */
         
@@ -161,6 +164,14 @@ name="buildType"
 value="buildWithParameters" checked>
 buildWithParameters
 </label>
+
+<label>
+<input class="widthUnset" type="radio"
+name="buildType"
+value="URL-buildWithParameters" >
+URL-buildWithParameters
+</label>
+
 </div>
 <label>Username</label>
 <input id="username">
@@ -208,6 +219,10 @@ placeholder="0sec">
 儲存設定
 </button>
 
+<button onclick="copyText('curLinelOutput')">
+複製單行
+</button>
+
 <button onclick="exportConfig()">
 匯出 JSON
 </button>
@@ -228,7 +243,7 @@ onchange="importConfig(event)"
 <div class="card">
 
 <h3>Generated CURL</h3>
-
+<pre class="overflowWhiteNowrap maxWidth50dvh" id="curLinelOutput"></pre>
 <pre id="curlOutput"></pre>
 
 </div>
@@ -287,6 +302,8 @@ function getConfig(){
         }))
         .filter(v=>v.name);
 
+        
+
     return {
 
         jenkinsUrl:
@@ -316,6 +333,8 @@ function getConfig(){
     };
 }
 
+
+
 function generateCurl(){
 
     const cfg=getConfig();
@@ -340,41 +359,58 @@ function generateCurl(){
 
     if(cfg.buildType==='buildWithParameters'){
 
-        cfg.params.forEach(p=>{
-
-            dataPart+=
-` \\
---data-urlencode "${p.name}=${p.value}"`;
+        cfg.params.forEach((p , index)=>{
+          if (index==0) {
+            dataPart+=`--data-urlencode "${p.name}=${p.value}" \\`;
+          }else{
+            dataPart+=`
+--data-urlencode "${p.name}=${p.value}" \\`;
 //伺服器將收到email=user%2Btest%40gmail.com&message=Hello%20World%21
-
+        }
         });
     }
 
-    if(query.length){
+       if(cfg.buildType==='URL-buildWithParameters'){
+     url=url.replaceAll('URL-buildWithParameters','buildWithParameters');
+        cfg.params.forEach((p , index)=>{
+          if (index==0) {
+            url+=`?${p.name}=${p.value}\\`;
+          }else{
+            url+=`
+&${p.name}=${p.value}\\`;
+        }
+        });
 
-        url+='?'+query.join('&');
+    }
+
+    if(query.length){
+         if(cfg.buildType==='URL-buildWithParameters'){
+        url+='\n&'+query.join('&');
+         }else{
+            url+='?'+query.join('&');
+         }
     }
 
     let auth='';
 
     if(cfg.username && cfg.apiToken){
 
-        auth=
-`--user "${cfg.username}:${cfg.apiToken}"`;
+        auth=`--user "${cfg.username}:${cfg.apiToken}" \\`;
     }
 
     const curl=
 `curl -X POST \\
-${auth}
-${dataPart}
+${auth||'\\'}
+${dataPart||'\\'}
 "${url}"`;
 
     curlOutput.textContent=curl;
+    curLinelOutput.textContent=curl.replaceAll('\n','').replaceAll('\\','');
 }
 
 function copyText(elementId){
       navigator.clipboard.writeText(document.getElementById(elementId).textContent)
-      titlchange(' 複製 '+elementId)
+      titlchange(' CPOY '+elementId)
       
 }
 
