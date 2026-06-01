@@ -276,7 +276,7 @@
                   <summary>設定</summary>
                   <div class="topSummary">
                      <ol id="setMenuol">
-                     
+                    
                           <li><input placeholder="搜索列表" type="search" id="searchBars">
                        <select id="searchEmoji"><option value="">搜索表情</option></select>
                         <input type="checkbox" id="displayEmojiAnswer" >過濾表情標籤
@@ -300,6 +300,7 @@
                           <p>
                               <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
                               <input id="joinStr" placeholder="組合符 預設,逗號" >
+                              <input placeholder="切割行數 預設10行" type="input" id="cutConut" title="切割按鈕用的分割行數">
                           </p>
                         </li>
                          <li>
@@ -388,6 +389,7 @@
          const list = document.getElementById('list');
          const bars = document.getElementById('bars');
          const usage = document.getElementById('usage');
+         canSaveDate = true
          
          ////
              function auto_grow(el) {
@@ -494,6 +496,10 @@
          });
          */
          function save() {
+          if (!canSaveDate) {
+            titleChangeUse('暫時不能儲存資料');
+            return
+          }
            localStorage.setItem('clipboardData', JSON.stringify(data));
          }
          
@@ -1011,7 +1017,10 @@ console.log(`item-${t}`)
          
              textarea.oninput = () => {
                item.text = textarea.value;
-               save();
+               if (!item.canotSave) {
+                save();
+               }
+               
                renderBars();
                renderUsage();
                if (item.expanded) {
@@ -1042,6 +1051,40 @@ console.log(`item-${t}`)
                
               // setTimeout(() => {auto_grow(textarea);}, 0);
              }
+          ////切割行
+             const toggleBtnToCut = document.createElement('button');
+             toggleBtnToCut.textContent = item.toCutConut ? '原文' : '切割';
+             toggleBtnToCut.className='buttomStyle1'
+             toggleBtnToCut.onclick = () => {
+               item.toCutConut = !item.toCutConut;
+               item.canotSave = !item.canotSave;
+               //save();
+               render();
+             };
+            if (item.toCutConut) {
+              //canSaveDate=false
+                const lines = textarea.value.split(delimiter)
+                  const result = [];
+                cutConut=document.getElementById('cutConut').value||10;
+                
+                result.push(`===== 0/${lines.length} 每${cutConut}分隔 =====`);
+
+                lines.forEach((line, index) => {
+
+                    result.push(line);
+
+                    if ((index + 1) % cutConut === 0) {
+                        result.push(`===== ${index +1}/${lines.length} 行分隔線 =====`);
+                    }
+
+                });
+
+                const text = result.join(delimiter);
+                textarea.value=text
+                
+              }
+             ////切割行
+
              ////
              const toggleBtnToLower = document.createElement('button');
              toggleBtnToLower.textContent = item.tolowered ? '原文' : '小寫';
@@ -1211,16 +1254,20 @@ console.log(`item-${t}`)
              divBtn.appendChild(createBtnClickFun('複製',()=>copyText(textarea.value,index),'複製內容'));
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
+             divBtn.appendChild(toggleBtnTojoinStr);//替換字
+             divBtn.appendChild(toggleBtnToCut);//切割行數
              divBtn.appendChild(toggleBtnToLower);//全部小寫
              divBtn.appendChild(toggleBtnToReverse);//倒序
-             divBtn.appendChild(toggleBtnTojoinStr);//替換字
-             divOther.appendChild(createBtnClickFun('⏎',cpoyLine,'複製整個區塊'));
-             divOther.appendChild(createBtnClickFun('🔗',cpoyShare,'模板分享'));
+             
+            
              divBtn.appendChild(testIMGlinkBtn); //IMG訪問
              divBtn.appendChild(createBtnClickFun('url全部訪問',openALLurl));
               
-             //divBtn.appendChild(createBtnClickFun('X',delLine));
-              divOther.appendChild(createBtnClickFun('❌',delLine,'刪除'));
+            
+            divOther.appendChild(createBtnClickFun('⏎',cpoyLine,'複製整個區塊'));
+            divOther.appendChild(createBtnClickFun('🔗',cpoyShare,'模板分享'));
+            divOther.appendChild(createBtnClickFun('❌',delLine,'刪除'));
+
             divlineAndBtns.className='inlineflex'
              divinline.appendChild(divBtn);
              divlineAndBtns.appendChild(inputEmoji)
