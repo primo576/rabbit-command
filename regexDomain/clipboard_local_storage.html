@@ -301,6 +301,7 @@
                               <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
                               <input id="joinStr" placeholder="組合符 預設,逗號" >
                               <input placeholder="切割行數 預設10行" type="input" id="cutConut" title="切割按鈕用的分割行數">
+                             <input type="checkbox" id="filterSpace" >切割過濾空白行
                           </p>
                         </li>
                          <li>
@@ -1017,9 +1018,7 @@ console.log(`item-${t}`)
          
              textarea.oninput = () => {
                item.text = textarea.value;
-               if (!item.canotSave) {
-                save();
-               }
+               save();
                
                renderBars();
                renderUsage();
@@ -1057,28 +1056,42 @@ console.log(`item-${t}`)
              toggleBtnToCut.className='buttomStyle1'
              toggleBtnToCut.onclick = () => {
                item.toCutConut = !item.toCutConut;
-               item.canotSave = !item.canotSave;
+              
                //save();
                render();
              };
             if (item.toCutConut) {
-              //canSaveDate=false
+              per=0
                 const lines = textarea.value.split(delimiter)
                   const result = [];
                 cutConut=document.getElementById('cutConut').value||10;
                 
-                result.push(`===== 0/${lines.length} 每${cutConut}分隔 =====`);
+                result.push(`===== 0/${lines.length} 每${cutConut}分隔 0% =====`);
 
                 lines.forEach((line, index) => {
 
+                  if (filterSpace.checked) {
+                    if (line!='') {
                     result.push(line);
+                   }
+                  }else{
+                    result.push(line);
+                  }
+                  
+                    
 
                     if ((index + 1) % cutConut === 0) {
-                        result.push(`===== ${index +1}/${lines.length} 行分隔線 =====`);
+                      per=Math.floor(((index+1)/lines.length*100))
+                        if (per === 100) {
+                          
+                        }else{
+                          result.push(`===== ${index +1}/${lines.length} 行分隔線 ${per}% =====`);
+                        }
+                        
                     }
 
                 });
-
+                result.push(`===== ${lines.length}/${lines.length} 行分隔線 100% =====`);
                 const text = result.join(delimiter);
                 textarea.value=text
                 
@@ -1151,6 +1164,11 @@ console.log(`item-${t}`)
                render();
                titleChange('重新整理找回：'+time.textContent+"···操作新資料才保存刪除")  
                recoverTitle();
+             }
+
+            function recut(){
+               
+               textarea.value=textarea.value.replace(/^=====.*=====\n?/gm, '');
              }
 
              function cpoyLine(){
@@ -1255,7 +1273,10 @@ console.log(`item-${t}`)
              divBtn.appendChild(toggleBtn); //展開收起
              divBtn.appendChild(createBtnClickFun('逐行',lineMode)); 
              divBtn.appendChild(toggleBtnTojoinStr);//替換字
+
              divBtn.appendChild(toggleBtnToCut);//切割行數
+             if (item.toCutConut) { divBtn.appendChild(createBtnClickFun('刪除切割行',recut,'刪除切割行')); }
+             
              divBtn.appendChild(toggleBtnToLower);//全部小寫
              divBtn.appendChild(toggleBtnToReverse);//倒序
              
