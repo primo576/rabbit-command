@@ -95,10 +95,6 @@ let data = JSON.parse(localStorage.getItem('clipboardData')) || [];
 
 
 function save() {
-   if (!canSaveDate) {
-      titleChangeUse('暫時不能儲存資料');
-      return
-   }
    localStorage.setItem('clipboardData', JSON.stringify(data));
 }
 
