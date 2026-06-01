@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>剪貼簿</title>
+      <link rel="stylesheet" type="text/css" href="./style.css">
+   </head>
+   <body>
+      <div class="sticky-navbar">
+         <div class="">
+            <div class="titleStyle">
+               <p id="titleA" class="textCenter">剪貼簿</p>
+               <div id="usage"></div>
+            </div >
+         </div >
+         <div class="setbar">
+            <label class="" style="margin-left: 2px;">
+               <details>
+                  <summary>設定</summary>
+                  <div class="topSummary">
+                     <ol id="setMenuol">
+                        <li>
+                           <input placeholder="搜索列表" type="search" id="searchBars">
+                           <select id="searchEmoji">
+                              <option value="">搜索表情</option>
+                           </select>
+                           <input type="checkbox" id="displayEmojiAnswer" >過濾表情標籤
+                        </li>
+                        <li>
+                           <p>
+                              <button class="buttomStyle1" onclick="applyToAllTextareasSet()">全部展開</button>
+                              <button class="buttomStyle1" onclick="applyToAllTextareasRm()">全部收起</button>
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              <input
+                                 id="delimInput"
+                                 list="delimList"
+                                 placeholder="輸入後保存分隔符替換符用&&切割"
+                                 />
+                              <datalist id="delimList">
+                              </datalist>
+                              <button onclick="deletehistory()">清除歷史</button>
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              <input id="delimiterInput" placeholder="逐行分隔符 預設\n" >
+                              <input id="joinStr" placeholder="組合符 預設,逗號" >
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              <input placeholder="切割行數 預設10行" type="input" id="cutConut" title="切割按鈕用的分割行數">
+                              <input type="checkbox" id="filterSpace" >切割過濾空白行
+                           </p>
+                        </li>
+                        <li>
+                           <p>逐行卡片展示
+                              <input type="checkbox" id="lineCardMode" >
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              檢查清單
+                              <input type="checkbox" id="lineCheckMode">
+                              <button onclick="sendToinput()">勾選彙整</button>
+                              <button onclick="clearAllSelect('ask')">刪除勾選紀錄</button>
+                           </p>
+                        </li>
+                        <li>
+                           <p>文字大小
+                              <input type="range" min="10" max="25" value="16" id="slider">
+                           </p>
+                        </li>
+                        <li>
+                           <p>
+                              逐行點擊訪問域名
+                              <input title="預設文字直接訪問需要加在勾https" type="checkbox" id="lineUrlahref">
+                              前綴加https
+                              <input type="checkbox" id="addHttpscheckBox">
+                           </p>
+                        </li>
+                        <li>
+                           <p>允許一次全部訪問
+                              <input type="checkbox" id="allowOPENallurl">
+                              全開延遲秒數
+                              <input id="OPENAllwindowTimeset" title="全開延遲秒數" value="1" >
+                           </p>
+                        </li>
+                        <li>
+                           <input id="windowHWset" title="寬,高,螢幕寬,螢幕高,換行線 ｜ 預設訪問視窗參數" value="200,200,1200,1000,60" >
+                           <button onclick="closeMultipleWindows()">關閉所有訪問視窗</button>
+                        </li>
+                        <li>
+                           <p>IMG訪問
+                              <input type="checkbox" id="IMGcheckBox">
+                              圖片大小
+                              <input type="range" min="50" max="300" value="150" id="sliderIMG">
+                           </p>
+                        </li>
+            </label>
+            <li>
+            <button class="buttomStyle1" id="exportBtn">資料匯出</button>
+            <button class="buttomStyle1" onclick="importFile.click()" id="exportBtn">資料匯入</button>
+            <input type="file" class="hide" id="importFile"/>
+            </li>
+            <li>
+            <p>
+            <input type="datetime-local" id="timeInput">
+            <button onclick="removeBeforeTime()">刪除時間段前資料</button>
+            </p>
+            </li>
+            </ol>
+            <div class="bar-container" id="bars"></div>
+            </div>
+            </details>
+         </div>
+      </div>
+      <div class="toolbar ">
+         <button class="paste-btn buttomStyle1" id="paste-btn" >貼上</button>
+         <button  id="seveText-btn buttomStyle1"  onclick="mainaction()">保存✎</button>
+         <textarea class="contentTop" id="input" placeholder="貼上內容..."></textarea>
+      </div>
+      <hr>
+      <div>
+         <ol class="colTop" id="list"></ol>
+      </div>
+      <script src="../public/js/emoji.js"></script>
+      <script src="../public/js/warface.js"></script>
+      <script src="../public/js/randomColor.js"></script>
+      <script src="./config.js"></script>
+      <script src="../public/floating-menu.js"></script>
+   </body>
+</html>

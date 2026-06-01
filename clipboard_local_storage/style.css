@@ -1,0 +1,407 @@
+.overflowAuto {
+	overflow: auto;
+}
+
+.divNum {
+	text-align: center;
+}
+
+.title {
+	white-space: nowrap;
+}
+
+.divTop {
+	transition: 0.3s;
+}
+
+.divBtns {
+	padding-bottom: 3px;
+	max-height: 25px;
+	overflow-y: auto;
+	white-space: nowrap;
+}
+
+body {
+	font-family: Arial;
+	padding: 0px;
+}
+
+.testImg {
+	width: 100%;
+	object-fit: contain;
+}
+
+.divTestImgTop {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--img-size, 150px), 1fr));
+	gap: 3px;
+}
+
+.divTestImg {
+	border: 1px solid #ffffff;
+	padding: 0px;
+	text-align: center;
+}
+
+.divTestImg a {
+	display: block;
+	max-width: 100%;
+	/*
+         overflow: hidden;
+         white-space: wrap;
+         */
+	text-overflow: ellipsis;
+	word-wrap: break-word;
+}
+
+/*textarea#input { width: 100%; height: 80px; }*/
+.toolbar {
+	width: 100%;
+	/* margin: 8px 0; display: flex;flex-wrap: nowrap;justify-content: space-evenly;align-items: center; */
+}
+
+.setbar {
+	margin: 0px;
+	display: flex;
+	flex-direction: column;
+}
+
+.itemO {
+	margin-top: 10px;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	list-style-position: inside;
+}
+
+.item {
+	list-style: none;
+	margin-top: 10px;
+	padding: 8px;
+	/*border-bottom: 1px solid #ccc;*/
+	border-top: 1px solid #ccc;
+	border-radius: 8px;
+	list-style-position: inside;
+	font-size: 12px;
+}
+
+li ::marker {
+	white-space: nowrap;
+}
+
+.time {
+	align-items: center;
+	white-space: nowrap;
+	font-size: 12px;
+	color: gray;
+	height: fit-content;
+	display: inline-flex;
+}
+
+/* time 時間樣式 127x13.5 */
+.content {
+	border-radius: 8px;
+	width: -webkit-fill-available;
+	min-height: 80px;
+	overflow: auto;
+	resize: none;
+	white-space: nowrap;
+	overflow-x: auto;
+	overflow-y: auto;
+	transition: 0.3s;
+}
+
+.fixArea {
+	field-sizing: content;
+	min-height: 0px;
+}
+
+.contentTop {
+	border-radius: 8px;
+	width: -webkit-fill-available;
+	min-height: 20px;
+	overflow: auto;
+	resize: none;
+	white-space: nowrap;
+	overflow-x: auto;
+	overflow-y: auto;
+	transition: 0.3s;
+	margin-top: 3px;
+}
+
+.contentTop:focus {
+	min-height: 80px;
+	transition: 0.3s;
+	field-sizing: content;
+}
+
+input {
+	field-sizing: content;
+	min-width: 3px;
+}
+
+.expanded {
+	/*overflow: hidden;*/
+}
+
+.line0 {
+	padding: 4px;
+	border-bottom: 1px dashed #ddd;
+	cursor: pointer;
+	list-style-position: inside;
+	font-size: 18px;
+}
+
+.line {
+	font-size: var(--font-size, 18px);
+	word-wrap: break-word;
+	border-radius: 8px;
+	margin-top: 10px;
+	padding: 4px;
+	border-bottom: 1px dashed #ddd;
+	cursor: pointer;
+	list-style-position: inside;
+	background-color: var(--lineBackroundColor);
+}
+
+.lineCardExhibit {
+	margin-right: 10px;
+	min-width: 75%;
+	min-height: 80px;
+	max-height: fit-content;
+	overflow-y: auto;
+}
+
+@media screen and (max-width: 600px) {
+
+	/*寬 600px 以內時應用 */
+	.lineCardExhibit {
+		min-width: 95%;
+	}
+}
+
+.horizLine {
+	display: flex;
+	overflow: auto;
+	scroll-snap-type: x mandatory;
+}
+
+.horizLine li {
+	scroll-snap-align: center;
+}
+
+/* font-size: 18px; line的影響閱讀 可以做成動態 */
+.line0:hover {
+	background: #eee;
+}
+
+.line:hover {
+	color: var(--textFocus);
+	background-color: var(--textAreaFocusBG, #ddd);
+}
+
+.bar-container {
+	margin-top: 0px;
+	overflow: auto;
+}
+
+.bar {
+	list-style-position: inside;
+	height: fit-content;
+	margin: 4px 0;
+	background: #ccc;
+	cursor: pointer;
+	position: relative;
+}
+
+.bar:hover {
+	opacity: 0.8;
+}
+
+.bar span {
+	position: absolute;
+	left: 5px;
+	font-size: 12px;
+}
+
+.progress {
+	height: 20px;
+	background: #4caf50;
+}
+
+.colOragin {
+	padding-inline-start: 0px;
+}
+
+.col {
+	padding-inline-start: 0px;
+	margin: 0px;
+}
+
+.colTop {
+	padding-inline-start: 0px;
+	margin: 0px;
+}
+
+.strLine {
+	overflow: auto;
+	max-height: 50dvh;
+	scroll-snap-type: y mandatory;
+}
+
+.strLine li {
+	scroll-snap-align: center;
+}
+
+.col2 {
+	padding-inline-start: 0px;
+	/*margin-block-start: 0;margin-block-end: 0;*/
+}
+
+.buttomStyle1 {
+	margin: 2px;
+}
+
+
+.hide {
+	display: none;
+}
+
+.textCenter {
+	display: flex;
+	justify-content: center;
+	margin-block-start: 0em;
+	margin-block-end: 0em;
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.inlineflex {
+	display: inline-flex;
+	column-gap: 5px;
+	width: 100%;
+	justify-content: space-evenly;
+	flex-direction: row-reverse;
+	align-items: center;
+}
+
+.titleStyle {
+	height: 25px;
+	overflow: hidden;
+	width: 100%;
+}
+
+@media (hover: none) and (pointer: coarse) {
+	.toolbar {
+		flex-wrap: wrap;
+	}
+
+}
+
+input,
+textarea,
+select {
+	/* font-size: 16px;*/
+	font-size: var(--font-size, 13px);
+}
+
+/* 讓導覽列緊貼在視窗頂部 */
+.sticky-navbar {
+	position: sticky;
+	top: 0;
+	padding-top: env(safe-area-inset-top);
+	/*background-color: #333;  背景色，避免頁面內容穿透 */
+	z-index: 1000;
+	/* 確保導覽列層級最高，蓋在其他內容上方 */
+}
+
+.emoji {
+	field-sizing: content;
+	font-size: xx-large;
+}
+
+@media screen and (min-width: 900px) {
+	/*寬 600px 以內時應用 */
+
+	.colTop {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+	}
+
+	.item {
+		margin: 5px;
+		border: 1px solid #ccc;
+	}
+
+	.divBtns {
+		max-height: fit-content;
+		overflow: auto;
+		white-space: unset;
+	}
+
+	.lineCardExhibit {
+		min-width: 90%;
+	}
+
+	.col2 {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	}
+
+	.bar {
+		margin: 4px;
+	}
+
+	.emoji {
+		font-size: -webkit-xxx-large;
+	}
+}
+
+.topSummary {
+	height: 75dvh;
+
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
+.divtitle {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	column-gap: 10px;
+	align-items: center;
+}
+
+.divinline {
+	display: inline-block;
+	overflow-y: auto;
+}
+
+.lndiv {
+	display: grid;
+	grid-template-columns: 1fr 10dvh;
+	column-gap: 10px;
+}
+
+
+.opacity {
+	opacity: 0.3;
+}
+
+.co-gray {
+	color: gray;
+}
+
+.grid1fr1fr {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+	column-gap: 3px;
+}
+
+.grid1fr1fr1fr {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	align-items: center;
+}
