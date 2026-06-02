@@ -1321,14 +1321,25 @@ function nextWindowPosition(conf) {
 
 // 匯出
 exportBtn.onclick = () => {
+   bb=[]
    const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: 'application/json'
    });
    const url = URL.createObjectURL(blob);
    const a = document.createElement('a');
    a.href = url;
-   a.download = 'backup.json';
-   a.pointerdown();
+   a.download = 'clipboard_data_backup.json';
+   a.textContent='點擊下載匯出資料'
+   a.className ='textCenter'
+   bb.push(a)
+   bb.push(titleA)
+   bb[1].replaceWith(bb[0]);
+   
+   bb[0].onclick = () => {
+      bb[0].replaceWith(bb[1]);
+
+   }
+   //bb[0].click();
 };
 
 // 匯入

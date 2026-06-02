@@ -28,6 +28,11 @@ label{
 
 .inline-flex {
     display:inline-flex;
+
+}
+
+.gap10 {
+    gap:10px;
 }
 
 input,textarea,select{
@@ -62,7 +67,7 @@ pre{
     color:#0f0;
     padding:15px;
     overflow:auto;
-    white-space:pre-wrap;
+    /*white-space:pre-wrap;*/
 }
 
 .historyItem{
@@ -77,7 +82,7 @@ pre{
 
 .flex{
     display:flex;
-    gap:20px;
+   gap:20px; 
 }
 
 .left{
@@ -98,8 +103,16 @@ pre{
 }
 .overflowAuto{
   overflow: auto;
-  max-height: 20dvh;
 }
+
+.max-height20dvh{
+    max-height: 20dvh;
+}
+
+.max-height60dvh{
+    max-height: 60dvh;
+}
+
 
 .widthUnset{
     width: unset;
@@ -120,12 +133,26 @@ pre{
 .maxWidth50dvh{
     max-width: 50dvh;
 }
+
+.max-heightHistoryList{
+    max-height: 50dvh;
+}
+
+.pre{
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
    @media screen and (max-width: 700px) {
          /*寬 600px 以內時應用 */
         
          .flex{
           flex-direction: column-reverse;
          }
+
+         .max-heightHistoryList{
+    max-height: 20dvh;
+}
           
          }
         
@@ -141,16 +168,36 @@ pre{
 
 <div class="card">
 
-<label>Jenkins job URL</label>
-<input id="jenkinsUrl"
-placeholder="https://jenkins.example.com/job/jobName">
-
 <div class="">
 <label>保存標題</label>
 <input id="jobName"
 placeholder="保存時標題寫這個">
 </div>
-<label>Build Type</label>
+
+<label>Jenkins job URL</label>
+<input id="jenkinsUrl"
+placeholder="https://jenkins.example.com/job/jobName">
+
+
+
+
+<div class="inline-flex gap10">
+
+<label>Username<input id="username">
+</label>
+
+<label>API Token<input id="apiToken">
+</label>
+
+<label>Delay<input id="delay"
+placeholder="0sec">
+</label>
+
+
+</div>
+
+<div>
+    <label>Build Type</label>
 <div class="disflex">
 <label>
 <input class="widthUnset" type="radio"
@@ -174,20 +221,15 @@ URL-buildWithParameters
 </label>
 
 </div>
-<label>Username</label>
-<input id="username">
 
-<label>API Token</label>
-<input id="apiToken">
+
+</div>
 
 <div class="hide">
 <label>Trigger Token</label>
 <input id="triggerToken">
 </div>
 
-<label>Delay</label>
-<input id="delay"
-placeholder="0sec">
 
 </div>
 
@@ -199,7 +241,7 @@ placeholder="0sec">
 + 新增參數
 </button>
 </div>
-<div id="paramList" class="overflowAuto"></div>
+<div id="paramList" class="overflowAuto max-height20dvh"></div>
 
 
 
@@ -244,9 +286,10 @@ onchange="importConfig(event)"
 <div class="card">
 
 <h3>Generated CURL</h3>
-<pre class="overflowWhiteNowrap maxWidth50dvh" id="curLinelOutput"></pre>
-<pre id="curlOutput"></pre>
-
+<div class="pre">
+<pre class="overflowWhiteNowrap " id="curLinelOutput"></pre>
+<pre class="" id="curlOutput"></pre>
+</div>
 </div>
 
 </div>
@@ -257,7 +300,7 @@ onchange="importConfig(event)"
 
 <h3>History</h3>
 
-<div id="historyList" class="overflowAuto"></div>
+<div id="historyList" class="overflowAuto max-heightHistoryList"></div>
 
 </div>
 
@@ -267,7 +310,7 @@ onchange="importConfig(event)"
 
 <script>
 
-function addParam(name='', value=''){
+function addParam(name='', value='', replaceText=''){
 
     const row=document.createElement('div');
     row.className='paramRow';
@@ -280,6 +323,10 @@ function addParam(name='', value=''){
         <input class="paramValue"
                placeholder="Parameter Value"
                value="${value}">
+
+        <input class="paramReplaceText"
+               placeholder="重新替換字串 例如,&& 逗號轉空格"
+               value="${replaceText}">
 
         <button onclick="this.parentNode.remove();generateCurl()">
         X
@@ -298,7 +345,9 @@ function getConfig(){
 
             name:row.querySelector('.paramName').value,
 
-            value:row.querySelector('.paramValue').value
+            value:row.querySelector('.paramValue').value,
+
+            replaceText:row.querySelector('.paramReplaceText').value
 
         }))
         .filter(v=>v.name);
@@ -360,7 +409,13 @@ function generateCurl(){
 
     if(cfg.buildType==='buildWithParameters'){
 
+
         cfg.params.forEach((p , index)=>{
+            if (p.replaceText) {
+                r=p.replaceText.split('&&')
+                p.value=p.value.replaceAll(r[0]||'',r[1]||'');
+            }
+
           if (index==0) {
             dataPart+=`--data-urlencode "${p.name}=${p.value}" \\`;
           }else{
@@ -514,7 +569,7 @@ function loadConfig(index){
 
     cfg.params.forEach(p=>{
 
-        addParam(p.name,p.value);
+        addParam(p.name,p.value,p.replaceText);
 
     });
 
