@@ -75,6 +75,7 @@
   <div class="actions">
     <button onclick="extractDomains()">過濾域名</button>
 <button onclick="copyns()">複製ns結果</button>
+<button onclick="copynsLine()">複製ns字串結果</button>
 <button onclick="copyid()">複製id結果</button>
 <button onclick="copyall()">複製結果</button>
   </div>
@@ -132,9 +133,25 @@
       document.getElementById('output').value = result.join('');
       document.getElementById('count').innerText = `共找到 ${id.length} 組`;
     }
-
+   function returnLineStr(text){
+    b=['']
+    text.forEach((item) => {
+      item=`"${item}"\n`
+      b.push(item)
+    })
+    
+    
+    return b
+   }
       function copyns() {
       navigator.clipboard.writeText(ns.join(','));
+      //returnLineStr(ns)
+      alert('已複製到剪貼簿');
+      }
+
+         function copynsLine() {
+      navigator.clipboard.writeText(returnLineStr(ns).join(','));
+      
       alert('已複製到剪貼簿');
       }
             function copyid() {

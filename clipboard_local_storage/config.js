@@ -467,6 +467,14 @@ function render() {
             return;
          }
       }
+
+      if (displayNum.value.length>0) {
+         
+         if (index!=displayNum.value) {
+
+            return
+         }
+      }
       //過濾表情標籤
       const divTop = document.createElement('div');
       divTop.className = 'divTop'
@@ -603,6 +611,7 @@ function render() {
       };
 
       /*點擊輸入標題*/
+//基礎textarea區塊
 
       const textarea = document.createElement('textarea');
       textarea.className = 'content';
@@ -618,7 +627,7 @@ function render() {
             auto_grow(textarea);
          }
       };
-
+//基礎textarea區塊
       const toggleBtn = document.createElement('button');
       toggleBtn.textContent = item.expanded ? '收起' : '展開';
       toggleBtn.className = 'buttomStyle1'
@@ -776,6 +785,16 @@ function render() {
          recoverTitle();
       }
 
+      function hideTextareaMode() {
+         item.textArea = !item.textArea;
+         
+         //div.removeChild(textarea)
+         save();//展開後儲存狀態
+         //console.log(item.textArea)
+         render();
+         
+      }
+
       function cpoyShare() {
          shareText = []
 
@@ -841,6 +860,23 @@ function render() {
       const divNum = document.createElement('div');
       divNum.textContent = item.index
       divNum.className = 'divNum'
+      divNum.onclick = () => {
+         
+
+         //save();
+         
+         if (displayNum.value==item.index) {
+            displayNum.value=''
+         }else if (item.index==''){
+            //displayNum.value=0
+            //alert()
+         }
+         else{
+            displayNum.value=  item.index
+         }
+         //console.log(displayNum.value , item.index)
+         render();
+      };
       const divinline = document.createElement('div');
       const divtitle = document.createElement('div');
 
@@ -852,7 +888,7 @@ function render() {
       divtitle.appendChild(time);
       const divNumAndOther = document.createElement('div');
       const divOther = document.createElement('div');
-      divOther.className = 'grid1fr1fr1fr'
+      divOther.className = 'grid1fr1fr1fr1fr'
       divNumAndOther.className = 'grid1fr1fr'
       divNumAndOther.appendChild(divNum);
       divNumAndOther.appendChild(divOther);
@@ -883,10 +919,10 @@ function render() {
       divBtn.appendChild(testIMGlinkBtn); //IMG訪問
       divBtn.appendChild(createBtnClickFun('url全部訪問', openALLurl));
 
-
+      divOther.appendChild(createBtnClickFun('🔒', hideTextareaMode, '不顯示textarea'));
       divOther.appendChild(createBtnClickFun('⏎', cpoyLine, '複製整個區塊'));
       divOther.appendChild(createBtnClickFun('🔗', cpoyShare, '模板分享'));
-      divOther.appendChild(createBtnClickFun('❌', delLine, '刪除'));
+      
 
       divlineAndBtns.className = 'inlineflex'
       divinline.appendChild(divBtn);
@@ -894,8 +930,14 @@ function render() {
 
       div.appendChild(divlineAndBtns);
 
-      div.appendChild(textarea);
 
+      //組裝textarea
+      
+      if (!item.textArea) {
+         div.appendChild(textarea);
+         divOther.appendChild(createBtnClickFun('❌', delLine, '刪除'));
+      }
+//組裝textarea
 
       //if function要在按鈕建立之後 不然排版會混亂
 
@@ -1322,13 +1364,15 @@ function nextWindowPosition(conf) {
 // 匯出
 exportBtn.onclick = () => {
    bb=[]
+   const Time = new Date(Date.now()).toLocaleString()
    const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: 'application/json'
    });
    const url = URL.createObjectURL(blob);
    const a = document.createElement('a');
+   const host=window.location.hostname
    a.href = url;
-   a.download = 'clipboard_data_backup.json';
+   a.download = `clipboard_data_backup_${host||'location'}_${Time}.json`;
    a.textContent='點擊下載匯出資料'
    a.className ='textCenter'
    bb.push(a)
@@ -1358,6 +1402,10 @@ importFile.onchange = (e) => {
 // paste
 input.addEventListener('paste', () => {
    mainaction();
+});
+
+displayNum.addEventListener('input', () => {
+   render();
 });
 
 function mainaction() {

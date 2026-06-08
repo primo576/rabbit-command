@@ -406,3 +406,9 @@ select {
 	grid-template-columns: 1fr 1fr 1fr;
 	align-items: center;
 }
+
+.grid1fr1fr1fr1fr {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	align-items: center;
+}
