@@ -469,6 +469,7 @@ function render() {
       }
 
       if (displayNum.value.length>0) {
+        
          
          if (index!=displayNum.value) {
 
@@ -859,23 +860,15 @@ function render() {
       }
       const divNum = document.createElement('div');
       divNum.textContent = item.index
+      divNum.title = '點擊獨立顯示'
       divNum.className = 'divNum'
       divNum.onclick = () => {
-         
-
-         //save();
-         
-         if (displayNum.value==item.index) {
-            displayNum.value=''
-         }else if (item.index==''){
-            //displayNum.value=0
-            //alert()
+         if (displayNum.value=='') {
+            displayNum.value=item.index
+         }else{
+             displayNum.value=''
          }
-         else{
-            displayNum.value=  item.index
-         }
-         //console.log(displayNum.value , item.index)
-         render();
+        render();
       };
       const divinline = document.createElement('div');
       const divtitle = document.createElement('div');
@@ -1061,6 +1054,11 @@ function render() {
 
          } else {
             ol.classList.add('strLine');
+            if (displayNum.value!='') {
+               ol.classList.add('maxHeight80dvh');
+            }else{
+               ol.classList.add('maxHeight50dvh');
+            }
          }
          //卡片模式
          //const lines = item.text.split('\n').filter(l => l.trim());

@@ -2,6 +2,16 @@
 	overflow: auto;
 }
 
+.maxHeight80dvh{
+	max-height: 80dvh;
+}
+
+
+
+.maxHeight50dvh{
+	max-height: 50dvh;
+}
+
 .divNum {
 	text-align: center;
 }
@@ -245,7 +255,7 @@ input {
 
 .strLine {
 	overflow: auto;
-	max-height: 50dvh;
+	
 	scroll-snap-type: y mandatory;
 }
 
