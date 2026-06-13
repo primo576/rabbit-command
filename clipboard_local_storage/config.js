@@ -2,7 +2,28 @@ const input = document.getElementById('input');
 const list = document.getElementById('list');
 const bars = document.getElementById('bars');
 const usage = document.getElementById('usage');
+autoBox=[]
+autoIngBox=[]
 
+function autoClick() {
+   autoBox.forEach((i)=>{
+      console.log(i)
+         g=setInterval(() => {
+         i.click();
+         }, 5000);
+         autoIngBox.push(g)
+         i.click();
+   })
+}
+
+function autoClickStop() {
+   autoIngBox.forEach((i)=>{
+      
+         clearInterval(i);
+   })
+}
+
+//clearInterval
 
 function auto_grow(el) {
    el.classList.add('fixArea')
@@ -430,7 +451,7 @@ function sendToinput() {
 
 function render() {
    oclass = ['setMenuol']
-
+   autoBox=[]
    data.forEach((item, index) => {
       item.index = index;
    });
@@ -1051,6 +1072,7 @@ function render() {
             };
             //randomPage
             const randomPage = document.createElement('button');
+            autoBox.push(randomPage)
             randomPage.textContent = '隨機'
             randomPage.onclick = () => {
              
