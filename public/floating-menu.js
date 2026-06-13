@@ -33,7 +33,7 @@
     { label: 'cmd+k開啟清單', url: '#' },
   ];
 
-  if (createIndexHTML) {
+  if (window.createIndexHTML) {
     const indexHtml=document.getElementById('main');
     [...LINKS].forEach((i)=>{
       //<a href="${l.url}" ${l.blank ? 'target="_blank"' : ''}>${l.label}</a>`)
