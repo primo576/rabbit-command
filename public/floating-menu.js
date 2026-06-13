@@ -33,6 +33,21 @@
     { label: 'cmd+k開啟清單', url: '#' },
   ];
 
+  if (createIndexHTML) {
+    const indexHtml=document.getElementById('main');
+    [...LINKS].forEach((i)=>{
+      //<a href="${l.url}" ${l.blank ? 'target="_blank"' : ''}>${l.label}</a>`)
+      const ahref = document.createElement('a');
+      ahref.href=i.url.replace('../','./');
+      ahref.textContent=i.label
+      
+      ahref.className='object'
+      indexHtml.appendChild(ahref)
+
+    })
+    return
+  }
+
   const style = document.createElement('style');
   style.innerHTML = `
     .fab-wrap {
