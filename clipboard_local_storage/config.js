@@ -869,6 +869,7 @@ function render() {
          }else{
              displayNum.value=''
          }
+         hidePastetextArea()
         render();
       };
       const divinline = document.createElement('div');
@@ -1057,7 +1058,7 @@ function render() {
                   return Math.floor(Math.random() * max);
                }
                
-               inputPage.value=getRandomInt(ol.children.length)
+               inputPage.value = getRandomInt(ol.children.length) + 1;
                const event = new Event("input");
                inputPage.dispatchEvent(event);
               
@@ -1546,3 +1547,13 @@ sliderIMG.addEventListener('input', (e) => {
    document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
 });
 
+function hidePastetextArea(){
+   
+   
+   add=[...document.getElementsByClassName('toolbar ')[0].classList].includes('hide')
+   if (add) {
+      document.getElementsByClassName('toolbar ')[0].classList.remove('hide');
+   }else{
+       document.getElementsByClassName('toolbar ')[0].classList.add('hide');
+   }
+}
