@@ -61,7 +61,17 @@
                         <li>
                            <p>逐行卡片展示
                               <input type="checkbox" id="lineCardMode" >
+                              
                            </p>
+                              <p>逐行卡片展示-文字置中
+                              <input type="checkbox" id="lineCardTextCenterMode" >
+                           </p>
+                           </p>
+                              <p>聲音
+                              <input type="checkbox" id="speakTextAllow" >
+                              <button onclick="window.speechSynthesis.cancel()">停止聲音</button>
+                           </p>
+                            
                         </li>
                         <li>
                            <p>
@@ -130,6 +140,7 @@
          <ol class="colTop" id="list"></ol>
       </div>
       <script src="../public/js/emoji.js"></script>
+      <script src="../public/js/speckText.js"></script>
       <script src="../public/js/warface.js"></script>
       <script src="../public/js/randomColor.js"></script>
       <script src="./config.js"></script>

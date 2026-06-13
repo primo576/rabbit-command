@@ -14,6 +14,7 @@
     { label: 'cfCurlAPI', url: '../regexDomain/cfCurlAPI.html' },
     { label: '文本比對0', url: '../regexDomain/textDifferent.html' },
     { label: 'regex搜索文本', url: '../regexDomain/searchRegex.html' },
+    { label: '找list不同', url: '../regexDomain/findListDifference.html' },
     { label: '剪貼簿', url: '../clipboard_local_storage/index.html' },
     { label: 'url多開', url: '../regexDomain/openUrls.html' },
     { label: 'jenkins-curl', url: '../jenkins-curl/index.html' },

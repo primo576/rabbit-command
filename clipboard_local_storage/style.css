@@ -16,6 +16,14 @@
 	text-align: center;
 }
 
+.textFlexCenter {
+    text-align: center;
+    display: list-item;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .title {
 	white-space: nowrap;
 }

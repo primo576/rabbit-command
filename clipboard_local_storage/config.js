@@ -427,6 +427,7 @@ function sendToinput() {
 //checkbox取值
 
 
+
 function render() {
    oclass = ['setMenuol']
 
@@ -924,6 +925,7 @@ function render() {
       div.appendChild(divlineAndBtns);
 
 
+
       //組裝textarea
       
       if (!item.textArea) {
@@ -947,6 +949,7 @@ function render() {
          if (lineCardMode.checked) {
             //ol.className +=' horizLine '
             ol.classList.add('horizLine');
+            
             //滾動軸
             const lndiv = document.createElement('div');
             lndiv.className = 'lndiv'
@@ -1009,7 +1012,7 @@ function render() {
 
             bindRangeScroll(inputRange, ol);
 
-            lndiv.appendChild(inputRange);
+            
             const inputPage = document.createElement('input');
 
             inputPage.placeholder = `快速跳轉`
@@ -1030,13 +1033,13 @@ function render() {
 
                target =
                   ol.children[index];
-               console.log()
+              
                if (index > ol.children.length) {
                   num = ol.children.length - 1
                   target = ol.children[num];
                }
                if (target) {
-
+                  console.log(target.textContent);
                   ol.scrollTo({
                      left: target.offsetLeft,
                      behavior: 'smooth'
@@ -1045,8 +1048,70 @@ function render() {
                }
 
             };
+            //randomPage
+            const randomPage = document.createElement('button');
+            randomPage.textContent = '隨機'
+            randomPage.onclick = () => {
+             
+              function getRandomInt(max) {
+                  return Math.floor(Math.random() * max);
+               }
+               
+               inputPage.value=getRandomInt(ol.children.length)
+               const event = new Event("input");
+               inputPage.dispatchEvent(event);
+              
+            }
+            
+            //randomPage
+            //inputTextToChangePage
+                const inputExampleText = document.createElement('input');
 
+            inputExampleText.placeholder = `輸入相同文字`
+
+         
+           function getCurrentTarget() {
+
+               const index = Number(inputPage.value) - 1;
+
+               let target = ol.children[index];
+
+               if (index >= ol.children.length) {
+                  target = ol.children[ol.children.length - 1];
+               }
+
+               return target;
+            }
+           //
+            function clickrandom() {
+               randomPage.click()
+            }
+             
+            inputExampleText.addEventListener(
+               "pointerdown",
+               clickrandom
+            );
+
+            inputExampleText.oninput = () => {
+            const target = getCurrentTarget();
+             if (target && inputExampleText.value==target.textContent) {
+               titleChangeUse(`${inputExampleText.value} 正確`);
+               if (speakTextAllow.checked) {
+                   speakText(inputExampleText.value)
+               }
+              
+               randomPage.click();
+               inputExampleText.value=''
+               //alert();
+             }
+
+            };
+            //inputTextToChangePage
+            lndiv.appendChild(inputRange);
             lndiv.appendChild(inputPage)
+            lndiv.appendChild(inputExampleText);
+            lndiv.appendChild(randomPage)
+            
 
             //
             lastdiv.appendChild(lndiv)
@@ -1071,9 +1136,10 @@ function render() {
 
 
             if (lineCardMode.checked) {
-
                ldiv.classList.add('lineCardExhibit')
-
+                  if (lineCardTextCenterMode.checked) {
+                  ldiv.classList.add('textFlexCenter');
+                  }
             }
 
             //
@@ -1082,7 +1148,7 @@ function render() {
             ldiv.onclick = () => {
                copyText(line, index);
                ldiv.style.backgroundColor = randomColor();
-               console.log(ldiv)
+                
                setTimeout(() => {
                   ldiv.style.backgroundColor = ''
                }, 20 * 1000);
@@ -1185,11 +1251,13 @@ function render() {
                ahref.textContent = line
                ahref.title = line
                ahref.target = "_blank"
+               //ahref.classList.add('overflowAuto');
 
 
                img.onclick = () => copyText(line, index);
-               fdiv.appendChild(ahref)
                fdiv.appendChild(img);
+               fdiv.appendChild(ahref)
+               
                Topfdiv.appendChild(fdiv);
             } else {
                titleChangeUse('先允許訪問IMG');
@@ -1250,6 +1318,10 @@ function titleChangeUse(string) {
 }
 
 function copyText(text, index) {
+   if (speakTextAllow.checked) {
+                   speakText(text)
+                   
+               }
 
    navigator.clipboard.writeText(text)
    text20 = text.slice(0, 20)
@@ -1473,3 +1545,4 @@ const sliderIMG = document.getElementById('sliderIMG');
 sliderIMG.addEventListener('input', (e) => {
    document.documentElement.style.setProperty('--img-size', e.target.value + 'px');
 });
+

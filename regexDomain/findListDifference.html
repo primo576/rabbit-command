@@ -1,0 +1,62 @@
+<body></body>
+<script>
+oklist=`
+a
+b
+c
+`
+
+oklist=oklist.split('\n')
+
+jklist=['a','b','e'
+]
+
+
+function TextDiv(text){
+    const div=document.createElement('div')
+    div.textContent=text
+    return div
+   
+}
+
+function diffList(a,b){
+output=document.getElementsByTagName('body')[0]
+output.innerHTML=''
+createList=[]
+
+createList.push(TextDiv(a))
+createList.push(TextDiv(b))
+
+
+
+const diff = [
+  ...a.filter(x => !b.includes(x)),
+  ...b.filter(x => !a.includes(x))
+];
+
+
+
+createList.push(TextDiv('兩個之間不同'))
+
+diff.forEach((i)=>{
+    createList.push(TextDiv(i))
+})
+
+createList.push(TextDiv('list:'))
+
+
+createList.push(TextDiv(diff))
+
+
+
+createList.forEach((i)=>{
+   output.appendChild(i)
+})
+
+
+}
+
+diffList(oklist,jklist)
+
+</script>
+<script src="../public/floating-menu.js"></script>
