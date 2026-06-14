@@ -1578,4 +1578,66 @@ function hidePastetextArea(){
    }else{
        document.getElementsByClassName('toolbar ')[0].classList.add('hide');
    }
+   
 }
+
+function hideToolobjectDiv(){
+   t=[...document.getElementsByClassName('inlineflex')];
+   if (t.length==0) {
+      t=[...document.getElementsByClassName('hideToolobjectDiv')];
+   }
+
+t.forEach((i)=>{
+   i.classList.toggle('hide')
+   i.classList.toggle('hideToolobjectDiv')
+   i.classList.toggle('inlineflex')
+})
+
+}
+
+function hideTextareaDiv(){
+   t=[...document.getElementsByClassName('content')];
+   if (t.length==0) {
+      t=[...document.getElementsByClassName('hideTextareaDiv')];
+   }
+
+t.forEach((i)=>{
+   i.classList.toggle('hide')
+   i.classList.toggle('hideTextareaDiv')
+   i.classList.toggle('content')
+})
+
+}
+
+
+
+function hidelndivDiv(){
+   t=[...document.getElementsByClassName('lndiv')];
+   if (t.length==0) {
+      t=[...document.getElementsByClassName('hidelndivDiv')];
+   }
+
+t.forEach((i)=>{
+   i.classList.toggle('hide')
+   i.classList.toggle('hidelndivDiv')
+   i.classList.toggle('lndiv')
+})
+
+}
+
+function allLINEmonde(){
+data.forEach((i)=>i.lineMode=!i.lineMode)
+render();
+}
+
+function disployMODE(){
+   lineCardMode.checked=true
+   hidePastetextArea();
+allLINEmonde();
+hideToolobjectDiv();
+hideTextareaDiv();
+autoClick();
+hidelndivDiv();
+ 
+}
+
