@@ -6,6 +6,10 @@
 	max-height: 80dvh;
 }
 
+.marginTop10px{
+	margin-top: 10px;
+}
+
 
 
 .maxHeight50dvh{
@@ -173,7 +177,7 @@ input {
 .line {
 	font-size: var(--font-size, 18px);
 	word-wrap: break-word;
-	border-radius: 8px;
+	border-radius: 6px;
 	margin-top: 10px;
 	padding: 4px;
 	border-bottom: 1px dashed #ddd;
@@ -182,12 +186,30 @@ input {
 	background-color: var(--lineBackroundColor);
 }
 
+.line:nth-child(even){
+	background-color:
+    color-mix(
+        in srgb,
+        var(--lineBackroundColor) 92%,
+        white 8%
+    );
+	  
+}
+
 .lineCardExhibit {
-	margin-right: 10px;
+	margin: 10px;
 	min-width: 75%;
-	min-height: 80px;
-	max-height: fit-content;
+	height: 80px;
+	/*max-height: fit-content;*/
 	overflow-y: auto;
+}
+
+.lineCardExhibit:first-child {
+border-radius: 18px 6px 6px 18px;
+}
+
+.lineCardExhibit:last-child {
+ border-radius: 6px 18px 18px 6px;
 }
 
 @media screen and (max-width: 600px) {

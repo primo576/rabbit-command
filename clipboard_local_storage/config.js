@@ -7,7 +7,7 @@ autoIngBox=[]
 
 function autoClick() {
    autoBox.forEach((i)=>{
-      console.log(i)
+     
          g=setInterval(() => {
          i.click();
          }, 5000);
@@ -406,7 +406,7 @@ function renderBarsV2(filter = '') {
 
 function parseDelimiter(str) {
    if (!str) return '\n'; // 預設
-
+   if (str=='null') return ''
    return str
       .replace(/\\n/g, '\n')
       .replace(/\\t/g, '\t');
@@ -737,7 +737,7 @@ function render() {
       const toggleBtnTojoinStr = document.createElement('button');
       toggleBtnTojoinStr.textContent = item.TojoinStred ? '原文字' : '替換字';
       toggleBtnTojoinStr.className = 'buttomStyle1'
-      toggleBtnTojoinStr.title = '替換文字由delimiterInput joinStr決定'
+      toggleBtnTojoinStr.title = '替換文字由delimiterInput joinStr決定 null是""'
       toggleBtnTojoinStr.onclick = () => {
          item.TojoinStred = !item.TojoinStred;
          //save();
@@ -962,7 +962,7 @@ function render() {
       if (item.lineMode) {
          const ol = document.createElement('ol');
          const lastdiv = document.createElement('div');
-         lastdiv.style = 'margin-top: 10px;'
+         
          //ol.id = `colScreen-${index}`;
          //ol.className = 'col'; 
          ol.classList.add('col')
@@ -975,7 +975,7 @@ function render() {
             //滾動軸
             const lndiv = document.createElement('div');
             lndiv.className = 'lndiv'
-
+            lndiv.classList.add('marginTop10px');
 
             //拉條
             const inputRange = document.createElement('input');
@@ -1061,7 +1061,7 @@ function render() {
                   target = ol.children[num];
                }
                if (target) {
-                  console.log(target.textContent);
+                
                   ol.scrollTo({
                      left: target.offsetLeft,
                      behavior: 'smooth'

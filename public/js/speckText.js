@@ -14,3 +14,8 @@ utterance.pitch = 1.0;
 // 觸發瀏覽器進行語音朗讀
 window.speechSynthesis.speak(utterance);
 }
+
+/**
+ https://mdn.github.io/dom-examples/web-speech-api/speak-easy-synthesis/
+  
+ */
