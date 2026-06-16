@@ -28,9 +28,10 @@
     { label: 'html formatter', url: 'https://www.freeformatter.com/html-formatter.html' , blank: true},
     { label: 'cs beautifier', url: 'https://www.freeformatter.com/css-beautifier.html' , blank: true},
     { label: 'js beautifier', url: 'https://www.freeformatter.com/javascript-beautifier.html' , blank: true},
+    { label: '買域名dynadot', url: 'https://www.dynadot.com/zh' , blank: true},
     { label: '截圖', url: 'javascript:capture()' },
     { label: '回到頂部', url: '#' },
-    { label: 'cmd+k開啟清單', url: '#' },
+    { label: 'cmd+k開啟清單', url: '../index.html' },
   ];
 
   if (window.createIndexHTML) {

@@ -21,10 +21,54 @@
     justify-content: center;
     align-items: center;
   }
+  .center{
+    display: grid;
+    grid-template-columns:  repeat(auto-fill, minmax(400px, 1fr));
+        justify-items: center;
+  }
+  .timer{
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    font-size: 30px;
+  }
+ #clockText {
+  font-size: 48px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+ 
+}
+
  </style>
 </head>
 
 <body>
+  
+
+
+<div class="center">
+<div id="clockdiv" style="text-align: center; width:250px"><br>
+    <canvas id="domClock" width="200" height="200">not canvas</canvas>
+    
+</div>
+<div class="timer">
+  <div id='clockText'></div>
+  <div>
+<button id="btnStart">開始</button>
+<button id="btnLap">分組</button>
+</div>
+<div >
+    <div>總時間：</div>
+    <span id="clock">00:00:00</span>
+</div>
+
+<ol id="lapList">
+  
+</ol>
+
+</div>
+</div>
 <div id="main" class="index"></div>
 </body>
 <script>
@@ -33,3 +77,87 @@ window.createIndexHTML = true;
 </html>
 
  <script src="./public/floating-menu.js"></script>
+  <script src="./public/clock.js"></script>
+  <script>
+let startTime;
+let lastLapTime;
+let timerId;
+
+function format(ms) {
+
+    const totalSeconds =
+        Math.floor(ms / 1000);
+
+    const hours =
+        Math.floor(totalSeconds / 3600);
+
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) / 60
+        );
+
+    const seconds =
+        totalSeconds % 60;
+
+    return (
+        String(hours).padStart(2, '0') +
+        ':' +
+        String(minutes).padStart(2, '0') +
+        ':' +
+        String(seconds).padStart(2, '0')
+    );
+}
+
+btnStart.onclick = () => {
+
+    startTime = Date.now();
+    lastLapTime = startTime;
+
+    clearInterval(timerId);
+
+    timerId = setInterval(() => {
+
+        const elapsed =
+            Date.now() - startTime;
+
+        clock.textContent =
+            format(elapsed);
+
+    }, 100);
+};
+btnLap.onclick = () => {
+
+    const now = Date.now();
+
+    const lapTime =
+        now - lastLapTime;
+        
+
+    lastLapTime = now;
+
+    const li =
+        document.createElement('li');
+
+    li.textContent =
+        format(lapTime);
+
+    lapList.prepend(li);
+
+};
+
+function updateClock() {
+  // Get the current time using the Date() object
+  const now = new Date();
+
+  // Format the time using the toLocaleTimeString() method
+  const timeString = now.toLocaleTimeString();
+
+  // Update the clock display by setting the innerHTML property of the clock div element
+  const clock = document.getElementById('clockText');
+  clock.innerHTML = timeString;
+}
+
+// Use the setInterval() method to call the updateClock() function every second
+setInterval(updateClock, 1000);
+updateClock();
+  </script>
