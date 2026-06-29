@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
  <title>🐇index</title>
  <style>
+    .body{
+        background-color: black;
+    }
   .index{
     display: grid;
     grid-template-columns:  repeat(auto-fill, minmax(200px, 1fr));
@@ -21,10 +24,19 @@
     justify-content: center;
     align-items: center;
   }
+  .card{
+    background-color: #ffffff;
+    height: 100%;
+    width: 100%;
+    border-radius: 18px;
+    overflow: auto;
+  }
   .center{
     display: grid;
     grid-template-columns:  repeat(auto-fill, minmax(400px, 1fr));
         justify-items: center;
+       margin-bottom: 10px;
+        gap: 10px;
   }
   .timer{
     width: 100%;
@@ -39,6 +51,24 @@
   text-align: center;
  
 }
+.lr{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+      column-gap: 10px;
+   
+}
+.index44{
+    display: grid;
+     row-gap: 10px;
+}
+.hide{
+    display: none;
+}
+
+.fixArea {
+	field-sizing: content;
+	white-space: nowrap;
+}
 
  </style>
 </head>
@@ -47,29 +77,57 @@
   
 
 
-<div class="center">
+<div class="center ">
+    <div class="card center">
 <div id="clockdiv" style="text-align: center; width:250px"><br>
     <canvas id="domClock" width="200" height="200">not canvas</canvas>
     
 </div>
-<div class="timer">
-  <div id='clockText'></div>
+ <div id='clockText'></div>
+</div>
+
+<div class="timer card">
+ 
   <div>
 <button id="btnStart">開始</button>
 <button id="btnLap">分組</button>
 </div>
-<div >
+
     <div>總時間：</div>
     <span id="clock">00:00:00</span>
-</div>
-
-<ol id="lapList">
+    <ol id="lapList">
   
 </ol>
+</div>
+
+
+
 
 </div>
 </div>
+<div class="lr">
 <div id="main" class="index"></div>
+<div id="sppedsavelink" class="index2">
+       <details>
+      <summary>更多</summary>
+      
+<div class="">
+    
+
+   
+    <button id="saveBtn">儲存</button>
+    <button id="loadBtn">load</button>
+    
+    <button id="allaudjestBtn">全部修改</button>
+ <br>
+    <textarea class="fixArea" id="input" rows="10" cols="50"
+    placeholder="name,url"></textarea>
+</div>
+</details>
+    <div id="link"  class="index"></div>
+
+</div>
+</div>
 </body>
 <script>
 window.createIndexHTML = true;
@@ -161,3 +219,118 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
   </script>
+
+
+<script>
+const STORAGE_KEY = 'LINKS';
+
+function loadLinks() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+}
+
+
+
+function saveLinks(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function removeLinks() {
+    localStorage.removeItem(STORAGE_KEY);
+}
+
+function renderLinks() {
+    const LINKS = loadLinks();
+
+    const div = document.getElementById('link');
+    div.innerHTML = '';
+
+    LINKS.forEach((i) => {
+        const ahref = document.createElement('a');
+
+        ahref.textContent = i.label;
+        ahref.href = i.url;
+        ahref.target = '_blank';
+
+        ahref.className = 'object';
+
+        
+
+        div.appendChild(ahref);
+        //div.appendChild(document.createElement('br'));
+    });
+}
+
+document.getElementById('loadBtn').onclick = () => {
+     text = document.getElementById('input')
+
+    const oldLinks = loadLinks();
+    newtext=''
+
+    oldLinks.forEach(i=>{
+        newtext+=`${i.label},${i.url}\n`
+    })
+      text.value=newtext
+};
+
+document.getElementById('saveBtn').onclick = () => {
+    const text = document.getElementById('input').value.trim();
+
+    const oldLinks = loadLinks();
+
+    const newLinks = text
+        .split('\n')
+        .map(line => {
+            const [label, url] = line.split(',');
+
+            return {
+                label: label?.trim(),
+                url: url?.trim()
+            };
+        })
+        .filter(i => i.label && i.url);
+
+    const map = new Map();
+
+    [...oldLinks, ...newLinks].forEach(i => {
+        map.set(i.url, i); // 用 url 去重
+    });
+
+    const result = [...map.values()];
+
+    saveLinks(result);
+    renderLinks();
+};
+
+document.getElementById('allaudjestBtn').onclick = () => {
+    removeLinks();
+    const text = document.getElementById('input').value.trim();
+
+    const oldLinks = loadLinks();
+
+    const newLinks = text
+        .split('\n')
+        .map(line => {
+            const [label, url] = line.split(',');
+
+            return {
+                label: label?.trim(),
+                url: url?.trim()
+            };
+        })
+        .filter(i => i.label && i.url);
+
+    const map = new Map();
+
+    [...oldLinks, ...newLinks].forEach(i => {
+        map.set(i.url, i); // 用 url 去重
+    });
+
+    const result = [...map.values()];
+
+    saveLinks(result);
+    renderLinks();
+};
+
+
+renderLinks();
+</script>

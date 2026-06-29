@@ -1093,7 +1093,15 @@ GIT_BASIC_TEMPLATE_CONFIG :[
     label: '還原檔案內容',
     value: 'git checkout -- ${file}',
     risk: 'high',
-    desc: '放棄檔案的所有本地修改，無法復原'
+    desc: `放棄檔案的所有本地修改，無法復原 
+    所有檔案git checkout -- .`
+  },
+  {
+    label: '還原檔案內容',
+    value: 'git restore .',
+    risk: 'high',
+    desc: `放棄檔案的所有本地修改，無法復原 
+    git checkout -- . 的新版本語句`
   },
   {
     label: '強制同步遠端分支',
@@ -1434,6 +1442,25 @@ http_status_TEMPLATE_CONFIG : [
 
 
 linux_vi_TEMPLATE_CONFIG : [
+{
+  label: 'vi 多行註解',
+  value: 'ctrl + v  -> shift+i -> 註解符號 -> esc -> 完 - > ctrl + v 選取註解 -> d',
+  risk: 'safe',
+  desc: `多行注释：
+　　1. 进入命令行模式，按ctrl + v进入 visual block模式，然后按j, 或者k选中多行，把需要注释的行标记起来
+
+　　2. 按大写字母I，再插入注释符，例如#
+
+　　3. 按esc键就会全部注释了
+
+取消多行注释：
+　　1. 进入命令行模式，按ctrl + v进入 visual block模式，按字母l横向选中列的个数，例如 # 需要选中2列
+
+　　2. 按字母j，或者k选中注释符号
+
+　　3. 按d键就可全部取消注释`
+},
+ , 
 {
   label: 'vi 全域替換文字',
   value: ':%s/old/new/g',
