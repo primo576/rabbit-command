@@ -116,10 +116,11 @@
       <textarea id="listB" placeholder="b.com\nx.b.com\ntest.com"></textarea>
     </div>
   </div>
-<button id="copyAllBtn" style="margin-top:8px;">複製全部交集域名（換行）</button>
-<button id="copyAllBtndot" style="margin-top:8px;">複製全部交集域名（,）</button>
+<button id="copyAllBtn" style="margin-top:8px;">複製全部結果（換行）</button>
+<button id="copyAllBtndot" style="margin-top:8px;">複製全部結果（,）</button>
 
-  <button onclick="compareDomains()">開始比對</button>
+  <button onclick="compareDomains()">比對交集</button>
+  <button onclick="compareDiffDomains()">開始非交集</button>
 
   <div id="summary" style="margin-top:12px;"></div>
   <div id="result" class="result"></div>
@@ -177,6 +178,54 @@
       renderResult(intersection, aRaw.length, bRaw.length);
     }
 
+  function compareDiffDomains() {
+      const aRaw = parseList(document.getElementById('listA').value);
+      const bRaw = parseList(document.getElementById('listB').value);
+
+      const aMap = new Map();
+      const bMap = new Map();
+
+      aRaw.forEach(d => {
+        const base = normalizeDomain(d);
+        if (!base) return;
+        if (!aMap.has(base)) aMap.set(base, []);
+        aMap.get(base).push(d);
+      });
+
+      bRaw.forEach(d => {
+        const base = normalizeDomain(d);
+        if (!base) return;
+        if (!bMap.has(base)) bMap.set(base, []);
+        bMap.get(base).push(d);
+      });
+
+const diff = [];
+
+// A 有，B 沒有
+for (const base of aMap.keys()) {
+  if (!bMap.has(base)) {
+    diff.push({
+      base,
+      source: 'A',
+      list: aMap.get(base)
+    });
+  }
+}
+
+// B 有，A 沒有
+for (const base of bMap.keys()) {
+  if (!aMap.has(base)) {
+    diff.push({
+      base,
+      source: 'B',
+      list: bMap.get(base)
+    });
+  }
+}
+
+renderDiffResult(diff, aRaw.length, bRaw.length);
+    }
+
 let lastIntersection = [];
 
     function renderResult(list, aCount, bCount) {
@@ -199,7 +248,7 @@ let lastIntersection = [];
     list.forEach(item => {
       const div = document.createElement('div');
       div.className = 'card';
-
+      
       div.innerHTML = `
         <div class="title">${item.base}</div>
 
@@ -208,6 +257,7 @@ let lastIntersection = [];
         </div>
 
         <div>🅰️ A 表原始值：</div>
+        
         <div class="badge">${item.aList.join(', ')}</div>
 
         <div style="margin-top:6px;">🅱️ B 表原始值：</div>
@@ -218,6 +268,47 @@ let lastIntersection = [];
     });
 
     }
+
+    function renderDiffResult(list, aCount, bCount) {
+        lastIntersection = list; // 存起來給全域複製用
+      const result = document.getElementById('result');
+      const summary = document.getElementById('summary');
+      result.innerHTML = '';
+
+      summary.innerHTML = `
+        📊 A 表：${aCount} 筆　
+        B 表：${bCount} 筆　
+        非交集：${list.length} 筆
+      `;
+
+      if (list.length === 0) {
+        result.innerHTML = `<div style="opacity:.7;">沒有找到共同域名</div>`;
+        return;
+      }
+
+    list.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      
+      div.innerHTML = `
+        <div class="title">${item.base}</div>
+
+        <div style="display:flex; gap:6px; margin-bottom:6px;">
+          <button class="copy-btn" data-copy="${item.base}">複製主域名</button>
+        </div>
+
+        <div>${item.source} 表</div>
+        
+     
+
+        
+      `;
+
+      result.appendChild(div);
+    });
+
+    }
+
     document.addEventListener('click', e => {
   const btn = e.target.closest('.copy-btn');
   if (!btn) return;

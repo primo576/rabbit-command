@@ -69,6 +69,17 @@
 	field-sizing: content;
 	white-space: nowrap;
 }
+.bbsCF{
+   display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 30dvh;
+}
+.incident{
+        background-color: bisque;
+        margin-bottom: 10px;
+        border-radius: 10px;
+}
 
  </style>
 </head>
@@ -86,18 +97,21 @@
  <div id='clockText'></div>
 </div>
 
-<div class="timer card">
+<div class="card">
  
   <div>
 <button id="btnStart">開始</button>
 <button id="btnLap">分組</button>
+
+<button onclick="renderIncidents()">fatch CF</button>
 </div>
 
     <div>總時間：</div>
-    <span id="clock">00:00:00</span>
+    <span style="font-size: 30px;" class="" id="clock">00:00:00</span>
     <ol id="lapList">
   
 </ol>
+<div class="bbsCF" id="incidentList"></div>
 </div>
 
 
@@ -333,4 +347,52 @@ document.getElementById('allaudjestBtn').onclick = () => {
 
 
 renderLinks();
+</script>
+<script>
+    async function renderIncidents() {
+        const div = document.getElementById('incidentList');
+        div.innerHTML = 'try Fetch...';
+    const res = await fetch(
+        //'https://www.cloudflarestatus.com/api/v2/incidents.json'
+        'https://www.cloudflarestatus.com/api/v2/incidents/unresolved.json'
+    );
+
+    const data = await res.json();
+
+    
+
+    div.innerHTML = '';
+
+       const ahref = document.createElement('a');
+
+        ahref.textContent = 'CF status';
+        ahref.href = 'https://new.cloudflarestatus.com/';
+        ahref.target = '_blank';
+
+        ahref.className = 'incident';
+ div.appendChild(ahref);
+
+    data.incidents.forEach(item => {
+     
+        const card = document.createElement('div');
+
+        card.className = 'incident';
+
+        card.innerHTML = `
+            <h3>${item.name}</h3>
+            <div>Status：${item.status}</div>
+            <div>Impact：${item.impact}</div>
+            <div>Start ：${new Date(item.started_at).toLocaleString()}</div>
+            <div>Update：${new Date(item.updated_at).toLocaleString()}</div>
+        `;
+
+        div.appendChild(card);
+
+    });
+
+  //  
+
+}
+
+renderIncidents();
 </script>

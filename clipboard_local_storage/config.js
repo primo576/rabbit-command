@@ -447,7 +447,7 @@ function sendToinput() {
 }
 //checkbox取值
 
-
+animationStatus=true
 
 function render() {
    oclass = ['setMenuol']
@@ -501,6 +501,8 @@ function render() {
       //過濾表情標籤
       const divTop = document.createElement('div');
       divTop.className = 'divTop'
+     
+      
       const div = document.createElement('li');
       div.className = 'item';
       div.id = `item-${index}`;
@@ -1156,13 +1158,20 @@ function render() {
             //const ldiv = document.createElement('div');
             const ldiv = document.createElement('li');
             ldiv.className = 'line';
-
+                if (animationStatus) {
+         ldiv.classList.add('heartbeat');
+         
+         }
 
             if (lineCardMode.checked) {
                ldiv.classList.add('lineCardExhibit')
                   if (lineCardTextCenterMode.checked) {
                   ldiv.classList.add('textFlexCenter');
                   }
+                  
+                
+            }else{
+
             }
 
             //
