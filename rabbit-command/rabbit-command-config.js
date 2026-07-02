@@ -5,16 +5,17 @@ function addVar(name = '', value = '') {
    const div = document.createElement('div');
    div.className = 'var-block';
    div.innerHTML = `
+   <div style="float: right;">❌</div>
     <label>變數名稱</label>
+   
     <input value="${name}">
     <label>變數值</label>
     <textarea placeholder="換行,逗號,空格">${value}</textarea>
-    <button>❌ 刪除</button>
   `;
 
    const input = div.querySelector('input');
    const textarea = div.querySelector('textarea');
-   const btn = div.querySelector('button');
+   const btn = div.querySelector('div');
 
    input.addEventListener('input', saveVars);
    textarea.addEventListener('input', saveVars);

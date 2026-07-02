@@ -4,7 +4,7 @@ ALL_TEMPLATE.Config_white_TEMPLATE_CONFIG=[
   {
     label: '— 自訂 —',
     value: `如果有\${} 要加上跳脫符\\ 可以多行處理`,
-    risk: 'custom',
+    risk: null,
     desc: ``
 },
 {   "label": "查看目前狀態",
@@ -16,32 +16,7 @@ ALL_TEMPLATE.Config_white_TEMPLATE_CONFIG=[
 
 
   
-ALL_TEMPLATE.docker_TEMPLATE_CONFIG=[
-  {
-    label: '— 自訂 —',
-    value: `如果有\${} 要加上跳脫符\\ 可以多行處理`,
-    risk: 'custom',
-    desc: ``
-},
-{   "label": "刪除 build layer cache",
-    "value": `docker builder prune -a`,
-    "risk": "safe",
-    "desc": `先看docker佔用空間再看要怎麼刪除
-  docker system df
-TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
-Images          5         1         4.271GB   3.339GB (78%)
-Containers      1         0         214B      214B (100%)
-Local Volumes   0         0         0B        0B
-Build Cache     2600      0         258.6GB   258.6GB
 
-這代表：
- Build Cache
-  * 有 **2600 個 build layer cache**
-  * 全部都是 **沒在用（ACTIVE = 0）**
-  * **100% 可以刪**
-`
-  }
-  ]
 
 ALL_TEMPLATE.NEWwebCreate_TEMPLATE_CONFIG=[
  {
@@ -199,7 +174,7 @@ ALL_TEMPLATE.CloudFlare_TEMPLATE_CONFIG=[
   {
     label: '— 自訂 —',
     value: '',
-    risk: 'custom',
+    risk: null,
     desc: ``
 },
 {   "label": "301 302跳轉設定",
@@ -254,7 +229,7 @@ curl -X POST http://loki.test-yq.top/loki/api/v1/push \
  {
     label: '— 自訂 —',
     value: '',
-    risk: 'custom',
+    risk: null,
     desc: ``
   }
 ]
@@ -263,7 +238,7 @@ ALL_TEMPLATE.k8s_top_TEMPLATE_CONFIG = [
   {
     label: '— 自訂 —',
     value: '',
-    risk: 'custom',
+    risk: null,
     desc: ``
   },
 
@@ -422,3 +397,455 @@ kubectl get apiservice | grep metrics
 `
   }
 ]
+
+
+ALL_TEMPLATE.AWS_s3_TEMPLATE_CONFIG = [
+{
+  label: 'S3 ls (Buckets)',
+  value: 'aws --profile ${profileName} s3 ls',
+  risk: 'safe',
+  desc: '列出此 Profile 可存取的所有 S3 Bucket'
+},
+{
+  label: 'S3 ls Bucket',
+  value: 'aws --profile ${profileName} s3 ls s3://${bucket-name}',
+  risk: 'safe',
+  desc: '列出 Bucket 根目錄內容'
+},
+{
+  label: 'S3 ls Recursive',
+  value: 'aws --profile ${profileName} s3 ls s3://${bucket-name} --recursive',
+  risk: 'safe',
+  desc: '遞迴列出 Bucket 所有物件'
+},
+{
+  label: 'S3 du',
+  value: 'aws --profile ${profileName} s3 ls s3://${bucket-name} --recursive --human-readable --summarize',
+  risk: 'safe',
+  desc: '查看 Bucket 檔案數量與總容量'
+},
+{
+  label: 'S3 cp Download',
+  value: 'aws --profile ${profileName} s3 cp s3://${bucket-name}/file.txt ./',
+  risk: 'read',
+  desc: '下載單一檔案'
+},
+{
+  label: 'S3 cp Upload',
+  value: 'aws --profile ${profileName} s3 cp ./file.txt s3://${bucket-name}/',
+  risk: 'write',
+  desc: '上傳單一檔案'
+},
+{
+  label: 'S3 cp Recursive Download',
+  value: 'aws --profile ${profileName} s3 cp s3://${bucket-name} ./local --recursive',
+  risk: 'read',
+  desc: '下載整個資料夾'
+},
+{
+  label: 'S3 cp Recursive Upload',
+  value: 'aws --profile ${profileName} s3 cp ./local s3://${bucket-name} --recursive',
+  risk: 'write',
+  desc: '上傳整個資料夾'
+},
+{
+  label: 'S3 sync Download',
+  value: 'aws --profile ${profileName} s3 sync s3://${bucket-name} ./local',
+  risk: 'read',
+  desc: '同步 Bucket 到本機'
+},
+{
+  label: 'S3 sync Upload',
+  value: 'aws --profile ${profileName} s3 sync ./local s3://${bucket-name}',
+  risk: 'write',
+  desc: '同步本機到 Bucket'
+},
+{
+  label: 'S3 sync DryRun',
+  value: 'aws --profile ${profileName} s3 sync ./local s3://${bucket-name} --dryrun',
+  risk: 'safe',
+  desc: '預覽同步結果，不會真正執行'
+},
+{
+  label: 'S3 sync Delete',
+  value: 'aws --profile ${profileName} s3 sync ./local s3://${bucket-name} --delete',
+  risk: 'danger',
+  desc: '同步並刪除 Bucket 中不存在於本機的檔案'
+},
+{
+  label: 'S3 rm File',
+  value: 'aws --profile ${profileName} s3 rm s3://${bucket-name}/file.txt',
+  risk: 'danger',
+  desc: '刪除單一檔案'
+},
+{
+  label: 'S3 rm Recursive',
+  value: 'aws --profile ${profileName} s3 rm s3://${bucket-name}/path/ --recursive',
+  risk: 'danger',
+  desc: '遞迴刪除資料夾'
+},
+{
+  label: 'S3 mb',
+  value: 'aws --profile ${profileName} s3 mb s3://${bucket-name}',
+  risk: 'write',
+  desc: '建立新的 Bucket'
+},
+{
+  label: 'S3 rb',
+  value: 'aws --profile ${profileName} s3 rb s3://${bucket-name}',
+  risk: 'danger',
+  desc: '刪除空 Bucket'
+},
+{
+  label: 'S3 rb Force',
+  value: 'aws --profile ${profileName} s3 rb s3://${bucket-name} --force',
+  risk: 'danger',
+  desc: '刪除 Bucket（包含所有物件）'
+}
+]
+
+
+ALL_TEMPLATE.Docker_TEMPLATE_CONFIG=[
+  {   "label": "刪除 build layer cache",
+    "value": `docker builder prune -a`,
+    "risk": "safe",
+    "desc": `先看docker佔用空間再看要怎麼刪除
+  docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          5         1         4.271GB   3.339GB (78%)
+Containers      1         0         214B      214B (100%)
+Local Volumes   0         0         0B        0B
+Build Cache     2600      0         258.6GB   258.6GB
+
+這代表：
+ Build Cache
+  * 有 **2600 個 build layer cache**
+  * 全部都是 **沒在用（ACTIVE = 0）**
+  * **100% 可以刪**
+`
+  }
+  ,
+  {
+  label: '──── Docker 啟動 ────',
+  value: '',
+  risk: null,
+  desc: ``
+},
+{
+  label: 'docker version',
+  value: 'docker version',
+  risk: 'safe',
+  desc: '查看 Docker Client 與 Server 版本'
+},
+{
+  label: 'docker info',
+  value: 'docker info',
+  risk: 'safe',
+  desc: '查看 Docker 系統資訊'
+},
+{
+  label: 'docker context ls',
+  value: 'docker context ls',
+  risk: 'safe',
+  desc: '查看目前 Docker Context'
+},
+{
+  label: 'docker login',
+  value: 'docker login',
+  risk: 'write',
+  desc: '登入 Docker Registry'
+},
+{
+  label: 'docker logout',
+  value: 'docker logout',
+  risk: 'write',
+  desc: '登出 Docker Registry'
+},
+
+{
+  label: '──── Docker Image ────',
+  value: '',
+  risk: null,
+  desc: ``
+},
+{
+  label: 'docker images',
+  value: 'docker images',
+  risk: 'safe',
+  desc: '查看本機所有 Image'
+},
+{
+  label: 'docker image ls',
+  value: 'docker image ls',
+  risk: 'safe',
+  desc: '列出所有 Image'
+},
+{
+  label: 'docker pull',
+  value: 'docker pull image:tag',
+  risk: 'write',
+  desc: '下載 Image'
+},
+{
+  label: 'docker push',
+  value: 'docker push image:tag',
+  risk: 'write',
+  desc: '推送 Image 到 Registry'
+},
+{
+  label: 'docker build',
+  value: 'docker build -t image:tag .',
+  risk: 'write',
+  desc: '建立 Image'
+},
+{
+  label: 'docker tag',
+  value: 'docker tag source:tag target:tag',
+  risk: 'write',
+  desc: '重新標記 Image'
+},
+{
+  label: 'docker inspect image',
+  value: 'docker inspect ${image-name}',
+  risk: 'safe',
+  desc: '查看 Image 詳細資訊'
+},
+{
+  label: 'docker history',
+  value: 'docker history ${image-name}',
+  risk: 'safe',
+  desc: '查看 Image Layer'
+},
+{
+  label: 'docker rmi',
+  value: 'docker rmi ${image-name}',
+  risk: 'danger',
+  desc: '刪除 Image'
+},
+{
+  label: 'docker image prune',
+  value: 'docker image prune',
+  risk: 'danger',
+  desc: '刪除未使用 Image'
+},
+
+{
+  label: '──── Docker Container ────',
+  value: '',
+  risk: null,
+  desc: ``
+},
+{
+  label: 'docker ps',
+  value: 'docker ps',
+  risk: 'safe',
+  desc: '查看執行中的 Container'
+},
+{
+  label: 'docker ps -a',
+  value: 'docker ps -a',
+  risk: 'safe',
+  desc: '查看所有 Container'
+},
+{
+  label: 'docker run',
+  value: 'docker run image:tag',
+  risk: 'write',
+  desc: '建立並啟動 Container'
+},
+{
+  label: 'docker start',
+  value: 'docker start ${container}',
+  risk: 'write',
+  desc: '啟動 Container'
+},
+{
+  label: 'docker stop',
+  value: 'docker stop ${container}',
+  risk: 'write',
+  desc: '停止 Container'
+},
+{
+  label: 'docker restart',
+  value: 'docker restart ${container}',
+  risk: 'write',
+  desc: '重新啟動 Container'
+},
+{
+  label: 'docker pause',
+  value: 'docker pause ${container}',
+  risk: 'write',
+  desc: '暫停 Container'
+},
+{
+  label: 'docker unpause',
+  value: 'docker unpause ${container}',
+  risk: 'write',
+  desc: '恢復 Container'
+},
+{
+  label: 'docker exec',
+  value: 'docker exec -it ${container} bash',
+  risk: 'write',
+  desc: '進入 Container'
+},
+{
+  label: 'docker logs',
+  value: 'docker logs -f ${container}',
+  risk: 'safe',
+  desc: '查看 Container Log'
+},
+{
+  label: 'docker inspect',
+  value: 'docker inspect ${container}',
+  risk: 'safe',
+  desc: '查看 Container 詳細資訊'
+},
+{
+  label: 'docker top',
+  value: 'docker top ${container}',
+  risk: 'safe',
+  desc: '查看 Container 內程序'
+},
+{
+  label: 'docker stats',
+  value: 'docker stats',
+  risk: 'safe',
+  desc: '查看 Container 資源使用'
+},
+{
+  label: 'docker cp',
+  value: 'docker cp container:/path ./',
+  risk: 'write',
+  desc: 'Container 與本機互相複製檔案'
+},
+{
+  label: 'docker rename',
+  value: 'docker rename old new',
+  risk: 'write',
+  desc: '重新命名 Container'
+},
+{
+  label: 'docker commit',
+  value: 'docker commit container image:new',
+  risk: 'write',
+  desc: '將 Container 建立成 Image'
+},
+{
+  label: 'docker rm',
+  value: 'docker rm ${container}',
+  risk: 'danger',
+  desc: '刪除 Container'
+},
+{
+  label: 'docker rm -f',
+  value: 'docker rm -f ${container}',
+  risk: 'danger',
+  desc: '強制刪除 Container'
+},
+{
+  label: 'docker container prune',
+  value: 'docker container prune',
+  risk: 'danger',
+  desc: '刪除所有停止中的 Container'
+},
+
+{
+  label: '──── Docker Network ────',
+  value: '',
+  risk: null,
+  desc: ``
+},
+{
+  label: 'docker network ls',
+  value: 'docker network ls',
+  risk: 'safe',
+  desc: '查看 Network'
+},
+{
+  label: 'docker network inspect',
+  value: 'docker network inspect network',
+  risk: 'safe',
+  desc: '查看 Network 詳細資訊'
+},
+{
+  label: 'docker network create',
+  value: 'docker network create network',
+  risk: 'write',
+  desc: '建立 Network'
+},
+{
+  label: 'docker network rm',
+  value: 'docker network rm network',
+  risk: 'danger',
+  desc: '刪除 Network'
+},
+
+{
+  label: '──── Docker Volume ────',
+  value: '',
+  risk: null,
+  desc: ``
+},
+{
+  label: 'docker volume ls',
+  value: 'docker volume ls',
+  risk: 'safe',
+  desc: '查看 Volume'
+},
+{
+  label: 'docker volume inspect',
+  value: 'docker volume inspect volume',
+  risk: 'safe',
+  desc: '查看 Volume 詳細資訊'
+},
+{
+  label: 'docker volume create',
+  value: 'docker volume create volume',
+  risk: 'write',
+  desc: '建立 Volume'
+},
+{
+  label: 'docker volume rm',
+  value: 'docker volume rm volume',
+  risk: 'danger',
+  desc: '刪除 Volume'
+},
+{
+  label: 'docker volume prune',
+  value: 'docker volume prune',
+  risk: 'danger',
+  desc: '刪除未使用 Volume'
+},
+
+{
+  label: '──── Docker Cleanup ────',
+  value: '',
+  risk: null,
+  desc: ``
+},
+{
+  label: 'docker system df',
+  value: 'docker system df',
+  risk: 'safe',
+  desc: '查看 Docker 空間使用'
+},
+{
+  label: 'docker system prune',
+  value: 'docker system prune',
+  risk: 'danger',
+  desc: '清除未使用資源'
+},
+{
+  label: 'docker system prune -a',
+  value: 'docker system prune -a',
+  risk: 'danger',
+  desc: '清除所有未使用 Image、Container、Network'
+},
+{
+  label: 'docker system prune -a --volumes',
+  value: 'docker system prune -a --volumes',
+  risk: 'danger',
+  desc: '清除所有未使用資源（包含 Volume）'
+}
+] 
