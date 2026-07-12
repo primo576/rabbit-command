@@ -849,3 +849,129 @@ Build Cache     2600      0         258.6GB   258.6GB
   desc: '清除所有未使用資源（包含 Volume）'
 }
 ] 
+
+
+ALL_TEMPLATE.nginx_conf_TEMPLATE_CONFIG=
+  [
+    {
+    label: 'conf常見配置',
+    value: '',
+    risk: 'safe',
+    desc: `http {
+    # 隐藏版本号
+    server_tokens off;
+    
+    # 限制请求大小
+    client_max_body_size 10M;
+    
+    # 默认关闭目录列表
+    autoindex off;
+    
+    # 全局安全响应头
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    
+    # 其他配置...
+}
+ 
+server {
+    listen 80;
+    
+    # 只允许GET和POST
+    if ($request_method !~ ^(GET|POST)$) {
+        return 405;
+    }
+    
+    # 敏感目录禁止访问
+    location ~ ^/(backup|logs|config)/ {
+        return 403;
+    }
+    
+    # 管理后台限制IP
+    location /admin/ {
+        allow 你的IP;
+        deny all;
+    }
+}
+    `
+  },
+  {
+    label: 'CORS',
+    value: 'Access-Control-Allow-*',
+    risk: 'safe',
+    desc: 'API 被瀏覽器擋掉'
+  },
+  {
+    label: 'WebSocket',
+    value: 'Upgrade / Connection',
+    risk: 'safe',
+    desc: 'WebSocket 連不上、一直斷線'
+  },
+  {
+    label: 'Cookie(Session)',
+    value: 'Set-Cookie / Credentials',
+    risk: 'safe',
+    desc: 'Cookie 不送、不儲存'
+  },
+  {
+    label: 'HTTPS Redirect',
+    value: 'return 301',
+    risk: 'safe',
+    desc: 'HTTP 無法自動導向 HTTPS'
+  },
+  {
+    label: 'Reverse Proxy',
+    value: 'proxy_set_header',
+    risk: 'safe',
+    desc: 'API 404、Host 不正確、後端取得錯誤資訊'
+  },
+  {
+    label: 'Upload',
+    value: 'client_max_body_size',
+    risk: 'safe',
+    desc: '上傳大檔失敗 (413 Request Entity Too Large)'
+  },
+  {
+    label: 'SPA Routing',
+    value: 'try_files',
+    risk: 'safe',
+    desc: 'Vue、React 重新整理頁面出現 404'
+  },
+  {
+    label: 'Cache',
+    value: 'expires / Cache-Control',
+    risk: 'safe',
+    desc: '修改 JS、CSS 後使用者仍看到舊版本'
+  },
+  {
+    label: 'Compression',
+    value: 'gzip / brotli',
+    risk: 'safe',
+    desc: '網頁載入慢、傳輸流量較大'
+  },
+  {
+    label: 'Security Headers',
+    value: 'X-Frame-Options 等',
+    risk: 'safe',
+    desc: '安全掃描失敗或存在安全風險'
+  },
+  {
+    label: 'Rate Limit',
+    value: 'limit_req',
+    risk: 'safe',
+    desc: 'API 遭大量請求、暴力破解或 DDoS'
+  },
+  {
+    label: 'Real Client IP',
+    value: 'real_ip_header',
+    risk: 'safe',
+    desc: '後端取得代理伺服器 IP，而非真實使用者 IP'
+  },
+  {
+    label: 'IP 白名單',
+    value: 'allow / deny',
+    risk: 'safe',
+    desc: '限制特定 IP 或網段才能存取服務'
+  }
+]
