@@ -640,6 +640,9 @@ function render() {
 
       const textarea = document.createElement('textarea');
       textarea.className = 'content';
+      if (item.whiteSpaceUnset) {
+         textarea.classList.add('whiteSpaceUnset');
+      }
       textarea.value = item.text;
 
       textarea.oninput = () => {
@@ -810,6 +813,11 @@ function render() {
          recoverTitle();
       }
 
+      function whiteSpaceUnset() {
+         item.whiteSpaceUnset = !item.whiteSpaceUnset;
+         textarea.classList.toggle('whiteSpaceUnset');
+      }
+
       function hideTextareaMode() {
          item.textArea = !item.textArea;
          
@@ -922,6 +930,7 @@ function render() {
 
       divBtn.appendChild(createBtnClickFun('複製', () => copyText(textarea.value, index), '複製內容'));
       divBtn.appendChild(toggleBtn); //展開收起
+      divBtn.appendChild(createBtnClickFun('斷行', whiteSpaceUnset, '過長斷行'));
       divBtn.appendChild(createBtnClickFun('逐行', lineMode));
       divBtn.appendChild(toggleBtnTojoinStr); //替換字
 

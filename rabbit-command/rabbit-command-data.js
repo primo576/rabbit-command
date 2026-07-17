@@ -230,6 +230,13 @@ br get ingress gocron.com -n gocron -o yaml`
     desc: ``
   },
   {
+    label: '單ns批量刪除驅逐 pod',
+    value: `kubectl --kubeconfig=/opt/cicd/k8s/\${cluster} -n \${ns} get pod  | grep Evicted | awk '{print $1}' | xargs -I {} kubectl --kubeconfig=/opt/cicd/k8s/\${cluster} -n \${ns} delete pod {}`,
+    risk: 'danger',
+    desc: `br get pod -n default | grep Evicted | awk '{print $1}' | xargs -I {} kubectl --kubeconfig=/opt/cicd/k8s/br delete pod {} -n default  
+`
+  },
+  {
     label: '調整pod數量（⚠️影響線上）（未驗收站點誤發）',
     value: 'kubectl scale deployment ${deployment} --replicas=${num} -n ${ns}',
     risk: 'danger',
