@@ -136,16 +136,25 @@ function copytemplate() {
    titleChangeUse(`已複製模板 ${t.slice(0,30)}`);
 }
 
-
+//
+function getNowDataSelect(){
+   const sel = document.getElementById('templateSelect');
+   return nowData[sel.selectedIndex]
+}
+//
 /*************************************************
  * Template 套用
  *************************************************/
 function applyTemplate() {
    const sel = document.getElementById('templateSelect');
    const opt = sel.options[sel.selectedIndex];
+  // console.log(sel.selectedIndex)
+  //nowDataSelect=nowData[sel.selectedIndex]
+   //nowDataSelect=nowData[0]
+   addNewSelect(opt);
 
    document.getElementById('template').value = opt.value || '';
-   document.getElementById('commandDesc').innerHTML =
+   document.getElementById('commandDesc').value =
       opt.dataset.desc || '未填寫說明';
 
    const note = document.getElementById('riskNote');
@@ -168,7 +177,55 @@ function applyTemplate() {
 
 }
 
+template.addEventListener('input', e => {
+   if (templateKeepingSave) {
+   nowDataSelect=getNowDataSelect();
+   
+   nowDataSelect.value=e.target.value
+   
+    save_localStorageGroupCreate()
+    renderTemplateOptions(nowData)
+   }
+});
 
+descTarget=document.getElementById('commandDesc')
+
+descTarget.addEventListener('input', e => {
+   if (templateKeepingSave) {
+   nowDataSelect=getNowDataSelect();
+   
+   nowDataSelect.desc=e.target.value
+   
+    save_localStorageGroupCreate()
+    renderTemplateOptions(nowData)
+   }
+});
+
+function addNewSelect(opt){
+   if (opt.value=='addNewTemplate') {
+      groupName=document.getElementById('templateGroup').value;
+      news=prompt();
+     
+      if (news.length>1) {
+      data_localStorageGroupCreate.forEach(key => {
+         
+         if (key.groupName==groupName) {
+            
+            key.data.unshift({
+            desc: '自訂',
+            label: news,
+            risk: '自訂2',
+            value:'自訂',
+            })
+            renderTemplateOptions(key.data)
+            save_localStorageGroupCreate()
+         }
+      })
+      }
+     templateSelect.selectedIndex=0
+   }
+    
+}
 /*************************************************
  * Vars 同步邏輯
  *************************************************/
@@ -255,6 +312,9 @@ function renderTemplateOptions(arr) {
          //給禁用選項
       }
       opt.dataset.desc = item.desc || '未填寫說明';
+      //
+  
+      //
       select.appendChild(opt);
    });
 
@@ -283,6 +343,25 @@ function renderGroupSelect() {
       option.textContent = key.replace('_TEMPLATE_CONFIG', '');
       groupSelect.appendChild(option);
    });
+   localStorageGroupCreate();
+}
+
+function localStorageGroupCreate(){
+   groupName='groupName'
+    const option = document.createElement('option');
+      option.value = 'localStorageGroupCreate';
+      option.textContent = 'addGroup_localStorage';
+      
+      groupSelect.appendChild(option);
+
+       data_localStorageGroupCreate.forEach(key => {
+      const option = document.createElement('option');
+      option.value = key[groupName];
+      option.textContent = key[groupName];
+      groupSelect.appendChild(option);
+       
+   });
+      
 }
 
 groupSelect.addEventListener('change', e => {
@@ -291,10 +370,53 @@ groupSelect.addEventListener('change', e => {
 
    if (ALL_TEMPLATE[groupKey]) {
       renderTemplateOptions(ALL_TEMPLATE[groupKey]);
+      
       rendersearch = ALL_TEMPLATE[groupKey];
       loadsearchkeyword()
+      applyTemplate();
+      templateKeepingSave=false
+      nowData=ALL_TEMPLATE[groupKey]
    }
-   applyTemplate();
+   ///////
+ data_localStorageGroupCreate.forEach(key => {
+   
+      if (key[groupName]==groupKey) {
+      renderTemplateOptions(key.data);
+      rendersearch=key.data;
+      loadsearchkeyword()
+      applyTemplate();
+      templateKeepingSave=true
+      nowData=key.data
+   }
+})
+////
+   if (groupKey=='localStorageGroupCreate') {
+      
+      newGroupName=prompt('GroupName');
+      if (newGroupName.length>1) {
+            data_localStorageGroupCreate.unshift({
+            groupName: newGroupName,
+            time: Date.now(),
+            data:[{
+            desc: '',
+            label: '自訂',
+            risk: '自訂2',
+            value:'',
+            },{
+            desc: '',
+            label: 'addNewTemplate',
+            risk: '自訂2',
+            value:'addNewTemplate',
+            }]
+         });
+     //保存
+     save_localStorageGroupCreate();
+     renderGroupSelect();
+      }
+     groupSelect.selectedIndex=0
+   
+   }
+   
 });
 
 
@@ -470,17 +592,30 @@ function renderHistory() {
 /*************************************************
  * 初始化 / 事件
  *************************************************/
+
+templateKeepingSave=false
+let nowData
+nowDataSelect=null
+
+let data_localStorageGroupCreate = JSON.parse(localStorage.getItem('localStorageGroupCreate')) || [];
+
 document.addEventListener('DOMContentLoaded', () => {
    renderGroupSelect();
 
    const lastGroup = localStorage.getItem('lastGroup');
+   console.log(lastGroup)
    if (lastGroup && ALL_TEMPLATE[lastGroup]) {
       groupSelect.value = lastGroup;
       rendersearch = ALL_TEMPLATE[lastGroup];
       renderTemplateOptions(ALL_TEMPLATE[lastGroup]);
+      nowData=ALL_TEMPLATE[lastGroup]
 
-   } else {
+   } //else if(){
+      
+   //}
+   else {
       renderTemplateOptions(ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG']);
+      nowData=ALL_TEMPLATE['KUBECTL_TEMPLATE_CONFIG']
    }
 
    loadVars();
@@ -491,6 +626,10 @@ document.addEventListener('DOMContentLoaded', () => {
    //console.log(localStorage);
    //localStorage.clear()
 });
+
+function save_localStorageGroupCreate() {
+   localStorage.setItem('localStorageGroupCreate', JSON.stringify(data_localStorageGroupCreate));
+}
 
 document.getElementById('template')
    .addEventListener('input', syncVarsFromTemplate);
