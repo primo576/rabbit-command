@@ -7,6 +7,8 @@
   const LINKS = window.FLOATING_MENU_LINKS || [
     { label: 'rabbitCommand', url: '../rabbit-command/index.html' },
     { label: 'lookDNS', url: '../regexDomain/lookDNS.html' },
+    { label: '剪貼簿', url: '../clipboard_local_storage/index.html' },
+    { label: 'calc', url: '../Web-Calculator/web-calculator.html' },
     { label: 'AB表域名比對', url: '../regexDomain/abTableComparison.html' },
     { label: '文字找Domain', url: '../regexDomain/searchDomain.html' },
     { label: 'List 清單刪除 / 保留分行', url: '../regexDomain/listRegex.html' },
@@ -15,7 +17,6 @@
     { label: '文本比對0', url: '../regexDomain/textDifferent.html' },
     { label: 'regex搜索文本', url: '../regexDomain/searchRegex.html' },
     { label: '找list不同', url: '../regexDomain/findListDifference.html' },
-    { label: '剪貼簿', url: '../clipboard_local_storage/index.html' },
     { label: 'url多開', url: '../regexDomain/openUrls.html' },
     { label: 'jenkins-curl', url: '../jenkins-curl/index.html' },
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
@@ -45,6 +46,16 @@
       indexHtml.appendChild(ahref)
 
     })
+
+n=LINKS.map((i)=>{
+   return {
+        label:i.label,
+        url:i.url.replace('../','./')
+    }
+})
+
+
+    window.LINKS=n
     return
   }
 

@@ -28,7 +28,7 @@
     background-color: #ffffff;
     height: 100%;
     width: 100%;
-    border-radius: 18px;
+   
     overflow: auto;
   }
   .center{
@@ -114,6 +114,12 @@
 <div class="bbsCF" id="incidentList"></div>
 </div>
 
+<div class="card">
+    <select id="toolSelect">
+
+</select>
+    <iframe style="border:none;" id="toolIframe" src="./Web-Calculator/web-calculator.html" width=100% height=100% title="calc"></iframe>
+</div>
 
 
 
@@ -395,4 +401,46 @@ renderLinks();
 }
 
 renderIncidents();
+
+const toolSelect = document.getElementById("toolSelect");
+const toolIframe = document.getElementById("toolIframe");
+
+toolSelect.addEventListener("change", (e) => {
+  toolIframe.src = e.target.value;
+});
+
+const TOOLS = window.LINKS
+
+const b=[
+  {
+    name: "計算機",
+    path: "Web-Calculator/web-calculator.html"
+  },
+  {
+    name: "searchnsid",
+    path: "regexDomain/searchnsid.html"
+  },
+  {
+    name: "JSON Viewer",
+    path: "JSON-Viewer/index.html"
+  },
+  {
+    name: "Base64",
+    path: "Base64/index.html"
+  }
+];
+
+const select = document.getElementById("toolSelect");
+const iframe = document.getElementById("toolIframe");
+
+TOOLS.forEach(tool => {
+  const option = document.createElement("option");
+  option.textContent = tool.label;
+  option.value = tool.url;
+  select.appendChild(option);
+});
+
+select.addEventListener("change", () => {
+  iframe.src = select.value;
+});
 </script>
