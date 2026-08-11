@@ -1,0 +1,1295 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iframe Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        /* =========================
+           Toolbar
+        ========================= */
+
+        #toolbar {
+            height: 50px;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 12px;
+
+            background: #222;
+            color: white;
+        }
+
+        #toolbar button {
+            border: none;
+            border-radius: 4px;
+
+            padding: 7px 12px;
+
+            cursor: pointer;
+        }
+
+        #toolbar button:hover {
+            opacity: 0.85;
+        }
+
+        .toolbar-title {
+            margin-right: auto;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           Dashboard
+        ========================= */
+
+        #dashboard {
+            position: relative;
+
+            width: 100%;
+            height: calc(100vh - 50px);
+
+            overflow: auto;
+
+            /*
+             * 12 x 12 Grid
+             */
+            display: grid;
+
+            grid-template-columns:
+                repeat(12, minmax(60px, 1fr));
+
+            grid-auto-rows: 60px;
+
+            gap: 8px;
+
+            padding: 8px;
+        }
+
+
+        /* =========================
+           Iframe Card
+        ========================= */
+
+        .iframe-card {
+            position: relative;
+
+            min-width: 0;
+            min-height: 0;
+
+            background: white;
+
+            border: 1px solid #bbb;
+            border-radius: 6px;
+
+            overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* =========================
+           Header
+        ========================= */
+
+        .iframe-header {
+            flex: 0 0 34px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 8px;
+
+            background: #e9e9e9;
+
+            border-bottom: 1px solid #ccc;
+
+            cursor: move;
+
+            user-select: none;
+        }
+
+        .iframe-title {
+            flex: 1;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .iframe-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .iframe-actions button {
+            width: 26px;
+            height: 24px;
+
+            padding: 0;
+
+            border: none;
+            border-radius: 3px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           iframe
+        ========================= */
+
+        .iframe-content {
+            flex: 1;
+
+            min-height: 0;
+        }
+
+        iframe {
+            display: block;
+
+            width: 100%;
+            height: 100%;
+
+            border: none;
+        }
+
+
+        /* =========================
+           Resize Handle
+        ========================= */
+
+        .resize-handle {
+            position: absolute;
+
+            right: 0;
+            bottom: 0;
+
+            width: 18px;
+            height: 18px;
+
+            cursor: nwse-resize;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    transparent 50%,
+                    #888 50%
+                );
+
+            opacity: 0.7;
+        }
+
+        .resize-handle:hover {
+            opacity: 1;
+        }
+
+
+        /* =========================
+           Modal
+        ========================= */
+
+        #modal {
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(0, 0, 0, 0.45);
+
+            z-index: 9999;
+        }
+
+        #modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(500px, 90vw);
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-box h3 {
+            margin-top: 0;
+        }
+
+        .form-row {
+            margin-bottom: 14px;
+        }
+
+        .form-row label {
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-row input {
+            width: 100%;
+
+            padding: 8px;
+
+            border: 1px solid #bbb;
+            border-radius: 4px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .modal-buttons button {
+            padding: 8px 16px;
+
+            border: none;
+            border-radius: 4px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           Mobile
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            #dashboard {
+                grid-template-columns: 1fr;
+
+                grid-auto-rows: 400px;
+            }
+
+            .iframe-card {
+                grid-column: 1 !important;
+                grid-row: auto !important;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     Toolbar
+========================= -->
+
+<div id="toolbar">
+
+    <div class="toolbar-title">
+        Iframe Dashboard
+    </div>
+
+    <button onclick="addIframe()">
+        ＋ 新增
+    </button>
+
+    <button onclick="resetDashboard()">
+        ↻ 重設
+    </button>
+
+</div>
+
+
+<!-- =========================
+     Dashboard
+========================= -->
+
+<div id="dashboard"></div>
+
+
+<!-- =========================
+     Modal
+========================= -->
+
+<div id="modal">
+
+    <div class="modal-box">
+
+        <h3 id="modalTitle">
+            新增 iframe
+        </h3>
+
+        <div class="form-row">
+
+            <label>
+                名稱
+            </label>
+
+            <input
+                id="inputTitle"
+                type="text"
+                placeholder="例如：Calculator"
+            >
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label>
+                URL
+            </label>
+
+            <input
+                id="inputSrc"
+                type="text"
+                placeholder="例如：Web-Calculator/web-calculator.html"
+            >
+
+        </div>
+
+
+        <div class="modal-buttons">
+
+            <button onclick="closeModal()">
+                取消
+            </button>
+
+            <button onclick="saveIframe()">
+                儲存
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/*
+ * =========================================================
+ * 設定
+ * =========================================================
+ */
+
+const STORAGE_KEY = "iframe-dashboard";
+
+const DEFAULT_IFRAMES = [
+
+    {
+        id: createId(),
+        title: "Calculator",
+        src: "Web-Calculator/web-calculator.html",
+
+        /*
+         * Grid 位置
+         */
+        x: 1,
+        y: 1,
+
+        /*
+         * Grid 大小
+         */
+        w: 4,
+        h: 5
+    },
+
+    {
+        id: createId(),
+        title: "Tool 2",
+        src: "tool2.html",
+
+        x: 5,
+        y: 1,
+
+        w: 4,
+        h: 5
+    },
+
+    {
+        id: createId(),
+        title: "Tool 3",
+        src: "tool3.html",
+
+        x: 9,
+        y: 1,
+
+        w: 4,
+        h: 5
+    }
+
+];
+
+
+let iframeList = loadData();
+
+let editingId = null;
+
+
+/*
+ * =========================================================
+ * ID
+ * =========================================================
+ */
+
+function createId() {
+
+    return Date.now().toString(36)
+        + Math.random().toString(36).substring(2);
+
+}
+
+
+/*
+ * =========================================================
+ * LocalStorage
+ * =========================================================
+ */
+
+function loadData() {
+
+    const data = localStorage.getItem(STORAGE_KEY);
+
+    if (!data) {
+
+        return DEFAULT_IFRAMES;
+
+    }
+
+    try {
+
+        return JSON.parse(data);
+
+    } catch (error) {
+
+        console.error(error);
+
+        return DEFAULT_IFRAMES;
+
+    }
+
+}
+
+
+function saveData() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(iframeList)
+    );
+
+}
+
+
+/*
+ * =========================================================
+ * Render
+ * =========================================================
+ */
+
+function render() {
+
+    const dashboard =
+        document.getElementById("dashboard");
+
+    dashboard.innerHTML = "";
+
+
+    iframeList.forEach(item => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "iframe-card";
+
+
+        /*
+         * Grid position
+         */
+
+        card.style.gridColumn =
+            `${item.x} / span ${item.w}`;
+
+        card.style.gridRow =
+            `${item.y} / span ${item.h}`;
+
+
+        /*
+         * Header
+         */
+
+        const header =
+            document.createElement("div");
+
+        header.className =
+            "iframe-header";
+
+
+        /*
+         * Title
+         */
+
+        const title =
+            document.createElement("div");
+
+        title.className =
+            "iframe-title";
+
+        title.textContent =
+            item.title;
+
+
+        /*
+         * Actions
+         */
+
+        const actions =
+            document.createElement("div");
+
+        actions.className =
+            "iframe-actions";
+
+
+        const editButton =
+            document.createElement("button");
+
+        editButton.textContent = "✎";
+
+        editButton.title = "編輯";
+
+        editButton.onclick = function(e) {
+
+            e.stopPropagation();
+
+            editIframe(item.id);
+
+        };
+
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.textContent = "×";
+
+        deleteButton.title = "刪除";
+
+        deleteButton.onclick = function(e) {
+
+            e.stopPropagation();
+
+            deleteIframe(item.id);
+
+        };
+
+
+        actions.appendChild(editButton);
+        actions.appendChild(deleteButton);
+
+
+        header.appendChild(title);
+        header.appendChild(actions);
+
+
+        /*
+         * iframe
+         */
+
+        const content =
+            document.createElement("div");
+
+        content.className =
+            "iframe-content";
+
+
+        const iframe =
+            document.createElement("iframe");
+
+        iframe.src = item.src;
+
+        iframe.loading = "lazy";
+
+        iframe.title = item.title;
+
+
+        content.appendChild(iframe);
+
+
+        /*
+         * Resize handle
+         */
+
+        const resizeHandle =
+            document.createElement("div");
+
+        resizeHandle.className =
+            "resize-handle";
+
+
+        /*
+         * 組合
+         */
+
+        card.appendChild(header);
+
+        card.appendChild(content);
+
+        card.appendChild(resizeHandle);
+
+        dashboard.appendChild(card);
+
+
+        /*
+         * 啟用拖曳
+         */
+
+        enableDrag(card, header, item);
+
+        enableResize(card, resizeHandle, item);
+
+    });
+
+}
+
+
+/*
+ * =========================================================
+ * Drag
+ * =========================================================
+ */
+
+function enableDrag(card, header, item) {
+
+    let startX;
+    let startY;
+
+    let originalX;
+    let originalY;
+
+
+    header.addEventListener(
+        "pointerdown",
+        function(e) {
+
+            /*
+             * 如果按到按鈕，不啟動拖曳
+             */
+
+            if (e.target.closest("button")) {
+                return;
+            }
+
+
+            e.preventDefault();
+
+
+            startX = e.clientX;
+            startY = e.clientY;
+
+            originalX = item.x;
+            originalY = item.y;
+
+
+            header.setPointerCapture(e.pointerId);
+
+
+            function move(ev) {
+
+                const dx =
+                    ev.clientX - startX;
+
+                const dy =
+                    ev.clientY - startY;
+
+
+                const dashboard =
+                    document.getElementById(
+                        "dashboard"
+                    );
+
+
+                const rect =
+                    dashboard.getBoundingClientRect();
+
+
+                /*
+                 * Grid 寬度
+                 */
+
+                const columnWidth =
+                    (
+                        rect.width -
+                        16 -
+                        (11 * 8)
+                    ) / 12;
+
+
+                const rowHeight =
+                    60 + 8;
+
+
+                const moveX =
+                    Math.round(
+                        dx / (columnWidth + 8)
+                    );
+
+
+                const moveY =
+                    Math.round(
+                        dy / rowHeight
+                    );
+
+
+                item.x =
+                    Math.max(
+                        1,
+                        Math.min(
+                            13 - item.w,
+                            originalX + moveX
+                        )
+                    );
+
+
+                item.y =
+                    Math.max(
+                        1,
+                        originalY + moveY
+                    );
+
+
+                card.style.gridColumn =
+                    `${item.x} / span ${item.w}`;
+
+                card.style.gridRow =
+                    `${item.y} / span ${item.h}`;
+
+            }
+
+
+            function end(ev) {
+
+                header.releasePointerCapture(
+                    ev.pointerId
+                );
+
+                header.removeEventListener(
+                    "pointermove",
+                    move
+                );
+
+                header.removeEventListener(
+                    "pointerup",
+                    end
+                );
+
+                saveData();
+
+            }
+
+
+            header.addEventListener(
+                "pointermove",
+                move
+            );
+
+            header.addEventListener(
+                "pointerup",
+                end
+            );
+
+        }
+    );
+
+}
+
+
+/*
+ * =========================================================
+ * Resize
+ * =========================================================
+ */
+
+function enableResize(card, handle, item) {
+
+    let startX;
+    let startY;
+
+    let originalW;
+    let originalH;
+
+
+    handle.addEventListener(
+        "pointerdown",
+        function(e) {
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+
+            startX = e.clientX;
+            startY = e.clientY;
+
+            originalW = item.w;
+            originalH = item.h;
+
+
+            handle.setPointerCapture(
+                e.pointerId
+            );
+
+
+            function move(ev) {
+
+                const dx =
+                    ev.clientX - startX;
+
+                const dy =
+                    ev.clientY - startY;
+
+
+                const dashboard =
+                    document.getElementById(
+                        "dashboard"
+                    );
+
+
+                const rect =
+                    dashboard.getBoundingClientRect();
+
+
+                const columnWidth =
+                    (
+                        rect.width -
+                        16 -
+                        (11 * 8)
+                    ) / 12;
+
+
+                const columnMove =
+                    Math.round(
+                        dx / (columnWidth + 8)
+                    );
+
+
+                const rowMove =
+                    Math.round(
+                        dy / (60 + 8)
+                    );
+
+
+                item.w =
+                    Math.max(
+                        1,
+                        Math.min(
+                            12 - item.x + 1,
+                            originalW + columnMove
+                        )
+                    );
+
+
+                item.h =
+                    Math.max(
+                        2,
+                        originalH + rowMove
+                    );
+
+
+                card.style.gridColumn =
+                    `${item.x} / span ${item.w}`;
+
+                card.style.gridRow =
+                    `${item.y} / span ${item.h}`;
+
+            }
+
+
+            function end(ev) {
+
+                handle.releasePointerCapture(
+                    ev.pointerId
+                );
+
+                handle.removeEventListener(
+                    "pointermove",
+                    move
+                );
+
+                handle.removeEventListener(
+                    "pointerup",
+                    end
+                );
+
+                saveData();
+
+            }
+
+
+            handle.addEventListener(
+                "pointermove",
+                move
+            );
+
+            handle.addEventListener(
+                "pointerup",
+                end
+            );
+
+        }
+    );
+
+}
+
+
+/*
+ * =========================================================
+ * 新增 iframe
+ * =========================================================
+ */
+
+function addIframe() {
+
+    editingId = null;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "新增 iframe";
+
+
+    document.getElementById(
+        "inputTitle"
+    ).value = "";
+
+
+    document.getElementById(
+        "inputSrc"
+    ).value = "";
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add("show");
+
+}
+
+
+/*
+ * =========================================================
+ * 編輯 iframe
+ * =========================================================
+ */
+
+function editIframe(id) {
+
+    const item =
+        iframeList.find(
+            x => x.id === id
+        );
+
+
+    if (!item) {
+        return;
+    }
+
+
+    editingId = id;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "編輯 iframe";
+
+
+    document.getElementById(
+        "inputTitle"
+    ).value =
+        item.title;
+
+
+    document.getElementById(
+        "inputSrc"
+    ).value =
+        item.src;
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add("show");
+
+}
+
+
+/*
+ * =========================================================
+ * 儲存 iframe
+ * =========================================================
+ */
+
+function saveIframe() {
+
+    const title =
+        document.getElementById(
+            "inputTitle"
+        ).value.trim();
+
+
+    const src =
+        document.getElementById(
+            "inputSrc"
+        ).value.trim();
+
+
+    if (!title) {
+
+        alert("請輸入名稱");
+
+        return;
+
+    }
+
+
+    if (!src) {
+
+        alert("請輸入 URL");
+
+        return;
+
+    }
+
+
+    /*
+     * 編輯
+     */
+
+    if (editingId) {
+
+        const item =
+            iframeList.find(
+                x => x.id === editingId
+            );
+
+
+        if (item) {
+
+            item.title = title;
+            item.src = src;
+
+        }
+
+    }
+
+    /*
+     * 新增
+     */
+
+    else {
+
+        /*
+         * 找一個比較合理的位置
+         */
+
+        const item = {
+
+            id: createId(),
+
+            title: title,
+
+            src: src,
+
+            x: 1,
+
+            y: 1,
+
+            w: 4,
+
+            h: 5
+
+        };
+
+
+        /*
+         * 放到目前最下面
+         */
+
+        if (iframeList.length > 0) {
+
+            const maxY =
+                Math.max(
+                    ...iframeList.map(
+                        x => x.y + x.h
+                    )
+                );
+
+
+            item.y = maxY;
+
+        }
+
+
+        iframeList.push(item);
+
+    }
+
+
+    saveData();
+
+    closeModal();
+
+    render();
+
+}
+
+
+/*
+ * =========================================================
+ * 刪除
+ * =========================================================
+ */
+
+function deleteIframe(id) {
+
+    const item =
+        iframeList.find(
+            x => x.id === id
+        );
+
+
+    if (!item) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            `確定要刪除「${item.title}」嗎？`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    iframeList =
+        iframeList.filter(
+            x => x.id !== id
+        );
+
+
+    saveData();
+
+    render();
+
+}
+
+
+/*
+ * =========================================================
+ * Modal
+ * =========================================================
+ */
+
+function closeModal() {
+
+    document.getElementById(
+        "modal"
+    ).classList.remove("show");
+
+}
+
+
+/*
+ * =========================================================
+ * Reset
+ * =========================================================
+ */
+
+function resetDashboard() {
+
+    if (
+        !confirm(
+            "確定要清除目前 Dashboard 設定嗎？"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+
+
+    iframeList =
+        DEFAULT_IFRAMES.map(
+            x => ({
+                ...x,
+                id: createId()
+            })
+        );
+
+
+    saveData();
+
+    render();
+
+}
+
+
+/*
+ * =========================================================
+ * 啟動
+ * =========================================================
+ */
+
+render();
+
+</script>
+
+</body>
+</html>
+```

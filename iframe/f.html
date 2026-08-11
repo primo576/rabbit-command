@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iframe Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* iframe 容器 */
+        #iframeContainer {
+            width: 100%;
+            height: 100vh;
+
+            display: grid;
+
+            /*
+             * 自動依照 iframe 數量調整欄數
+             * 最小寬度 400px
+             */
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(400px, 1fr)
+            );
+
+            grid-auto-rows: minmax(300px, 1fr);
+
+            gap: 8px;
+            padding: 8px;
+            overflow: auto;
+        }
+
+        .iframe-wrapper {
+            position: relative;
+
+            width: 100%;
+            height: 100%;
+
+            min-width: 0;
+            min-height: 0;
+
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+
+            overflow: hidden;
+        }
+
+        .iframe-title {
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 10px;
+
+            background: #eee;
+            border-bottom: 1px solid #ccc;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        iframe {
+            display: block;
+
+            width: 100%;
+            height: calc(100% - 32px);
+
+            border: none;
+        }
+
+        /*
+         * 小螢幕時改成單欄
+         */
+        @media (max-width: 600px) {
+            #iframeContainer {
+                grid-template-columns: 1fr;
+                grid-auto-rows: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="iframeContainer"></div>
+
+<script>
+
+    /*
+     * ==============================
+     * iframe 設定
+     * ==============================
+     *
+     * 直接增加項目即可
+     */
+
+    const iframeList = [
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        },
+        {
+            title: "Calculator",
+            src: "Web-Calculator/web-calculator.html"
+        }
+    ];
+
+
+    /*
+     * ==============================
+     * 建立 iframe
+     * ==============================
+     */
+
+    const container = document.getElementById("iframeContainer");
+
+
+    iframeList.forEach((item, index) => {
+
+        const wrapper = document.createElement("div");
+
+        wrapper.className = "iframe-wrapper";
+
+
+        // 標題
+        const title = document.createElement("div");
+
+        title.className = "iframe-title";
+
+        title.textContent = item.title;
+
+
+        // iframe
+        const iframe = document.createElement("iframe");
+
+        iframe.src = item.src;
+
+        iframe.loading = "lazy";
+
+        iframe.title = item.title;
+
+
+        wrapper.appendChild(title);
+        wrapper.appendChild(iframe);
+
+        container.appendChild(wrapper);
+
+    });
+
+</script>
+
+</body>
+</html>
+```

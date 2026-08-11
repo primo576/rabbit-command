@@ -10,6 +10,7 @@
     { label: '剪貼簿', url: '../clipboard_local_storage/index.html' },
     { label: 'calc', url: '../Web-Calculator/web-calculator.html' },
     { label: 'AB表域名比對', url: '../regexDomain/abTableComparison.html' },
+    { label: 'iframe Dashboard', url: '../iframe/index.html' },
     { label: '文字找Domain', url: '../regexDomain/searchDomain.html' },
     { label: 'List 清單刪除 / 保留分行', url: '../regexDomain/listRegex.html' },
     { label: 'nsid過濾工具', url: '../regexDomain/searchnsid.html' },

@@ -1,0 +1,43 @@
+<style>
+    #clockText {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+.center {
+    display: flex;
+    padding-top: 10px;
+    margin-bottom: 10px;
+    flex-direction: column;
+    align-items: center;
+    background-color: wheat;
+    border-radius: 10px;
+}
+</style>
+    <div class="card center">
+<div id="clockdiv" >
+    <canvas id="domClock" width="200" height="200">not canvas</canvas>
+    
+</div>
+ <div id='clockText'></div>
+</div>
+
+<script>
+    function updateClock() {
+  // Get the current time using the Date() object
+  const now = new Date();
+
+  // Format the time using the toLocaleTimeString() method
+  const timeString = now.toLocaleTimeString();
+
+  // Update the clock display by setting the innerHTML property of the clock div element
+  const clock = document.getElementById('clockText');
+  clock.innerHTML = timeString;
+}
+
+// Use the setInterval() method to call the updateClock() function every second
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+<script src="../public/clock.js"></script>

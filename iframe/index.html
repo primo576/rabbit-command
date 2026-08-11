@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web Tool Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+
+            font-family:
+                Arial,
+                "Microsoft JhengHei",
+                sans-serif;
+
+            overflow: hidden;
+        }
+
+        body {
+            background: #f4f5f7;
+        }
+
+
+        /* =====================================================
+           Toolbar
+        ===================================================== */
+
+        #toolbar {
+
+            height: 52px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 8px 12px;
+
+            background: #202124;
+
+            color: white;
+        }
+
+
+        .toolbar-title {
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            margin-right: 10px;
+
+        }
+
+
+        #toolbar button,
+        #toolbar select {
+
+            height: 34px;
+
+            padding: 0 12px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+        }
+
+
+        #toolbar button:hover {
+
+            opacity: .85;
+
+        }
+
+
+        /* =====================================================
+           Drop Area
+        ===================================================== */
+
+        #dropHint {
+
+            position: fixed;
+
+            inset: 52px 0 0 0;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 10000;
+
+            background:
+                rgba(50, 100, 255, .15);
+
+            border: 4px dashed #4a7cff;
+
+            pointer-events: none;
+
+        }
+
+
+        #dropHint.show {
+
+            display: flex;
+
+        }
+
+
+        #dropHint div {
+
+            padding: 30px 50px;
+
+            border-radius: 12px;
+
+            background: white;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =====================================================
+           Dashboard
+        ===================================================== */
+
+        #dashboard {
+
+            width: 100%;
+
+            height: calc(100vh - 52px);
+
+            overflow: auto;
+
+            padding: 8px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(12, minmax(60px, 1fr));
+
+            grid-auto-rows: 60px;
+
+            gap: 8px;
+
+            align-content: start;
+
+        }
+
+
+        /* =====================================================
+           Card
+        ===================================================== */
+
+        .iframe-card {
+
+            position: relative;
+
+            min-width: 0;
+            min-height: 0;
+
+            display: flex;
+
+            flex-direction: column;
+
+            background: white;
+
+            border: 1px solid #bbb;
+
+            border-radius: 7px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 2px 5px rgba(0,0,0,.12);
+
+        }
+
+
+        .iframe-card.favorite {
+
+            border: 2px solid #f0b400;
+
+        }
+
+
+        /* =====================================================
+           Header
+        ===================================================== */
+
+        .iframe-header {
+
+            flex: 0 0 34px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 8px;
+/*
+            background: #e9eaec;
+*/
+            border-bottom: 1px solid #ccc;
+
+            cursor: move;
+
+            user-select: none;
+
+        }
+
+
+        .favorite-star {
+
+            margin-right: 6px;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+        }
+
+
+        .iframe-title {
+
+            flex: 1;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+
+            text-overflow: ellipsis;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .category-label {
+
+            margin-right: 8px;
+
+            padding: 2px 6px;
+/*
+            background: #d8dce2;
+*/
+            border-radius: 4px;
+
+            font-size: 10px;
+
+        }
+
+
+        /* =====================================================
+           iframe
+        ===================================================== */
+
+        .iframe-content {
+
+            flex: 1;
+
+            min-height: 0;
+
+        }
+
+
+        iframe {
+
+            display: block;
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+        }
+
+
+        /* =====================================================
+           Resize
+        ===================================================== */
+
+        .resize-handle {
+
+            position: absolute;
+
+            right: 0;
+
+            bottom: 0;
+
+            width: 18px;
+
+            height: 18px;
+
+            cursor: nwse-resize;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    transparent 50%,
+                    #888 50%
+                );
+
+            opacity: .7;
+
+        }
+
+
+        .resize-handle:hover {
+
+            opacity: 1;
+
+        }
+
+
+        /* =====================================================
+           Context Menu
+        ===================================================== */
+
+        #contextMenu {
+
+            position: fixed;
+
+            display: none;
+
+            z-index: 20000;
+
+            min-width: 180px;
+/*
+            background: white;
+*/
+            border: 1px solid #ccc;
+
+            border-radius: 6px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.25);
+
+            padding: 5px 0;
+
+        }
+
+
+        #contextMenu.show {
+
+            display: block;
+
+        }
+
+
+        .context-item {
+
+            padding: 9px 14px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+        }
+
+
+        .context-item:hover {
+
+            background: #f0f1f3;
+
+        }
+
+
+        .context-divider {
+
+            height: 1px;
+
+            background: #ddd;
+
+            margin: 5px 0;
+
+        }
+
+
+        /* =====================================================
+           Modal
+        ===================================================== */
+
+        #modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 30000;
+
+            background:
+                rgba(0,0,0,.45);
+
+        }
+
+
+        #modal.show {
+
+            display: flex;
+
+        }
+
+
+        .modal-box {
+
+            width: min(500px, 90vw);
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 10px 40px rgba(0,0,0,.3);
+
+        }
+
+
+        .modal-box h3 {
+
+            margin-top: 0;
+
+        }
+
+
+        .form-row {
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .form-row label {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .form-row input,
+        .form-row select {
+
+            width: 100%;
+
+            padding: 9px;
+
+            border: 1px solid #bbb;
+
+            border-radius: 5px;
+
+        }
+
+
+        .modal-buttons {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 8px;
+
+        }
+
+
+        .modal-buttons button {
+
+            padding: 8px 16px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =====================================================
+           Fullscreen
+        ===================================================== */
+
+        .fullscreen-card {
+
+            position: fixed !important;
+
+            inset: 0 !important;
+
+            z-index: 15000;
+
+            width: 100vw !important;
+
+            height: 100vh !important;
+
+        }
+         /* =====================================================
+           Resize
+        ===================================================== */
+
+        .hide{
+            display: none;
+        }
+
+        /* =====================================================
+           Mobile
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            #dashboard {
+
+                grid-template-columns: 1fr;
+
+                grid-auto-rows: 400px;
+
+            }
+
+            .iframe-card {
+
+                grid-column: 1 !important;
+
+                grid-row: auto !important;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     Toolbar
+===================================================== -->
+
+<div id="toolbar">
+
+    <div class="toolbar-title">
+        Web Tool Dashboard
+    </div>
+
+
+    <button onclick="addIframe()">
+        ＋ 新增
+    </button>
+
+
+    <select id="categoryFilter"
+            onchange="render()">
+
+        <option value="all">
+            全部
+        </option>
+
+    </select>
+
+    <button onclick="hideTarget('iframe-header')">
+        標題
+    </button>
+
+   <button onclick="hideTarget('resize-handle')">
+        縮放
+    </button>
+
+    <button onclick="exportConfig()">
+        📤 匯出
+    </button>
+
+
+    <button onclick="document.getElementById('importFile').click()">
+        📥 匯入
+    </button>
+
+
+    <input
+        id="importFile"
+        type="file"
+        accept=".json"
+        hidden
+        onchange="importConfig(event)"
+    >
+
+</div>
+
+
+<!-- =====================================================
+     Drop Hint
+===================================================== -->
+
+<div id="dropHint">
+
+    <div>
+        🔗 放開滑鼠以新增 URL
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     Dashboard
+===================================================== -->
+
+<div id="dashboard"></div>
+
+
+<!-- =====================================================
+     Context Menu
+===================================================== -->
+
+<div id="contextMenu">
+
+    <div
+        class="context-item"
+        onclick="contextEdit()">
+
+        ✏️ 編輯
+
+    </div>
+
+
+    <div
+        class="context-item"
+        onclick="contextReload()">
+
+        🔄 重新載入
+
+    </div>
+
+
+    <div
+        class="context-item"
+        onclick="contextFullscreen()">
+
+        ⛶ 全螢幕
+
+    </div>
+
+
+    <div
+        class="context-item"
+        onclick="contextFavorite()">
+
+        ⭐ 收藏
+
+    </div>
+
+
+    <div
+        class="context-item"
+        onclick="contextCategory()">
+
+        📁 設定分類
+
+    </div>
+
+
+    <div class="context-divider"></div>
+
+
+    <div
+        class="context-item"
+        onclick="contextDelete()">
+
+        🗑️ 刪除
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     Modal
+===================================================== -->
+
+<div id="modal">
+
+    <div class="modal-box">
+
+        <h3 id="modalTitle">
+            新增 iframe
+        </h3>
+
+
+        <div class="form-row">
+
+            <label>
+                名稱
+            </label>
+
+            <input
+                id="inputTitle"
+                type="text"
+                placeholder="標題"
+            >
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label>
+                URL
+            </label>
+
+            <input
+                id="inputSrc"
+                type="text"
+                placeholder="https://example.com"
+            >
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label>
+                分類
+            </label>
+
+            <input
+                id="inputCategory"
+                type="text"
+                list="categoryList"
+                placeholder="default"
+            >
+
+            <datalist id="categoryList"></datalist>
+
+        </div>
+
+
+        <div class="modal-buttons">
+
+            <button onclick="closeModal()">
+                取消
+            </button>
+
+            <button onclick="saveIframe()">
+                儲存
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   Storage
+========================================================= */
+
+const STORAGE_KEY =
+    "web-tool-dashboard-v2";
+
+
+let iframeList =
+    loadData();
+
+
+let editingId = null;
+
+let contextId = null;
+
+
+/* =========================================================
+   ID
+========================================================= */
+
+function createId() {
+
+    return Date.now().toString(36)
+        + Math.random()
+            .toString(36)
+            .substring(2);
+
+}
+
+
+/* =========================================================
+   Load
+========================================================= */
+
+function loadData() {
+
+    const data =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if (!data) {
+
+        return [];
+
+    }
+
+
+    try {
+
+        return JSON.parse(data);
+
+    } catch (e) {
+
+        console.error(e);
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================================================
+   Save
+========================================================= */
+
+function saveData() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(iframeList)
+    );
+
+}
+
+
+/* =========================================================
+   Categories
+========================================================= */
+
+function getCategories() {
+
+    return [
+        ...new Set(
+            iframeList
+                .map(x => x.category)
+                .filter(Boolean)
+        )
+    ];
+
+}
+
+
+function updateCategoryUI() {
+
+    const categories =
+        getCategories();
+
+
+    const filter =
+        document.getElementById(
+            "categoryFilter"
+        );
+
+
+    const current =
+        filter.value;
+
+
+    filter.innerHTML =
+        `<option value="all">全部</option>`;
+
+
+    categories.forEach(category => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = category;
+
+        option.textContent = category;
+
+        filter.appendChild(option);
+
+    });
+
+
+    if (
+        categories.includes(current)
+    ) {
+
+        filter.value = current;
+
+    }
+
+
+    const datalist =
+        document.getElementById(
+            "categoryList"
+        );
+
+
+    datalist.innerHTML = "";
+
+
+    categories.forEach(category => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = category;
+
+        datalist.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================================================
+   Render
+========================================================= */
+
+function render() {
+
+    updateCategoryUI();
+
+
+    const dashboard =
+        document.getElementById(
+            "dashboard"
+        );
+
+
+    dashboard.innerHTML = "";
+
+
+    const filter =
+        document.getElementById(
+            "categoryFilter"
+        ).value;
+
+
+    iframeList.forEach(item => {
+
+        if (
+            filter !== "all" &&
+            item.category !== filter
+        ) {
+
+            return;
+
+        }
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.className =
+            "iframe-card";
+
+
+        if (item.favorite) {
+
+            card.classList.add(
+                "favorite"
+            );
+
+        }
+
+
+        card.dataset.id =
+            item.id;
+
+
+        card.style.gridColumn =
+            `${item.x} / span ${item.w}`;
+
+
+        card.style.gridRow =
+            `${item.y} / span ${item.h}`;
+
+
+        /* Header */
+
+        const header =
+            document.createElement("div");
+
+        header.className =
+            "iframe-header";
+
+
+        /* Favorite */
+
+        const star =
+            document.createElement("span");
+
+        star.className =
+            "favorite-star";
+
+        star.textContent =
+            item.favorite
+                ? "⭐"
+                : "☆";
+
+
+        star.onclick = function(e) {
+
+            e.stopPropagation();
+
+            item.favorite =
+                !item.favorite;
+
+            saveData();
+
+            render();
+
+        };
+
+
+        /* Title */
+
+        const title =
+            document.createElement("div");
+
+        title.className =
+            "iframe-title";
+
+        title.textContent =
+            item.title;
+
+
+        /* Category */
+
+        const category =
+            document.createElement("span");
+
+        category.className =
+            "category-label";
+
+        category.textContent =
+            item.category || "";
+
+
+        header.appendChild(star);
+
+        header.appendChild(title);
+
+        if (item.category) {
+
+            header.appendChild(category);
+
+        }
+
+
+        /* Content */
+
+        const content =
+            document.createElement("div");
+
+        content.className =
+            "iframe-content";
+
+
+        const iframe =
+            document.createElement("iframe");
+
+
+        iframe.src =
+            item.src;
+
+
+        iframe.loading =
+            "lazy";
+
+
+        iframe.title =
+            item.title;
+
+
+        content.appendChild(
+            iframe
+        );
+
+
+        /* Resize */
+
+        const resize =
+            document.createElement("div");
+
+
+        resize.className =
+            "resize-handle";
+
+
+        /* Build */
+
+        card.appendChild(header);
+
+        card.appendChild(content);
+
+        card.appendChild(resize);
+
+
+        dashboard.appendChild(card);
+
+
+        /* Context menu */
+
+        card.addEventListener(
+            "contextmenu",
+            function(e) {
+
+                e.preventDefault();
+
+                openContextMenu(
+                    item.id,
+                    e.clientX,
+                    e.clientY
+                );
+
+            }
+        );
+
+
+        /* Drag */
+
+        enableDrag(
+            card,
+            header,
+            item
+        );
+
+
+        /* Resize */
+
+        enableResize(
+            card,
+            resize,
+            item
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   Drag
+========================================================= */
+
+function enableDrag(
+    card,
+    header,
+    item
+) {
+
+    let startX;
+
+    let startY;
+
+    let originalX;
+
+    let originalY;
+
+
+    header.addEventListener(
+        "pointerdown",
+        function(e) {
+
+            if (
+                e.target.closest(
+                    ".favorite-star"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            startX =
+                e.clientX;
+
+            startY =
+                e.clientY;
+
+
+            originalX =
+                item.x;
+
+            originalY =
+                item.y;
+
+
+            header.setPointerCapture(
+                e.pointerId
+            );
+
+
+            function move(ev) {
+
+                const dx =
+                    ev.clientX -
+                    startX;
+
+
+                const dy =
+                    ev.clientY -
+                    startY;
+
+
+                const dashboard =
+                    document.getElementById(
+                        "dashboard"
+                    );
+
+
+                const rect =
+                    dashboard.getBoundingClientRect();
+
+
+                const columnWidth =
+                    (
+                        rect.width -
+                        16 -
+                        11 * 8
+                    ) / 12;
+
+
+                const columnMove =
+                    Math.round(
+                        dx /
+                        (
+                            columnWidth + 8
+                        )
+                    );
+
+
+                const rowMove =
+                    Math.round(
+                        dy / 68
+                    );
+
+
+                item.x =
+                    Math.max(
+                        1,
+                        Math.min(
+                            13 - item.w,
+                            originalX +
+                            columnMove
+                        )
+                    );
+
+
+                item.y =
+                    Math.max(
+                        1,
+                        originalY +
+                        rowMove
+                    );
+
+
+                card.style.gridColumn =
+                    `${item.x} / span ${item.w}`;
+
+
+                card.style.gridRow =
+                    `${item.y} / span ${item.h}`;
+
+            }
+
+
+            function end(ev) {
+
+                header.releasePointerCapture(
+                    ev.pointerId
+                );
+
+
+                header.removeEventListener(
+                    "pointermove",
+                    move
+                );
+
+
+                header.removeEventListener(
+                    "pointerup",
+                    end
+                );
+
+
+                saveData();
+
+            }
+
+
+            header.addEventListener(
+                "pointermove",
+                move
+            );
+
+
+            header.addEventListener(
+                "pointerup",
+                end
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   Resize
+========================================================= */
+
+function enableResize(
+    card,
+    handle,
+    item
+) {
+
+    handle.addEventListener(
+        "pointerdown",
+        function(e) {
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+
+            const startX =
+                e.clientX;
+
+
+            const startY =
+                e.clientY;
+
+
+            const originalW =
+                item.w;
+
+
+            const originalH =
+                item.h;
+
+
+            handle.setPointerCapture(
+                e.pointerId
+            );
+
+
+            function move(ev) {
+
+                const dx =
+                    ev.clientX -
+                    startX;
+
+
+                const dy =
+                    ev.clientY -
+                    startY;
+
+
+                const dashboard =
+                    document.getElementById(
+                        "dashboard"
+                    );
+
+
+                const rect =
+                    dashboard.getBoundingClientRect();
+
+
+                const columnWidth =
+                    (
+                        rect.width -
+                        16 -
+                        11 * 8
+                    ) / 12;
+
+
+                const columnMove =
+                    Math.round(
+                        dx /
+                        (
+                            columnWidth + 8
+                        )
+                    );
+
+
+                const rowMove =
+                    Math.round(
+                        dy / 68
+                    );
+
+
+                item.w =
+                    Math.max(
+                        1,
+                        Math.min(
+                            13 - item.x,
+                            originalW +
+                            columnMove
+                        )
+                    );
+
+
+                item.h =
+                    Math.max(
+                        2,
+                        originalH +
+                        rowMove
+                    );
+
+
+                card.style.gridColumn =
+                    `${item.x} / span ${item.w}`;
+
+
+                card.style.gridRow =
+                    `${item.y} / span ${item.h}`;
+
+            }
+
+
+            function end(ev) {
+
+                handle.releasePointerCapture(
+                    ev.pointerId
+                );
+
+
+                handle.removeEventListener(
+                    "pointermove",
+                    move
+                );
+
+
+                handle.removeEventListener(
+                    "pointerup",
+                    end
+                );
+
+
+                saveData();
+
+            }
+
+
+            handle.addEventListener(
+                "pointermove",
+                move
+            );
+
+
+            handle.addEventListener(
+                "pointerup",
+                end
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   Modal
+========================================================= */
+
+function openModal(item = null) {
+
+    document
+        .getElementById("modal")
+        .classList.add("show");
+
+
+    if (item) {
+
+        editingId =
+            item.id;
+
+
+        document
+            .getElementById("modalTitle")
+            .textContent =
+            "編輯 iframe";
+
+
+        document
+            .getElementById("inputTitle")
+            .value =
+            item.title;
+
+
+        document
+            .getElementById("inputSrc")
+            .value =
+            item.src;
+
+
+        document
+            .getElementById("inputCategory")
+            .value =
+            item.category || "";
+
+    }
+
+    else {
+
+        editingId =
+            null;
+
+
+        document
+            .getElementById("modalTitle")
+            .textContent =
+            "新增 iframe";
+
+
+        document
+            .getElementById("inputTitle")
+            .value =
+            "";
+
+
+        document
+            .getElementById("inputSrc")
+            .value =
+            "";
+
+
+        document
+            .getElementById("inputCategory")
+            .value =
+            "";
+
+    }
+
+}
+
+
+function closeModal() {
+
+    document
+        .getElementById("modal")
+        .classList
+        .remove("show");
+
+}
+
+
+/* =========================================================
+   Add
+========================================================= */
+
+function addIframe() {
+
+    openModal();
+
+}
+/* =========================================================
+   other
+========================================================= */
+function getRandomInt(max) {
+           return Math.floor(Math.random() * max);
+         }
+         
+function getDayTime(){
+    return new Date().toLocaleString().toString()
+}
+
+function hideTarget(target) {
+   [...document.getElementsByClassName(target)].forEach((i)=>{
+   i.classList.toggle('hide')  
+})
+
+}
+/* =========================================================
+   Save
+========================================================= */
+
+function saveIframe() {
+
+    const title =
+        document
+            .getElementById("inputTitle")
+            .value
+            .trim()||getDayTime();
+
+
+    const src =
+        document
+            .getElementById("inputSrc")
+            .value
+            .trim()||"about:blank";
+
+
+    const category =
+        document
+            .getElementById("inputCategory")
+            .value
+            .trim()||"default";
+
+
+    if (!title) {
+
+        alert("請輸入名稱");
+
+        return;
+
+    }
+
+
+    if (!src) {
+
+        alert("請輸入 URL");
+
+        return;
+
+    }
+
+
+    if (editingId) {
+
+        const item =
+            iframeList.find(
+                x => x.id === editingId
+            );
+
+
+        if (item) {
+
+            item.title =
+                title;
+
+            item.src =
+                src;
+
+            item.category =
+                category;
+
+        }
+
+    }
+
+    else {
+
+        let maxY = 2;
+
+/*
+建立的時候不疊加卡片
+        if (iframeList.length) {
+
+            maxY =
+                Math.max(
+                    ...iframeList.map(
+                        x =>
+                            x.y +
+                            x.h
+                    )
+                );
+
+        }
+
+*/
+        iframeList.push({
+
+            id:
+                createId(),
+
+            title:
+                title,
+
+            src:
+                src,
+
+            category:
+                category,
+
+            favorite:
+                false,
+
+            x:
+                2,
+
+            y:
+                maxY,
+
+            w:
+                4,
+
+            h:
+                5
+
+        });
+
+    }
+
+
+    saveData();
+
+    closeModal();
+
+    render();
+
+}
+
+
+/* =========================================================
+   Delete
+========================================================= */
+
+function deleteIframe(id) {
+
+    const item =
+        iframeList.find(
+            x => x.id === id
+        );
+
+
+    if (!item) {
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            `確定刪除「${item.title}」？`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    iframeList =
+        iframeList.filter(
+            x => x.id !== id
+        );
+
+
+    saveData();
+
+    render();
+
+}
+
+
+/* =========================================================
+   Context Menu
+========================================================= */
+
+function openContextMenu(
+    id,
+    x,
+    y
+) {
+
+    contextId =
+        id;
+
+
+    const menu =
+        document.getElementById(
+            "contextMenu"
+        );
+
+
+    menu.style.left =
+        `${x}px`;
+
+
+    menu.style.top =
+        `${y}px`;
+
+
+    menu.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeContextMenu() {
+
+    document
+        .getElementById(
+            "contextMenu"
+        )
+        .classList
+        .remove("show");
+
+}
+
+
+document.addEventListener(
+    "click",
+    closeContextMenu
+);
+
+
+/* =========================================================
+   Context Actions
+========================================================= */
+
+function getContextItem() {
+
+    return iframeList.find(
+        x => x.id === contextId
+    );
+
+}
+
+
+function contextEdit() {
+
+    const item =
+        getContextItem();
+
+
+    if (!item) return;
+
+
+    openModal(item);
+
+}
+
+
+function contextReload() {
+
+    const card =
+        document.querySelector(
+            `[data-id="${contextId}"]`
+        );
+
+
+    if (!card) return;
+
+
+    const iframe =
+        card.querySelector(
+            "iframe"
+        );
+
+
+    iframe.src =
+        iframe.src;
+
+}
+
+
+function contextFullscreen() {
+
+    const card =
+        document.querySelector(
+            `[data-id="${contextId}"]`
+        );
+
+
+    if (!card) return;
+
+
+    if (
+        card.classList.contains(
+            "fullscreen-card"
+        )
+    ) {
+
+        card.classList.remove(
+            "fullscreen-card"
+        );
+
+    }
+
+    else {
+
+        card.classList.add(
+            "fullscreen-card"
+        );
+
+    }
+
+}
+
+
+function contextFavorite() {
+
+    const item =
+        getContextItem();
+
+
+    if (!item) return;
+
+
+    item.favorite =
+        !item.favorite;
+
+
+    saveData();
+
+    render();
+
+}
+
+
+function contextCategory() {
+
+    const item =
+        getContextItem();
+
+
+    if (!item) return;
+
+
+    const category =
+        prompt(
+            "請輸入分類",
+            item.category || ""
+        );
+
+
+    if (
+        category === null
+    ) {
+
+        return;
+
+    }
+
+
+    item.category =
+        category.trim();
+
+
+    saveData();
+
+    render();
+
+}
+
+
+function contextDelete() {
+
+    deleteIframe(
+        contextId
+    );
+
+}
+
+
+/* =========================================================
+   Drag URL → Dashboard
+========================================================= */
+
+const dropHint =
+    document.getElementById(
+        "dropHint"
+    );
+
+
+document.addEventListener(
+    "dragover",
+    function(e) {
+
+        const types =
+            e.dataTransfer.types;
+
+
+        if (
+            types.includes("text/uri-list") ||
+            types.includes("text/plain")
+        ) {
+
+            e.preventDefault();
+
+            dropHint.classList.add(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "dragleave",
+    function(e) {
+
+        if (
+            e.clientX <= 0 ||
+            e.clientY <= 0 ||
+            e.clientX >= window.innerWidth ||
+            e.clientY >= window.innerHeight
+        ) {
+
+            dropHint.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "drop",
+    function(e) {
+
+        e.preventDefault();
+
+
+        dropHint.classList.remove(
+            "show"
+        );
+
+
+        let url =
+            e.dataTransfer.getData(
+                "text/uri-list"
+            );
+
+
+        if (!url) {
+
+            url =
+                e.dataTransfer.getData(
+                    "text/plain"
+                );
+
+        }
+
+
+        if (!url) {
+
+            return;
+
+        }
+
+
+        url =
+            url.trim();
+
+
+        /*
+         * 有些瀏覽器可能把多個 URL
+         * 放在一起
+         */
+
+        url =
+            url.split(/\r?\n/)[0];
+
+
+        let title =
+            url;
+
+
+        try {
+
+            const parsed =
+                new URL(url);
+
+            title =
+                parsed.hostname;
+
+        }
+
+        catch (e) {
+
+        }
+
+
+        /*
+         * 直接新增
+         */
+
+        createIframeFromURL(
+            url,
+            title
+        );
+
+    }
+);
+
+
+/* =========================================================
+   Create iframe from URL
+========================================================= */
+
+function createIframeFromURL(
+    url,
+    title
+) {
+
+    let maxY = 2;
+
+/*
+    if (iframeList.length) {
+
+        maxY =
+            Math.max(
+                ...iframeList.map(
+                    x =>
+                        x.y +
+                        x.h
+                )
+            );
+
+    }
+
+*/
+    iframeList.push({
+
+        id:
+            createId(),
+
+        title:
+            title||getDayTime(),
+
+        src:
+            url,
+
+        category:
+            "default",
+
+        favorite:
+            false,
+
+        x:
+            2,
+
+        y:
+            maxY,
+
+        w:
+            4,
+
+        h:
+            5
+
+    });
+
+
+    saveData();
+
+    render();
+
+}
+
+
+/* =========================================================
+   Export
+========================================================= */
+
+function exportConfig() {
+
+    const json =
+        JSON.stringify(
+            iframeList,
+            null,
+            2
+        );
+
+
+    const blob =
+        new Blob(
+            [json],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href =
+        url;
+
+
+    a.download =
+        "iframe-dashboard.json";
+
+
+    a.click();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* =========================================================
+   Import
+========================================================= */
+
+function importConfig(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        e.target.result
+                    );
+
+
+                if (
+                    !Array.isArray(data)
+                ) {
+
+                    throw new Error(
+                        "格式錯誤"
+                    );
+
+                }
+
+
+                iframeList =
+                    data;
+
+
+                saveData();
+
+                render();
+
+
+                alert(
+                    "設定匯入完成"
+                );
+
+            }
+
+            catch (error) {
+
+                alert(
+                    "JSON 格式錯誤"
+                );
+
+                console.error(
+                    error
+                );
+
+            }
+
+        };
+
+
+    reader.readAsText(
+        file
+    );
+
+
+    /*
+     * 允許再次選擇同一個檔案
+     */
+
+    event.target.value =
+        "";
+
+}
+
+
+/* =========================================================
+   ESC 關閉
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (
+            e.key === "Escape"
+        ) {
+
+            document
+                .querySelectorAll(
+                    ".fullscreen-card"
+                )
+                .forEach(
+                    card =>
+                        card.classList
+                            .remove(
+                                "fullscreen-card"
+                            )
+                );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   Init
+========================================================= */
+
+render();
+
+</script>
+
+</body>
+
+</html>
+
+<script src="../public/floating-menu.js"></script>
