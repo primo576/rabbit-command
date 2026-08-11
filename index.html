@@ -5,8 +5,21 @@
   <meta charset="UTF-8" />
  <title>🐇index</title>
  <style>
+
+    .iframeSelect{
+display: flex;
+    height: 100%;
+
+    flex-direction: column;
+    }
+    .toolIframe{
+        height: 100%;
+    }
     .body{
         background-color: black;
+    }
+    .minheight350{
+        min-height: 350px;
     }
   .index{
     display: grid;
@@ -73,12 +86,18 @@
    display: flex;
     flex-direction: column;
     overflow: auto;
-    height: 30dvh;
+    height: fit-content;
 }
 .incident{
         background-color: bisque;
         margin-bottom: 10px;
         border-radius: 10px;
+}
+
+.myframe{
+border:none;
+width:100% ;
+height:100%;
 }
 
  </style>
@@ -97,29 +116,37 @@
  <div id='clockText'></div>
 </div>
 
+<div class="card minheight350">
+    <div class="iframeSelect"> 
+    <select id="toolSelect">
+
+</select>
+    <iframe class="toolIframe" id="toolIframe" src="./Web-Calculator/web-calculator.html"  title="calc"></iframe>
+</div>
+</div>
 <div class="card">
  
   <div>
-<button id="btnStart">開始</button>
-<button id="btnLap">分組</button>
+
 
 <button onclick="renderIncidents()">fatch CF</button>
 </div>
 
-    <div>總時間：</div>
-    <span style="font-size: 30px;" class="" id="clock">00:00:00</span>
-    <ol id="lapList">
-  
-</ol>
+   
 <div class="bbsCF" id="incidentList"></div>
 </div>
 
 <div class="card">
-    <select id="toolSelect">
-
-</select>
-    <iframe style="border:none;" id="toolIframe" src="./Web-Calculator/web-calculator.html" width=100% height=100% title="calc"></iframe>
+<button id="btnStart">開始</button>
+<button id="btnLap">分組</button>
+ <div>總時間：</div>
+    <span style="font-size: 30px;" class="" id="clock">00:00:00</span>
+    <ol id="lapList">
+  
+</ol>
 </div>
+
+
 
 
 
