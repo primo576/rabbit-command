@@ -273,6 +273,7 @@
         ===================================================== */
 
         .iframe-content {
+            background-color: white;
 
             flex: 1;
 
@@ -532,6 +533,10 @@
             display: none;
         }
 
+        .gridHideAuto{
+            grid-area: auto;
+        }
+
         /* =====================================================
            Mobile
         ===================================================== */
@@ -661,6 +666,14 @@
 
     </div>
 
+    <div
+        class="context-item"
+        onclick="contextWindowOpen()">
+
+        📍 在新分頁中開啟連結
+
+    </div>
+
 
     <div
         class="context-item"
@@ -670,6 +683,13 @@
 
     </div>
 
+    <div
+        class="context-item"
+        onclick="contextMinscreen()">
+
+        ⛶ 最小化
+
+    </div>
 
     <div
         class="context-item"
@@ -1885,6 +1905,28 @@ function contextReload() {
 
 }
 
+function contextWindowOpen() {
+
+    const card =
+        document.querySelector(
+            `[data-id="${contextId}"]`
+        );
+
+
+    if (!card) return;
+
+
+    const iframe =
+        card.querySelector(
+            "iframe"
+        );
+
+    window.open(
+      iframe.src,
+      '_blank',
+      );
+
+}
 
 function contextFullscreen() {
 
@@ -1918,6 +1960,37 @@ function contextFullscreen() {
     }
 
 }
+
+function contextMinscreen() {
+
+    const card =
+        document.querySelector(
+            `[data-id="${contextId}"]`
+        );
+
+
+    if (!card) return;
+    
+    
+    if (card.getAttribute('style')!=null) {
+
+        card.removeAttribute('style')
+
+    }else{
+       
+    iframeList.forEach(item => {
+        if (item.id==card.dataset.id) {
+             card.style.gridColumn =
+            `${item.x} / span ${item.w}`;
+
+        card.style.gridRow =
+            `${item.y} / span ${item.h}`;
+        }
+    })
+    }
+    
+}
+
 
 
 function contextFavorite() {
@@ -2225,7 +2298,7 @@ function exportConfig() {
 
 
     a.download =
-        "iframe-dashboard.json";
+        `iframe-dashboard-${getDayTime()}.json`;
 
 
     a.click();
