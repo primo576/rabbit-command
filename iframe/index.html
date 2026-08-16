@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Web Tool Dashboard</title>
+    <title>iframe Dashboard</title>
 
     <style>
 
@@ -31,21 +31,26 @@
             background: #f4f5f7;
         }
 
+        .hide{
+            display: none;
+        }
+
 
         /* =====================================================
            Toolbar
         ===================================================== */
 
         #toolbar {
-
+            position: fixed;
+            z-index: 999;
             height: 52px;
-
+            border-radius: 7px;
             display: flex;
             align-items: center;
 
             gap: 8px;
 
-            padding: 8px 12px;
+            padding: 8px 8px;
 
             background: #202124;
 
@@ -144,7 +149,7 @@
 
             width: 100%;
 
-            height: calc(100vh - 52px);
+            height: 100dvh;
 
             overflow: auto;
 
@@ -574,9 +579,10 @@
 ===================================================== -->
 
 <div id="toolbar">
-
-    <div class="toolbar-title">
-        Web Tool Dashboard
+ <button id="openToolbar" onclick="optionDisplay()">></button>
+    <div id="innerButton">
+    <div class="toolbar-title hide">
+        iframe Dashboard
     </div>
 
 
@@ -619,6 +625,7 @@
         hidden
         onchange="importConfig(event)"
     >
+</div>
 
 </div>
 
@@ -2434,6 +2441,47 @@ document.addEventListener(
 ========================================================= */
 
 render();
+
+
+/* =========================================================
+   自訂
+========================================================= */
+
+function optionDisplay(){
+  hideTarget('iframe-header','class')
+  hideTarget('resize-handle','class')
+  hideTarget('innerButton','id')
+  hideTarget('fab-wrap','class')
+}
+
+function nodeContentTop(t='--node-content-top'){
+
+nPx=document.documentElement.style.getPropertyValue(t);
+
+if (nPx=='') {
+  document.documentElement.style.setProperty(t, '0px');
+}else if (nPx=='0px') {
+  document.documentElement.style.setProperty(t, '30px');
+}else if (nPx=='30px') {
+  document.documentElement.style.setProperty(t, '0px');
+}
+
+
+  
+}
+
+function hideTarget(target,type) {
+  if (type=='class') {
+    [...document.getElementsByClassName(target)].forEach((i)=>{
+   i.classList.toggle('hide')  
+    })
+  }
+  if (type=='id') {
+    document.getElementById(target).classList.toggle('hide')
+  }
+   
+
+}
 
 </script>
 

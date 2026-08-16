@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas Interactive UI</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background: #111827;
+    }
+
+    #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    canvas {
+        position: absolute;
+        inset: 0;
+        cursor: default;
+    }
+
+    .toolbar {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 54px;
+
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        padding: 8px;
+
+        background: rgba(31, 41, 55, .95);
+        border: 1px solid #374151;
+        border-radius: 10px;
+
+        z-index: 10;
+    }
+
+    .tool {
+        width: 36px;
+        height: 36px;
+
+        border: 0;
+        border-radius: 7px;
+
+        background: #374151;
+        color: white;
+
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .tool:hover {
+        background: #4b5563;
+    }
+
+    .panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+
+        width: 230px;
+        padding: 16px;
+
+        background: rgba(31, 41, 55, .95);
+        border: 1px solid #374151;
+        border-radius: 10px;
+
+        color: white;
+
+        z-index: 10;
+    }
+
+    .panel h3 {
+        margin: 0 0 15px;
+        font-size: 15px;
+    }
+
+    .property {
+        margin-bottom: 12px;
+    }
+
+    .property label {
+        display: block;
+        font-size: 12px;
+        color: #9ca3af;
+        margin-bottom: 5px;
+    }
+
+    .property input {
+        width: 100%;
+        padding: 7px;
+
+        border: 1px solid #4b5563;
+        border-radius: 5px;
+
+        background: #111827;
+        color: white;
+    }
+
+    .status {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+
+        padding: 7px 12px;
+
+        background: rgba(17, 24, 39, .9);
+        border-radius: 6px;
+
+        color: #9ca3af;
+        font-size: 12px;
+
+        z-index: 10;
+    }
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <canvas id="canvas"></canvas>
+
+    <div class="toolbar">
+        <button class="tool" id="addNode" title="新增節點">＋</button>
+        <button class="tool" id="zoomIn" title="放大">＋</button>
+        <button class="tool" id="zoomOut" title="縮小">−</button>
+        <button class="tool" id="reset" title="重置">⟳</button>
+    </div>
+
+    <div class="panel">
+        <h3>Node Properties</h3>
+
+        <div class="property">
+            <label>名稱</label>
+            <input id="nodeName">
+        </div>
+
+        <div class="property">
+            <label>X</label>
+            <input id="nodeX" type="number">
+        </div>
+
+        <div class="property">
+            <label>Y</label>
+            <input id="nodeY" type="number">
+        </div>
+    </div>
+
+    <div class="status" id="status">
+        Zoom: 100%
+    </div>
+
+</div>
+
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const nodeName = document.getElementById("nodeName");
+const nodeX = document.getElementById("nodeX");
+const nodeY = document.getElementById("nodeY");
+
+const status = document.getElementById("status");
+
+
+// --------------------------------------------------
+// Canvas
+// --------------------------------------------------
+
+function resizeCanvas() {
+
+    canvas.width = window.innerWidth * devicePixelRatio;
+    canvas.height = window.innerHeight * devicePixelRatio;
+
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+
+    ctx.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+
+    draw();
+}
+
+window.addEventListener("resize", resizeCanvas);
+
+
+// --------------------------------------------------
+// World / Camera
+// --------------------------------------------------
+
+let camera = {
+    x: 0,
+    y: 0,
+    zoom: 1
+};
+
+
+// --------------------------------------------------
+// Nodes
+// --------------------------------------------------
+
+let nodes = [
+    {
+        id: 1,
+        x: 250,
+        y: 200,
+        width: 150,
+        height: 80,
+        name: "Cloudflare"
+    },
+    {
+        id: 2,
+        x: 500,
+        y: 200,
+        width: 150,
+        height: 80,
+        name: "Nginx"
+    },
+    {
+        id: 3,
+        x: 750,
+        y: 200,
+        width: 150,
+        height: 80,
+        name: "EKS"
+    }
+];
+
+let selectedNode = null;
+
+
+// --------------------------------------------------
+// Coordinate Conversion
+// --------------------------------------------------
+
+function screenToWorld(x, y) {
+
+    return {
+        x: (x - camera.x) / camera.zoom,
+        y: (y - camera.y) / camera.zoom
+    };
+
+}
+
+function worldToScreen(x, y) {
+
+    return {
+        x: x * camera.zoom + camera.x,
+        y: y * camera.zoom + camera.y
+    };
+
+}
+
+
+// --------------------------------------------------
+// Draw Grid
+// --------------------------------------------------
+
+function drawGrid() {
+
+    const gridSize = 50 * camera.zoom;
+
+    const offsetX =
+        camera.x % gridSize;
+
+    const offsetY =
+        camera.y % gridSize;
+
+    ctx.beginPath();
+
+    for (
+        let x = offsetX;
+        x < canvas.width / devicePixelRatio;
+        x += gridSize
+    ) {
+
+        ctx.moveTo(x, 0);
+        ctx.lineTo(
+            x,
+            canvas.height / devicePixelRatio
+        );
+
+    }
+
+    for (
+        let y = offsetY;
+        y < canvas.height / devicePixelRatio;
+        y += gridSize
+    ) {
+
+        ctx.moveTo(0, y);
+
+        ctx.lineTo(
+            canvas.width / devicePixelRatio,
+            y
+        );
+
+    }
+
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
+
+    ctx.stroke();
+}
+
+
+// --------------------------------------------------
+// Draw Connections
+// --------------------------------------------------
+
+function drawConnections() {
+
+    for (let i = 0; i < nodes.length - 1; i++) {
+
+        const a = nodes[i];
+        const b = nodes[i + 1];
+
+        const start = worldToScreen(
+            a.x + a.width,
+            a.y + a.height / 2
+        );
+
+        const end = worldToScreen(
+            b.x,
+            b.y + b.height / 2
+        );
+
+        const middleX =
+            (start.x + end.x) / 2;
+
+        ctx.beginPath();
+
+        ctx.moveTo(start.x, start.y);
+
+        ctx.bezierCurveTo(
+            middleX,
+            start.y,
+            middleX,
+            end.y,
+            end.x,
+            end.y
+        );
+
+        ctx.strokeStyle = "#60a5fa";
+        ctx.lineWidth = 2;
+
+        ctx.stroke();
+
+        // Arrow
+
+        ctx.beginPath();
+
+        ctx.moveTo(end.x, end.y);
+
+        ctx.lineTo(
+            end.x - 8,
+            end.y - 5
+        );
+
+        ctx.lineTo(
+            end.x - 8,
+            end.y + 5
+        );
+
+        ctx.closePath();
+
+        ctx.fillStyle = "#60a5fa";
+        ctx.fill();
+    }
+}
+
+
+// --------------------------------------------------
+// Draw Nodes
+// --------------------------------------------------
+
+function drawNode(node) {
+
+    const pos = worldToScreen(
+        node.x,
+        node.y
+    );
+
+    const width =
+        node.width * camera.zoom;
+
+    const height =
+        node.height * camera.zoom;
+
+    const selected =
+        selectedNode === node;
+
+    // Shadow
+
+    ctx.fillStyle = "rgba(0,0,0,.3)";
+
+    ctx.fillRect(
+        pos.x + 4,
+        pos.y + 4,
+        width,
+        height
+    );
+
+
+    // Body
+
+    ctx.fillStyle =
+        selected
+        ? "#2563eb"
+        : "#374151";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        pos.x,
+        pos.y,
+        width,
+        height,
+        10
+    );
+
+    ctx.fill();
+
+
+    // Border
+
+    ctx.strokeStyle =
+        selected
+        ? "#93c5fd"
+        : "#4b5563";
+
+    ctx.lineWidth =
+        selected ? 2 : 1;
+
+    ctx.stroke();
+
+
+    // Title
+
+    ctx.fillStyle = "white";
+
+    ctx.font =
+        `${14 * camera.zoom}px Arial`;
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText(
+        node.name,
+        pos.x + width / 2,
+        pos.y + height / 2
+    );
+}
+
+
+// --------------------------------------------------
+// Draw
+// --------------------------------------------------
+
+function draw() {
+
+    const width =
+        canvas.width / devicePixelRatio;
+
+    const height =
+        canvas.height / devicePixelRatio;
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    drawGrid();
+
+    drawConnections();
+
+    for (const node of nodes) {
+        drawNode(node);
+    }
+
+    status.textContent =
+        `Zoom: ${Math.round(camera.zoom * 100)}%`;
+}
+
+
+// --------------------------------------------------
+// Find Node
+// --------------------------------------------------
+
+function getNodeAt(x, y) {
+
+    const p =
+        screenToWorld(x, y);
+
+    for (
+        let i = nodes.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const node = nodes[i];
+
+        if (
+            p.x >= node.x &&
+            p.x <= node.x + node.width &&
+            p.y >= node.y &&
+            p.y <= node.y + node.height
+        ) {
+
+            return node;
+
+        }
+
+    }
+
+    return null;
+}
+
+
+// --------------------------------------------------
+// Mouse Interaction
+// --------------------------------------------------
+
+let draggingNode = null;
+
+let dragOffset = {
+    x: 0,
+    y: 0
+};
+
+let panning = false;
+
+let lastMouse = {
+    x: 0,
+    y: 0
+};
+
+
+canvas.addEventListener(
+    "mousedown",
+    e => {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const x =
+            e.clientX - rect.left;
+
+        const y =
+            e.clientY - rect.top;
+
+
+        // Middle mouse = Pan
+
+        if (e.button === 1) {
+
+            panning = true;
+
+            lastMouse.x = x;
+            lastMouse.y = y;
+
+            return;
+        }
+
+
+        // Left mouse
+
+        if (e.button === 0) {
+
+            const node =
+                getNodeAt(x, y);
+
+            selectedNode = node;
+
+            if (node) {
+
+                draggingNode = node;
+
+                const world =
+                    screenToWorld(x, y);
+
+                dragOffset.x =
+                    world.x - node.x;
+
+                dragOffset.y =
+                    world.y - node.y;
+
+                updatePanel();
+
+            } else {
+
+                updatePanel();
+
+            }
+
+            draw();
+        }
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mousemove",
+    e => {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const x =
+            e.clientX - rect.left;
+
+        const y =
+            e.clientY - rect.top;
+
+
+        // Pan
+
+        if (panning) {
+
+            camera.x +=
+                x - lastMouse.x;
+
+            camera.y +=
+                y - lastMouse.y;
+
+            lastMouse.x = x;
+            lastMouse.y = y;
+
+            draw();
+
+            return;
+        }
+
+
+        // Drag Node
+
+        if (draggingNode) {
+
+            const world =
+                screenToWorld(x, y);
+
+            draggingNode.x =
+                world.x - dragOffset.x;
+
+            draggingNode.y =
+                world.y - dragOffset.y;
+
+            updatePanel();
+
+            draw();
+        }
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mouseup",
+    () => {
+
+        draggingNode = null;
+
+        panning = false;
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mouseleave",
+    () => {
+
+        draggingNode = null;
+
+        panning = false;
+
+    }
+);
+
+
+// --------------------------------------------------
+// Zoom
+// --------------------------------------------------
+
+canvas.addEventListener(
+    "wheel",
+    e => {
+
+        e.preventDefault();
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const mouseX =
+            e.clientX - rect.left;
+
+        const mouseY =
+            e.clientY - rect.top;
+
+
+        const before =
+            screenToWorld(
+                mouseX,
+                mouseY
+            );
+
+
+        const factor =
+            e.deltaY < 0
+            ? 1.1
+            : 0.9;
+
+        camera.zoom *= factor;
+
+        camera.zoom =
+            Math.max(
+                0.3,
+                Math.min(3, camera.zoom)
+            );
+
+
+        const after =
+            screenToWorld(
+                mouseX,
+                mouseY
+            );
+
+
+        camera.x +=
+            (after.x - before.x)
+            * camera.zoom;
+
+        camera.y +=
+            (after.y - before.y)
+            * camera.zoom;
+
+        draw();
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+// --------------------------------------------------
+// Double Click
+// --------------------------------------------------
+
+canvas.addEventListener(
+    "dblclick",
+    e => {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const node =
+            getNodeAt(
+                e.clientX - rect.left,
+                e.clientY - rect.top
+            );
+
+        if (!node) return;
+
+        const name =
+            prompt(
+                "輸入節點名稱",
+                node.name
+            );
+
+        if (name !== null) {
+
+            node.name = name;
+
+            updatePanel();
+
+            draw();
+        }
+
+    }
+);
+
+
+// --------------------------------------------------
+// Property Panel
+// --------------------------------------------------
+
+function updatePanel() {
+
+    if (!selectedNode) {
+
+        nodeName.value = "";
+        nodeX.value = "";
+        nodeY.value = "";
+
+        return;
+    }
+
+    nodeName.value =
+        selectedNode.name;
+
+    nodeX.value =
+        Math.round(selectedNode.x);
+
+    nodeY.value =
+        Math.round(selectedNode.y);
+}
+
+
+nodeName.addEventListener(
+    "input",
+    () => {
+
+        if (!selectedNode) return;
+
+        selectedNode.name =
+            nodeName.value;
+
+        draw();
+
+    }
+);
+
+
+nodeX.addEventListener(
+    "input",
+    () => {
+
+        if (!selectedNode) return;
+
+        selectedNode.x =
+            Number(nodeX.value);
+
+        draw();
+
+    }
+);
+
+
+nodeY.addEventListener(
+    "input",
+    () => {
+
+        if (!selectedNode) return;
+
+        selectedNode.y =
+            Number(nodeY.value);
+
+        draw();
+
+    }
+);
+
+
+// --------------------------------------------------
+// Add Node
+// --------------------------------------------------
+
+document.getElementById("addNode")
+    .addEventListener(
+        "click",
+        () => {
+
+            const node = {
+
+                id:
+                    Date.now(),
+
+                x:
+                    300 - camera.x / camera.zoom,
+
+                y:
+                    350 - camera.y / camera.zoom,
+
+                width: 150,
+
+                height: 80,
+
+                name:
+                    "New Node"
+
+            };
+
+            nodes.push(node);
+
+            selectedNode = node;
+
+            updatePanel();
+
+            draw();
+
+        }
+    );
+
+
+// --------------------------------------------------
+// Zoom Buttons
+// --------------------------------------------------
+
+document.getElementById("zoomIn")
+    .addEventListener(
+        "click",
+        () => {
+
+            camera.zoom *= 1.2;
+
+            camera.zoom =
+                Math.min(
+                    3,
+                    camera.zoom
+                );
+
+            draw();
+
+        }
+    );
+
+
+document.getElementById("zoomOut")
+    .addEventListener(
+        "click",
+        () => {
+
+            camera.zoom *= 0.8;
+
+            camera.zoom =
+                Math.max(
+                    .3,
+                    camera.zoom
+                );
+
+            draw();
+
+        }
+    );
+
+
+// --------------------------------------------------
+// Reset
+// --------------------------------------------------
+
+document.getElementById("reset")
+    .addEventListener(
+        "click",
+        () => {
+
+            camera.x = 0;
+            camera.y = 0;
+            camera.zoom = 1;
+
+            draw();
+
+        }
+    );
+
+
+// --------------------------------------------------
+// Delete Node
+// --------------------------------------------------
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        if (
+            e.key === "d" &&
+            selectedNode
+        ) {
+
+            nodes =
+                nodes.filter(
+                    n => n !== selectedNode
+                );
+
+            selectedNode = null;
+
+            updatePanel();
+
+            draw();
+        }
+
+    }
+);
+
+
+// --------------------------------------------------
+// Start
+// --------------------------------------------------
+
+resizeCanvas();
+
+</script>
+
+</body>
+</html>

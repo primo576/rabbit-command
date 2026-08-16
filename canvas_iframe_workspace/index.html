@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas + DOM iframe Workspace</title>
+<style>
+*{box-sizing:border-box}
+html,body,#app{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif}
+body{background:#111827;color:#e5e7eb}
+#app{position:relative}
+#canvas{position:absolute;inset:0;width:100%;height:100%;background:#111827}
+#iframeLayer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.iframe-node{position:absolute;pointer-events:auto;background:#fff;border:1px solid #4b5563;border-radius:8px;overflow:hidden;box-shadow:0 8px 30px #0007}
+.iframe-node.selected{border:2px solid #60a5fa;box-shadow:0 0 0 2px #2563eb55,0 12px 35px #0008}
+.node-title{position:absolute;left:0;right:0;top:0;height:30px;background:#1f2937;color:#fff;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:2;cursor:move;user-select:none}
+.node-title span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.node-btn{width:22px;height:22px;border:0;border-radius:4px;background:#374151;color:#fff;cursor:pointer}
+.node-btn:hover{background:#4b5563}
+.node-content{position:absolute;left:0;right:0;top:var(--node-content-top,30px);bottom:0}
+.node-content iframe{width:100%;height:100%;border:0;display:block}
+.resize-handle{position:absolute;right:1px;bottom:1px;width:16px;height:16px;background:#2563eb;z-index:4;cursor:nwse-resize;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.toolbar,.panel,.help{position:absolute;z-index:20;background:#1f2937ee;border:1px solid #374151;box-shadow:0 8px 25px #0005}
+.toolbar{left:16px;top:16px;padding:8px;border-radius:9px;display:flex;gap:6px;align-items:center}
+.toolbar button,.toolbar select{height:34px;border:1px solid #4b5563;border-radius:6px;background:#374151;color:#fff;padding:0 10px;cursor:pointer}
+.toolbar button:hover{background:#4b5563}
+.panel{right:16px;top:16px;width:270px;padding:14px;border-radius:9px}
+.panel h3{margin:0 0 12px;font-size:15px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:#9ca3af;margin-bottom:4px}
+.field input,.field select{width:100%;height:32px;border:1px solid #4b5563;border-radius:5px;background:#111827;color:#fff;padding:0 8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions{display:flex;gap:6px;margin-top:10px}
+.actions button{flex:1;height:32px;border:0;border-radius:5px;background:#374151;color:#fff;cursor:pointer}
+.actions button:hover{background:#4b5563}
+.help{left:16px;bottom:16px;padding:8px 11px;border-radius:6px;font-size:11px;color:#9ca3af}
+.context{position:fixed;display:none;z-index:1000;min-width:180px;background:#1f2937;border:1px solid #4b5563;border-radius:7px;padding:5px;box-shadow:0 10px 30px #0008}
+.context button{display:block;width:100%;text-align:left;border:0;background:none;color:#fff;padding:8px;border-radius:4px;cursor:pointer}
+.context button:hover{background:#374151}
+.empty{color:#9ca3af;font-size:12px;line-height:1.5}
+.badge{font-size:10px;background:#2563eb;padding:2px 5px;border-radius:4px}
+.hide{display: none;}
+</style>
+</head>
+<body>
+<div id="app">
+<canvas id="canvas"></canvas>
+<div id="iframeLayer"></div>
+
+<div class="toolbar">
+  <button id="openToolbar" onclick="optionDisplay()">></button>
+    <div id="innerButton">
+      <button id="add">＋ iframe</button>
+      <button id="zoomIn">＋</button>
+      <button id="zoomOut">−</button>
+      <button id="reset">⟳</button>
+      <button id="save">儲存</button>
+      <button id="export">匯出</button>
+      <button id="importBtn">匯入</button>
+      <input id="fileInput" type="file" accept=".json" hidden>
+      <select id="preset">
+        <option value="">快速新增...</option>
+        <option value="https://example.com">example.com</option>
+        <option value="https://www.wikipedia.org">Wikipedia</option>
+      </select>
+  </div>
+</div>
+
+<div class="panel" id="panel">
+  <h3>Node Properties</h3>
+  <div id="panelBody" class="empty">點選 iframe 節點以編輯屬性。</div>
+</div>
+
+<div class="help">
+  左鍵拖曳標題列＝移動　｜　右下角＝縮放　｜　中鍵/空白處拖曳＝移動畫布　｜　滾輪＝縮放畫布　｜　Delete＝刪除
+</div>
+
+<div class="context" id="context">
+  <button data-action="refresh">重新載入</button>
+  <button data-action="duplicate">複製節點</button>
+  <button data-action="fullscreen">全螢幕</button>
+  <button data-action="favorite">加入/取消收藏</button>
+  <button data-action="delete">刪除</button>
+</div>
+</div>
+
+<script>
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+const layer=document.getElementById('iframeLayer');
+const panel=document.getElementById('panelBody');
+const menu=document.getElementById('context');
+
+let camera={x:0,y:0,zoom:1};
+let selected=null, nodes=[];
+let pointer={x:0,y:0};
+let drag=null, pan=null, resize=null;
+
+const defaultNodes=[
+ {id:crypto.randomUUID(),x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
+ {id:crypto.randomUUID(),x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
+];
+nodes=defaultNodes;
+
+function resizeCanvas(){
+  const d=devicePixelRatio||1;
+  canvas.width=innerWidth*d; canvas.height=innerHeight*d;
+  canvas.style.width=innerWidth+'px'; canvas.style.height=innerHeight+'px';
+  ctx.setTransform(d,0,0,d,0,0);
+  render();
+}
+addEventListener('resize',resizeCanvas);
+
+function w2s(x,y){return{x:x*camera.zoom+camera.x,y:y*camera.zoom+camera.y}}
+function s2w(x,y){return{x:(x-camera.x)/camera.zoom,y:(y-camera.y)/camera.zoom}}
+
+function renderCanvas(){
+  const w=innerWidth,h=innerHeight;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#111827';ctx.fillRect(0,0,w,h);
+  const g=50*camera.zoom,ox=((camera.x%g)+g)%g,oy=((camera.y%g)+g)%g;
+  ctx.beginPath();
+  for(let x=ox;x<w;x+=g){ctx.moveTo(x,0);ctx.lineTo(x,h)}
+  for(let y=oy;y<h;y+=g){ctx.moveTo(0,y);ctx.lineTo(w,y)}
+  ctx.strokeStyle='#1f2937';ctx.lineWidth=1;ctx.stroke();
+}
+function renderNode(n){
+  if(!n.el){
+    n.el=document.createElement('div');
+    n.el.className='iframe-node';
+    n.el.innerHTML=`<div class="node-title"><span></span><button class="node-btn reload">↻</button><button class="node-btn full">□</button><button class="node-btn close">×</button></div><div class="node-content"><iframe loading="lazy"></iframe></div><div class="resize-handle"></div>`;
+    layer.appendChild(n.el);
+    n.el.querySelector('iframe').src=n.src;
+    n.el.querySelector('.node-title').addEventListener('mousedown',e=>startDrag(e,n));
+    n.el.querySelector('.resize-handle').addEventListener('mousedown',e=>startResize(e,n));
+    n.el.querySelector('.reload').onclick=e=>{e.stopPropagation();n.el.querySelector('iframe').src=n.src};
+    n.el.querySelector('.full').onclick=e=>{e.stopPropagation();toggleFullscreen(n)};
+    n.el.querySelector('.close').onclick=e=>{e.stopPropagation();removeNode(n)};
+    n.el.addEventListener('mousedown',e=>selectNode(n,e));
+    n.el.addEventListener('contextmenu',e=>{e.preventDefault();selectNode(n,e);showMenu(e.clientX,e.clientY,n)});
+  }
+  const p=w2s(n.x,n.y);
+  n.el.style.left=p.x+'px'; n.el.style.top=p.y+'px';
+  n.el.style.width=n.width*camera.zoom+'px'; n.el.style.height=n.height*camera.zoom+'px';
+  n.el.classList.toggle('selected',selected===n);
+  n.el.querySelector('.node-title span').textContent=(n.favorite?'★ ':'')+n.name;
+}
+function render(){
+  renderCanvas();
+  for(const n of nodes)renderNode(n);
+  updatePanel();
+}
+function selectNode(n,e){selected=n;hideMenu();render()}
+function startDrag(e,n){
+  if(e.button!==0)return;
+  e.preventDefault();selected=n;
+  const p=s2w(e.clientX,e.clientY);
+  drag={n,dx:p.x-n.x,dy:p.y-n.y};
+}
+function startResize(e,n){
+  if(e.button!==0)return;
+  e.preventDefault();e.stopPropagation();selected=n;
+  resize={n,startX:e.clientX,startY:e.clientY,w:n.width,h:n.height};
+}
+addEventListener('mousemove',e=>{
+  if(drag){
+    const p=s2w(e.clientX,e.clientY);drag.n.x=p.x-drag.dx;drag.n.y=p.y-drag.dy;render();
+  }else if(resize){
+    resize.n.width=Math.max(220,resize.w+(e.clientX-resize.startX)/camera.zoom);
+    resize.n.height=Math.max(150,resize.h+(e.clientY-resize.startY)/camera.zoom);render();
+  }else if(pan){
+    camera.x+=e.clientX-pan.x;camera.y+=e.clientY-pan.y;pan.x=e.clientX;pan.y=e.clientY;render();
+  }
+});
+addEventListener('mouseup',()=>{drag=null;resize=null;pan=null});
+canvas.addEventListener('mousedown',e=>{
+  hideMenu();
+  if(e.button===1 || e.button===0){
+    selected=null;
+    pan={x:e.clientX,y:e.clientY};
+    render();
+  }
+});
+canvas.addEventListener('wheel',e=>{
+  e.preventDefault();
+  /*滑鼠滾輪縮放
+  const before=s2w(e.clientX,e.clientY);
+  camera.zoom=Math.max(.3,Math.min(3,camera.zoom*(e.deltaY<0?1.1:.9)));
+  const after=s2w(e.clientX,e.clientY);
+  camera.x+=(after.x-before.x)*camera.zoom;
+  camera.y+=(after.y-before.y)*camera.zoom;
+  */
+  render();
+},{passive:false});
+
+function updatePanel(){
+  if(!selected){panel.innerHTML='<div class="empty">點選 iframe 節點以編輯屬性。</div>';return}
+  panel.innerHTML=`
+    <div class="field"><label>名稱</label><input id="pName" value="${esc(selected.name)}"></div>
+    <div class="field"><label>URL</label><input id="pSrc" value="${esc(selected.src)}"></div>
+    <div class="row">
+      <div class="field"><label>X</label><input id="pX" type="number" value="${Math.round(selected.x)}"></div>
+      <div class="field"><label>Y</label><input id="pY" type="number" value="${Math.round(selected.y)}"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>寬度</label><input id="pW" type="number" value="${Math.round(selected.width)}"></div>
+      <div class="field"><label>高度</label><input id="pH" type="number" value="${Math.round(selected.height)}"></div>
+    </div>
+    <div class="field"><label>分類</label><input id="pCategory" value="${esc(selected.category||'')}"></div>
+    <div class="actions">
+      <button id="apply">套用</button><button id="fav">${selected.favorite?'取消收藏':'收藏'}</button><button id="del">刪除</button>
+    </div>`;
+  document.getElementById('apply').onclick=applyPanel;
+  document.getElementById('fav').onclick=()=>{selected.favorite=!selected.favorite;render()};
+  document.getElementById('del').onclick=()=>removeNode(selected);
+}
+function applyPanel(){
+  if(!selected)return;
+  selected.name=document.getElementById('pName').value;
+  selected.src=document.getElementById('pSrc').value;
+  selected.x=Number(document.getElementById('pX').value)||0;
+  selected.y=Number(document.getElementById('pY').value)||0;
+  selected.width=Math.max(220,Number(document.getElementById('pW').value)||420);
+  selected.height=Math.max(150,Number(document.getElementById('pH').value)||300);
+  selected.category=document.getElementById('pCategory').value;
+  const f=selected.el.querySelector('iframe');
+  if(f.src!==selected.src)f.src=selected.src;
+  render();
+}
+function addNode(src='about:blank',name='New iframe'){
+  const p=s2w(innerWidth/2,innerHeight/2);
+  const n={id:crypto.randomUUID(),x:p.x-210,y:p.y-150,width:420,height:300,name,src,favorite:false,category:''};
+  nodes.push(n);selected=n;render();
+}
+function removeNode(n){
+  if(!n)return;
+  n.el?.remove();nodes=nodes.filter(x=>x!==n);if(selected===n)selected=null;hideMenu();render();
+}
+function toggleFullscreen(n){
+  if(document.fullscreenElement)document.exitFullscreen();
+  else n.el.requestFullscreen?.();
+}
+function duplicateNode(n){
+  const c={...n,id:crypto.randomUUID(),x:n.x+30,y:n.y+30,el:null};
+  nodes.push(c);selected=c;hideMenu();render();
+}
+function showMenu(x,y,n){
+  selected=n;menu.style.left=x+'px';menu.style.top=y+'px';menu.style.display='block';
+}
+function hideMenu(){menu.style.display='none'}
+menu.addEventListener('click',e=>{
+  const a=e.target.dataset.action;if(!a||!selected)return;
+  if(a==='refresh')selected.el.querySelector('iframe').src=selected.src;
+  if(a==='duplicate')duplicateNode(selected);
+  if(a==='fullscreen')toggleFullscreen(selected);
+  if(a==='favorite'){selected.favorite=!selected.favorite;render()}
+  if(a==='delete')removeNode(selected);
+  hideMenu();
+});
+addEventListener('click',e=>{if(!menu.contains(e.target))hideMenu()});
+document.getElementById('add').onclick=()=>addNode();
+document.getElementById('preset').onchange=e=>{if(e.target.value){addNode(e.target.value,new URL(e.target.value).hostname);e.target.value=''}};
+document.getElementById('zoomIn').onclick=()=>{camera.zoom=Math.min(3,camera.zoom*1.2);render()};
+document.getElementById('zoomOut').onclick=()=>{camera.zoom=Math.max(.3,camera.zoom*.8);render()};
+document.getElementById('reset').onclick=()=>{camera={x:0,y:0,zoom:1};render()};
+document.getElementById('save').onclick=()=>{localStorage.setItem('canvasIframeWorkspace',JSON.stringify({nodes:nodes.map(cleanNode),camera}));alert('已儲存')};
+document.getElementById('export').onclick=()=>{
+  const blob=new Blob([JSON.stringify({nodes:nodes.map(cleanNode),camera},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='canvas-workspace.json';a.click();URL.revokeObjectURL(a.href);
+};
+document.getElementById('importBtn').onclick=()=>document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange=e=>{
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();r.onload=()=>loadData(JSON.parse(r.result));r.readAsText(file);e.target.value='';
+};
+addEventListener('keydown',e=>{
+  if(e.key==='Delete' && selected && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName))removeNode(selected);
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();document.getElementById('save').click()}
+});
+function cleanNode(n){const {el,...data}=n;return data}
+function loadData(data){
+  for(const n of nodes)n.el?.remove();
+  nodes=(data.nodes||[]).map(n=>({...n,el:null}));
+  camera=data.camera||{x:0,y:0,zoom:1};selected=null;render();
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+////自訂
+function optionDisplay(){
+  hideTarget('help','class')
+  hideTarget('node-title','class')
+  hideTarget('resize-handle','class')
+  hideTarget('innerButton','id')
+  hideTarget('panel','id')
+  nodeContentTop()
+  
+}
+
+function nodeContentTop(t='--node-content-top'){
+
+nPx=document.documentElement.style.getPropertyValue(t);
+
+if (nPx=='') {
+  document.documentElement.style.setProperty(t, '0px');
+}else if (nPx=='0px') {
+  document.documentElement.style.setProperty(t, '30px');
+}else if (nPx=='30px') {
+  document.documentElement.style.setProperty(t, '0px');
+}
+
+
+  
+}
+
+function hideTarget(target,type) {
+  if (type=='class') {
+    [...document.getElementsByClassName(target)].forEach((i)=>{
+   i.classList.toggle('hide')  
+    })
+  }
+  if (type=='id') {
+    document.getElementById(target).classList.toggle('hide')
+  }
+   
+
+}
+
+////自訂
+
+
+(function init(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('canvasIframeWorkspace'));
+    if(saved)loadData(saved);
+  }catch{}
+  resizeCanvas();
+})();
+</script>
+</body>
+</html>
