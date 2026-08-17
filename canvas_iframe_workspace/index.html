@@ -41,6 +41,7 @@ body{background:#111827;color:#e5e7eb}
 .empty{color:#9ca3af;font-size:12px;line-height:1.5}
 .badge{font-size:10px;background:#2563eb;padding:2px 5px;border-radius:4px}
 .hide{display: none;}
+@media (hover: none) and (pointer: coarse) {input, textarea, select {font-size: 16px;}}
 
 </style>
 </head>
@@ -363,7 +364,7 @@ function hideTarget(target,type,status) {
 function styleAddZoom(target,type,status) {
   
   if (type=='id') {
-    //document.getElementById(target).classList.toggle('zoomTop')
+   
     target.classList.toggle('zoomTop');
   }
    
@@ -384,10 +385,9 @@ function hideTargetMove(target,type,status) {
 
 
 moveToiframe.addEventListener('pointerdown',e=>{
-  moveToiframe.innerHTML=''
+  moveToiframe.innerHTML='<option value="#">快速移動...</option>'
   nodes.forEach((i,index)=>{
     el=document.createElement('option')
-
     el.textContent=i.name
     el.value=index
     moveToiframe.appendChild(el)
@@ -404,7 +404,10 @@ document.getElementById('moveToiframe').onchange=e=>{if(e.target.value){
 
 
 function focusNode(node) {
-
+    if (node=='#') {
+      reset.click()
+      return
+    }
     const nodeCenterX =
         node.x + node.width / 2;
 
