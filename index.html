@@ -108,29 +108,7 @@ height:100%;
 
 
 <div class="center ">
-    <!-- =====================================================
-     
-===================================================== -->
- <!-- =====================================================
-     
-
-    <div class="card center">
-<div id="clockdiv" style="text-align: center; width:250px"><br>
-    <canvas id="domClock" width="200" height="200">not canvas</canvas>
-    
-</div>
- <div id='clockText'></div>
-</div>
-
-<div class="card minheight350">
-    <div class="iframeSelect"> 
-    <select id="toolSelect">
-
-</select>
-    <iframe class="toolIframe" id="toolIframe" src="./Web-Calculator/web-calculator.html"  title="calc"></iframe>
-</div>
-</div>
-===================================================== -->
+   
 <div class="card">
  
   <div>
@@ -435,47 +413,5 @@ renderLinks();
 }
 
 renderIncidents();
-/*
-const toolSelect = document.getElementById("toolSelect");
-const toolIframe = document.getElementById("toolIframe");
 
-toolSelect.addEventListener("change", (e) => {
-  toolIframe.src = e.target.value;
-});
-
-const TOOLS = window.LINKS
-
-const b=[
-  {
-    name: "計算機",
-    path: "Web-Calculator/web-calculator.html"
-  },
-  {
-    name: "searchnsid",
-    path: "regexDomain/searchnsid.html"
-  },
-  {
-    name: "JSON Viewer",
-    path: "JSON-Viewer/index.html"
-  },
-  {
-    name: "Base64",
-    path: "Base64/index.html"
-  }
-];
-
-const select = document.getElementById("toolSelect");
-const iframe = document.getElementById("toolIframe");
-
-TOOLS.forEach(tool => {
-  const option = document.createElement("option");
-  option.textContent = tool.label;
-  option.value = tool.url;
-  select.appendChild(option);
-});
-
-select.addEventListener("change", () => {
-  iframe.src = select.value;
-});
-*/
 </script>
