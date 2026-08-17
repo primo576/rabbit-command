@@ -11,15 +11,15 @@ body{background:#111827;color:#e5e7eb}
 #app{position:relative}
 #canvas{position:absolute;inset:0;width:100%;height:100%;background:#111827}
 #iframeLayer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.iframe-node{position:absolute;pointer-events:auto;background:#fff;border:1px solid #4b5563;border-radius:8px;overflow:hidden;box-shadow:0 8px 30px #0007}
-.iframe-node.selected{border:2px solid #60a5fa;box-shadow:0 0 0 2px #2563eb55,0 12px 35px #0008}
-.node-title{position:absolute;left:0;right:0;top:0;height:30px;background:#1f2937;color:#fff;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:2;cursor:move;user-select:none}
+.iframe-node{z-index: 0;;position:absolute;pointer-events:auto;background:#fff;border:1px solid #4b5563;border-radius:8px;overflow:hidden;box-shadow:0 8px 30px #0007}
+.iframe-node.selected{z-index: 19;border:2px solid #60a5fa;box-shadow:0 0 0 2px #2563eb55,0 12px 35px #0008}
+.node-title{position:absolute;left:0;right:0;top:0;height:30px;background:#1f2937;color:#fff;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:0;cursor:move;user-select:none}
 .node-title span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
 .node-btn{width:22px;height:22px;border:0;border-radius:4px;background:#374151;color:#fff;cursor:pointer}
 .node-btn:hover{background:#4b5563}
 .node-content{position:absolute;left:0;right:0;top:var(--node-content-top,30px);bottom:0}
 .node-content iframe{width:100%;height:100%;border:0;display:block}
-.resize-handle{position:absolute;right:1px;bottom:1px;width:16px;height:16px;background:#2563eb;z-index:4;cursor:nwse-resize;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.resize-handle{position:absolute;right:1px;bottom:1px;width:16px;height:16px;background:#2563eb;z-index:0;cursor:nwse-resize;clip-path:polygon(100% 0,100% 100%,0 100%)}
 .toolbar,.panel,.help{position:absolute;z-index:20;background:#1f2937ee;border:1px solid #374151;box-shadow:0 8px 25px #0005}
 .toolbar{left:16px;top:16px;padding:8px;border-radius:9px;display:flex;gap:6px;align-items:center}
 .toolbar button,.toolbar select{height:34px;border:1px solid #4b5563;border-radius:6px;background:#374151;color:#fff;padding:0 10px;cursor:pointer}
@@ -40,6 +40,7 @@ body{background:#111827;color:#e5e7eb}
 .empty{color:#9ca3af;font-size:12px;line-height:1.5}
 .badge{font-size:10px;background:#2563eb;padding:2px 5px;border-radius:4px}
 .hide{display: none;}
+
 </style>
 </head>
 <body>
@@ -96,8 +97,8 @@ let pointer={x:0,y:0};
 let drag=null, pan=null, resize=null;
 
 const defaultNodes=[
- {id:crypto.randomUUID(),x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
- {id:crypto.randomUUID(),x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
+ {id:crypto.randomUUID(),z:0,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
+ {id:crypto.randomUUID(),z:0,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
 ];
 nodes=defaultNodes;
 
@@ -153,18 +154,24 @@ function selectNode(n,e){selected=n;hideMenu();render()}
 function startDrag(e,n){
   if(e.button!==0)return;
   e.preventDefault();selected=n;
+  hideTargetMove('node-content','class',n.el.childNodes[1]);
   const p=s2w(e.clientX,e.clientY);
   drag={n,dx:p.x-n.x,dy:p.y-n.y};
 }
 function startResize(e,n){
   if(e.button!==0)return;
   e.preventDefault();e.stopPropagation();selected=n;
+  hideTargetMove('node-content','class',n.el.childNodes[1]);
+  console.log(n.el)
   resize={n,startX:e.clientX,startY:e.clientY,w:n.width,h:n.height};
 }
 addEventListener('pointermove',e=>{
+  
   if(drag){
+    
     const p=s2w(e.clientX,e.clientY);drag.n.x=p.x-drag.dx;drag.n.y=p.y-drag.dy;render();
   }else if(resize){
+    
     resize.n.width=Math.max(220,resize.w+(e.clientX-resize.startX)/camera.zoom);
     resize.n.height=Math.max(150,resize.h+(e.clientY-resize.startY)/camera.zoom);render();
   }else if(pan){
@@ -176,7 +183,7 @@ addEventListener('pointermove',e=>{
   
   }
 });
-addEventListener('pointerup',()=>{drag=null;resize=null;pan=null});
+addEventListener('pointerup',()=>{drag=null;resize=null;pan=null;hideTargetMove('node-content','class')});
 canvas.addEventListener('pointerdown',e=>{
   hideMenu();
   if(e.button===1 || e.button===0){
@@ -296,7 +303,7 @@ function loadData(data){
 }
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
-////自訂
+////自訂////自訂////
 function optionDisplay(){
   hideTarget('help','class')
   hideTarget('node-title','class')
@@ -323,7 +330,7 @@ if (nPx=='') {
   
 }
 
-function hideTarget(target,type) {
+function hideTarget(target,type,status) {
   if (type=='class') {
     [...document.getElementsByClassName(target)].forEach((i)=>{
    i.classList.toggle('hide')  
@@ -336,7 +343,38 @@ function hideTarget(target,type) {
 
 }
 
-////自訂
+function styleAddZoom(target,type,status) {
+  
+  if (type=='id') {
+    //document.getElementById(target).classList.toggle('zoomTop')
+    target.classList.toggle('zoomTop');
+  }
+   
+
+}
+
+function hideTargetMove(target,type,status) {
+    if (type=='class') {
+      if (status) {
+      status.classList.add('hide')  
+        /*  
+        [...document.getElementsByClassName(target)].forEach((i)=>{
+   i.classList.add('hide')  
+    })
+    */
+      }else{
+    [...document.getElementsByClassName(target)].forEach((i)=>{
+   i.classList.remove('hide')  
+   
+    })}
+  }
+}
+
+
+function addZindex(el,zIndexInt){
+  el.setAttribute('style',`z-index:${zIndexInt};`)
+}
+////自訂////
 
 
 (function init(){
