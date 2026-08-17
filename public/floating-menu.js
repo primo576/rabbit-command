@@ -41,6 +41,11 @@
     { label: 'cmd+k開啟清單', url: '../index.html' },
   ];
 
+  if (window.createLINK) {
+    window.__FLOATING_MENU__=LINKS
+    return
+  }
+
   if (window.createIndexHTML) {
     const indexHtml=document.getElementById('main');
     [...LINKS].forEach((i)=>{

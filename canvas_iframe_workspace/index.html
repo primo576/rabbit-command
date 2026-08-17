@@ -56,11 +56,13 @@ body{background:#111827;color:#e5e7eb}
       <button id="zoomOut">−</button>
       <button id="reset">⟳</button>
       <button id="save">儲存</button>
+       <button id="deletelocalStorage">刪存</button>
       <button id="export">匯出</button>
       <button id="importBtn">匯入</button>
       <input id="fileInput" type="file" accept=".json" hidden>
       <select id="preset">
         <option value="">快速新增...</option>
+        <option value="about:blank">about:blank</option>
         <option value="https://example.com">example.com</option>
         <option value="https://www.wikipedia.org">Wikipedia</option>
       </select>
@@ -97,8 +99,8 @@ let pointer={x:0,y:0};
 let drag=null, pan=null, resize=null;
 
 const defaultNodes=[
- {id:crypto.randomUUID(),z:0,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
- {id:crypto.randomUUID(),z:0,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
+ {id:crypto.randomUUID(),z:2,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
+ {id:crypto.randomUUID(),z:1,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
 ];
 nodes=defaultNodes;
 
@@ -140,6 +142,7 @@ function renderNode(n){
     n.el.addEventListener('contextmenu',e=>{e.preventDefault();selectNode(n,e);showMenu(e.clientX,e.clientY,n)});
   }
   const p=w2s(n.x,n.y);
+  n.el.style.zIndex=n.z
   n.el.style.left=p.x+'px'; n.el.style.top=p.y+'px';
   n.el.style.width=n.width*camera.zoom+'px'; n.el.style.height=n.height*camera.zoom+'px';
   n.el.classList.toggle('selected',selected===n);
@@ -166,21 +169,13 @@ function startResize(e,n){
   resize={n,startX:e.clientX,startY:e.clientY,w:n.width,h:n.height};
 }
 addEventListener('pointermove',e=>{
-  
   if(drag){
-    
     const p=s2w(e.clientX,e.clientY);drag.n.x=p.x-drag.dx;drag.n.y=p.y-drag.dy;render();
   }else if(resize){
-    
     resize.n.width=Math.max(220,resize.w+(e.clientX-resize.startX)/camera.zoom);
     resize.n.height=Math.max(150,resize.h+(e.clientY-resize.startY)/camera.zoom);render();
   }else if(pan){
-    camera.x+=e.clientX-pan.x;
-    camera.y+=e.clientY-pan.y;
-    pan.x=e.clientX;
-    pan.y=e.clientY;
-    render();
-  
+    camera.x+=e.clientX-pan.x;camera.y+=e.clientY-pan.y;pan.x=e.clientX;pan.y=e.clientY;render();
   }
 });
 addEventListener('pointerup',()=>{drag=null;resize=null;pan=null;hideTargetMove('node-content','class')});
@@ -224,7 +219,11 @@ function updatePanel(){
       <div class="field"><label>寬度</label><input id="pW" type="number" value="${Math.round(selected.width)}"></div>
       <div class="field"><label>高度</label><input id="pH" type="number" value="${Math.round(selected.height)}"></div>
     </div>
-    <div class="field"><label>分類</label><input id="pCategory" value="${esc(selected.category||'')}"></div>
+
+     <div class="row">
+      <div class="field"><label>分類</label><input id="pCategory" value="${esc(selected.category||'')}"></div>
+     <div class="field"><label>Z</label><input id="pZ" type="number" value="${Math.round(selected.z)}"></div>
+      </div>
     <div class="actions">
       <button id="apply">套用</button><button id="fav">${selected.favorite?'取消收藏':'收藏'}</button><button id="del">刪除</button>
     </div>`;
@@ -238,6 +237,7 @@ function applyPanel(){
   selected.src=document.getElementById('pSrc').value;
   selected.x=Number(document.getElementById('pX').value)||0;
   selected.y=Number(document.getElementById('pY').value)||0;
+  selected.z=Number(document.getElementById('pZ').value)||0;
   selected.width=Math.max(220,Number(document.getElementById('pW').value)||420);
   selected.height=Math.max(150,Number(document.getElementById('pH').value)||300);
   selected.category=document.getElementById('pCategory').value;
@@ -247,7 +247,7 @@ function applyPanel(){
 }
 function addNode(src='about:blank',name='New iframe'){
   const p=s2w(innerWidth/2,innerHeight/2);
-  const n={id:crypto.randomUUID(),x:p.x-210,y:p.y-150,width:420,height:300,name,src,favorite:false,category:''};
+  const n={id:crypto.randomUUID(),x:p.x-210,y:p.y-150,z:0,width:420,height:300,name,src,favorite:false,category:''};
   nodes.push(n);selected=n;render();
 }
 function removeNode(n){
@@ -277,11 +277,21 @@ menu.addEventListener('click',e=>{
 });
 addEventListener('click',e=>{if(!menu.contains(e.target))hideMenu()});
 document.getElementById('add').onclick=()=>addNode();
-document.getElementById('preset').onchange=e=>{if(e.target.value){addNode(e.target.value,new URL(e.target.value).hostname);e.target.value=''}};
+document.getElementById('preset').onchange=e=>{if(e.target.value){
+  try {
+    wName=new URL(e.target.value).hostname
+  } catch (error) {
+    wName=e.target.value
+  }
+  
+  addNode(e.target.value,wName);
+  e.target.value=''}
+};
 document.getElementById('zoomIn').onclick=()=>{camera.zoom=Math.min(3,camera.zoom*1.2);render()};
 document.getElementById('zoomOut').onclick=()=>{camera.zoom=Math.max(.3,camera.zoom*.8);render()};
 document.getElementById('reset').onclick=()=>{camera={x:0,y:0,zoom:1};render()};
 document.getElementById('save').onclick=()=>{localStorage.setItem('canvasIframeWorkspace',JSON.stringify({nodes:nodes.map(cleanNode),camera}));alert('已儲存')};
+document.getElementById('deletelocalStorage').onclick=()=>{if (confirm('確定要清空所有選取紀錄？'))localStorage.removeItem('canvasIframeWorkspace');};
 document.getElementById('export').onclick=()=>{
   const blob=new Blob([JSON.stringify({nodes:nodes.map(cleanNode),camera},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='canvas-workspace.json';a.click();URL.revokeObjectURL(a.href);
@@ -339,8 +349,6 @@ function hideTarget(target,type,status) {
   if (type=='id') {
     document.getElementById(target).classList.toggle('hide')
   }
-   
-
 }
 
 function styleAddZoom(target,type,status) {
@@ -357,11 +365,6 @@ function hideTargetMove(target,type,status) {
     if (type=='class') {
       if (status) {
       status.classList.add('hide')  
-        /*  
-        [...document.getElementsByClassName(target)].forEach((i)=>{
-   i.classList.add('hide')  
-    })
-    */
       }else{
     [...document.getElementsByClassName(target)].forEach((i)=>{
    i.classList.remove('hide')  
@@ -370,10 +373,6 @@ function hideTargetMove(target,type,status) {
   }
 }
 
-
-function addZindex(el,zIndexInt){
-  el.setAttribute('style',`z-index:${zIndexInt};`)
-}
 ////自訂////
 
 
@@ -385,5 +384,16 @@ function addZindex(el,zIndexInt){
   resizeCanvas();
 })();
 </script>
+<script>window.createLINK=true</script>
+ <script src="../public/floating-menu.js"></script>
+ <script>
+  window.__FLOATING_MENU__.forEach((i)=>{
+    el=document.createElement('option')
+    el.value=i.url
+    el.textContent=i.label
+    preset.appendChild(el)
+  })
+  //preset.appendChild(document.createElement('option'))
+ </script>
 </body>
 </html>

@@ -6,12 +6,17 @@
  * 	<canvas id="domClock" width="200" height="200">�函�瘚讛��膥銝滚�澆捆canvas</canvas>
  * </div>
  */
-var c_canvas = document.getElementById('domClock');
-var c_context = c_canvas.getContext('2d');
-var c_height = c_context.canvas.height;
-var c_width = c_context.canvas.width;
-var c_r = c_width / 2;
-var c_lineWidth = c_width/200;
+
+try {
+    var c_canvas = document.getElementById('domClock');
+    var c_context = c_canvas.getContext('2d');
+    var c_height = c_context.canvas.height;
+    var c_width = c_context.canvas.width;
+    var c_r = c_width / 2;
+    var c_lineWidth = c_width/200;
+} catch (error) {}
+
+
 
 //�𧒄��蠘�峕艶
 function drawBackground() {
@@ -106,6 +111,7 @@ function drawDot() {
 
 //�𧒄�𡢿�遆�㺭嚗諹悟�𧒄���覔�旿敶枏�齿𧒄�𡢿頝喳𢆡
 function Draw() {
+    try {
     c_context.clearRect(0,0,c_width,c_height);
     var time= new Date();
     var hour =time.getHours();
@@ -117,7 +123,7 @@ function Draw() {
     drawSecond(second);
     drawDot();
     c_context.restore()
-
+ } catch (error) {}
 }
 
 Draw();

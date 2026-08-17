@@ -148,9 +148,6 @@ function getNowDataSelect(){
 function applyTemplate() {
    const sel = document.getElementById('templateSelect');
    const opt = sel.options[sel.selectedIndex];
-  // console.log(sel.selectedIndex)
-  //nowDataSelect=nowData[sel.selectedIndex]
-   //nowDataSelect=nowData[0]
    addNewSelect(opt);
 
    document.getElementById('template').value = opt.value || '';
@@ -603,7 +600,6 @@ document.addEventListener('DOMContentLoaded', () => {
    renderGroupSelect();
 
    const lastGroup = localStorage.getItem('lastGroup');
-   console.log(lastGroup)
    if (lastGroup && ALL_TEMPLATE[lastGroup]) {
       groupSelect.value = lastGroup;
       rendersearch = ALL_TEMPLATE[lastGroup];
@@ -623,8 +619,6 @@ document.addEventListener('DOMContentLoaded', () => {
    renderHistory();
    init2()
    loadsearchkeyword()
-   //console.log(localStorage);
-   //localStorage.clear()
 });
 
 function save_localStorageGroupCreate() {
