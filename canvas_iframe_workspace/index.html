@@ -86,6 +86,7 @@ body{background:#111827;color:#e5e7eb}
 <div class="context" id="context">
   <button data-action="refresh">重新載入</button>
   <button data-action="duplicate">複製節點</button>
+  <button data-action="rebuildNode">重建節點</button>
   <button data-action="fullscreen">全螢幕</button>
   <button data-action="favorite">加入/取消收藏</button>
   <button data-action="delete">刪除</button>
@@ -137,7 +138,9 @@ function renderNode(n){
     n.el.className='iframe-node';
     n.el.innerHTML=`<div class="node-title"><span></span><button class="node-btn reload">↻</button><button class="node-btn full">□</button><button class="node-btn close">×</button></div><div class="node-content"><iframe loading="lazy"></iframe></div><div class="resize-handle"></div>`;
     layer.appendChild(n.el);
-    n.el.querySelector('iframe').src=n.src;
+    tiframe=n.el.querySelector('iframe');tiframe.src=n.src;
+    if (!typeof n.proxy == 'undefined'||!n.proxy=='') {tiframe.src=`${n.proxy}${tiframe.src}`;}
+    if (!typeof n.sandbox == 'undefined'||!n.sandbox=='') {tiframe.sandbox=n.sandbox;}
     n.el.querySelector('.node-title').addEventListener('pointerdown',e=>startDrag(e,n));
     n.el.querySelector('.resize-handle').addEventListener('pointerdown',e=>startResize(e,n));
     n.el.querySelector('.reload').onclick=e=>{e.stopPropagation();n.el.querySelector('iframe').src=n.src};
@@ -211,11 +214,21 @@ openToolbar.addEventListener('wheel',e=>{
 
 
 
+panel.addEventListener('wheel',e=>{
+  camera.y=camera.y+e.deltaY;
+  camera.x=camera.x+e.deltaX;
+ render();
+});
+
+
+
 function updatePanel(){
   if(!selected){panel.innerHTML='<div class="empty">點選 iframe 節點以編輯屬性。</div>';return}
   panel.innerHTML=`
     <div class="field"><label>名稱</label><input id="pName" value="${esc(selected.name)}"></div>
     <div class="field"><label>URL</label><input id="pSrc" value="${esc(selected.src)}"></div>
+    <div class="field"><label>sandbox</label><input id="pSandbox" value="${selected.sandbox||''}"></div>
+    <div class="field"><label>proxy</label><input id="pProxy" value="${selected.proxy||''}"></div>
     <div class="row">
       <div class="field"><label>X</label><input id="pX" type="number" value="${Math.round(selected.x)}"></div>
       <div class="field"><label>Y</label><input id="pY" type="number" value="${Math.round(selected.y)}"></div>
@@ -230,16 +243,19 @@ function updatePanel(){
      <div class="field"><label>Z</label><input id="pZ" type="number" value="${Math.round(selected.z)}"></div>
       </div>
     <div class="actions">
-      <button id="apply">套用</button><button id="fav">${selected.favorite?'取消收藏':'收藏'}</button><button id="del">刪除</button>
+      <button id="apply">套用</button><button id="fav">${selected.favorite?'取消收藏':'收藏'}</button><button id="rebuild">重建</button><button id="del">刪除</button>
     </div>`;
   document.getElementById('apply').onclick=applyPanel;
   document.getElementById('fav').onclick=()=>{selected.favorite=!selected.favorite;render()};
   document.getElementById('del').onclick=()=>removeNode(selected);
+  document.getElementById('rebuild').onclick=()=>rebuildNode(selected);
 }
 function applyPanel(){
   if(!selected)return;
   selected.name=document.getElementById('pName').value;
   selected.src=document.getElementById('pSrc').value;
+  selected.sandbox=document.getElementById('pSandbox').value;
+  selected.proxy=document.getElementById('pProxy').value;
   selected.x=Number(document.getElementById('pX').value)||0;
   selected.y=Number(document.getElementById('pY').value)||0;
   selected.z=Number(document.getElementById('pZ').value)||0;
@@ -248,8 +264,11 @@ function applyPanel(){
   selected.category=document.getElementById('pCategory').value;
   const f=selected.el.querySelector('iframe');
   if(f.src!==selected.src)f.src=selected.src;
+  if(f.sandbox!==selected.sandbox){f.sandbox=selected.sandbox;if(f.sandbox.value==''){f.removeAttribute('sandbox')}}
+  
   render();
 }
+
 function addNode(src='about:blank',name='New iframe'){
   const p=s2w(innerWidth/2,innerHeight/2);
   const n={id:crypto.randomUUID(),x:p.x-210,y:p.y-150,z:0,width:420,height:300,name,src,favorite:false,category:''};
@@ -267,6 +286,9 @@ function duplicateNode(n){
   const c={...n,id:crypto.randomUUID(),x:n.x+30,y:n.y+30,el:null};
   nodes.push(c);selected=c;hideMenu();render();
 }
+function rebuildNode(n){
+  if(!n)return;n.el.remove();n.el=null;render();
+}
 function showMenu(x,y,n){
   selected=n;menu.style.left=x+'px';menu.style.top=y+'px';menu.style.display='block';
 }
@@ -275,6 +297,7 @@ menu.addEventListener('click',e=>{
   const a=e.target.dataset.action;if(!a||!selected)return;
   if(a==='refresh')selected.el.querySelector('iframe').src=selected.src;
   if(a==='duplicate')duplicateNode(selected);
+  if(a==='rebuildNode')rebuildNode(selected);
   if(a==='fullscreen')toggleFullscreen(selected);
   if(a==='favorite'){selected.favorite=!selected.favorite;render()}
   if(a==='delete')removeNode(selected);
