@@ -60,8 +60,9 @@ body{background:#111827;color:#e5e7eb}
       <button id="zoomIn">＋</button>
       <button id="zoomOut">−</button>
       <button id="reset">⟳</button>
+      <button id="nodeProfile">⚙️</button>
       <button id="save">儲存</button>
-       <button id="deletelocalStorage">刪存</button>
+      <button id="deletelocalStorage">刪存</button>
       <button id="export">匯出</button>
       <button id="importBtn">匯入</button>
       <input id="fileInput" type="file" accept=".json" hidden>
@@ -224,6 +225,7 @@ document.querySelector('.help').addEventListener('wheel',e=>{
 
 
 function updatePanel(){
+  if(document.getElementById('panel').classList.contains('hide'))return
   if(!selected){panel.innerHTML='<div class="empty">點選 iframe 節點以編輯屬性。</div>';return}
   panel.innerHTML=`
     <div class="field"><label>名稱</label><input id="pName" value="${esc(selected.name)}"></div>
@@ -324,6 +326,7 @@ document.getElementById('preset').onchange=e=>{if(e.target.value){
 document.getElementById('zoomIn').onclick=()=>{camera.zoom=Math.min(3,camera.zoom*1.2);render()};
 document.getElementById('zoomOut').onclick=()=>{camera.zoom=Math.max(.3,camera.zoom*.8);render()};
 document.getElementById('reset').onclick=()=>{camera={x:0,y:0,zoom:1};render()};
+document.getElementById('nodeProfile').onclick=()=>{document.getElementById('panel').classList.toggle('hide')};
 document.getElementById('save').onclick=()=>{localStorage.setItem('canvasIframeWorkspace',JSON.stringify({nodes:nodes.map(cleanNode),camera}));alert('已儲存')};
 document.getElementById('deletelocalStorage').onclick=()=>{if (confirm('確定要清空所有選取紀錄？'))localStorage.removeItem('canvasIframeWorkspace');};
 document.getElementById('export').onclick=()=>{
