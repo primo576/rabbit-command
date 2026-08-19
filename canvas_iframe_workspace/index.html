@@ -41,7 +41,10 @@ body{background:#111827;color:#e5e7eb}
 .empty{color:#9ca3af;font-size:12px;line-height:1.5}
 .badge{font-size:10px;background:#2563eb;padding:2px 5px;border-radius:4px}
 .hide{display: none;}
-@media (hover: none) and (pointer: coarse) {input, textarea, select {font-size: 16px;}}
+@media (hover: none) and (pointer: coarse) {input, textarea, select {font-size: 16px;}
+.panel{max-height: 30dvh;
+    overflow: auto;}
+}
 
 </style>
 </head>
@@ -196,9 +199,7 @@ canvas.addEventListener('pointerdown',e=>{
   }
 });
 openToolbar.addEventListener('wheel',e=>{
- 
   e.preventDefault();
-
   camera.y=camera.y+e.deltaY
   camera.x=camera.x+e.deltaX
   /*
@@ -214,7 +215,7 @@ openToolbar.addEventListener('wheel',e=>{
 
 
 
-panel.addEventListener('wheel',e=>{
+document.querySelector('.help').addEventListener('wheel',e=>{
   camera.y=camera.y+e.deltaY;
   camera.x=camera.x+e.deltaX;
  render();

@@ -1,9 +1,7 @@
 
-
 (function () {
   if (window.__FLOATING_MENU__) return;
   window.__FLOATING_MENU__ = true;
-
   const LINKS = window.FLOATING_MENU_LINKS || [
     { label: 'rabbitCommand', url: '../rabbit-command/index.html' },
     { label: 'lookDNS', url: '../regexDomain/lookDNS.html' },
@@ -36,39 +34,22 @@
     { label: 'js beautifier', url: 'https://www.freeformatter.com/javascript-beautifier.html' , blank: true},
     { label: 'UglifyJS-online', url: 'https://skalman.github.io/UglifyJS-online' , blank: true},
     { label: '買域名dynadot', url: 'https://www.dynadot.com/zh' , blank: true},
+    { label: '每日資訊', url: 'https://thysrael.github.io/Horizon' , blank: true},
+    { label: '小遊戲庫', url: 'hhttps://flashpointproject.github.io/flashpoint-database/' , blank: true},
     { label: '截圖', url: 'javascript:capture()' },
     { label: '回到頂部', url: '#' },
     { label: 'cmd+k開啟清單', url: '../index.html' },
   ];
 
-  if (window.createLINK) {
-    window.__FLOATING_MENU__=LINKS
-    return
-  }
+  if (window.createLINK) {window.__FLOATING_MENU__=LINKS;return}
 
   if (window.createIndexHTML) {
     const indexHtml=document.getElementById('main');
     [...LINKS].forEach((i)=>{
       const ahref = document.createElement('a');
-      ahref.href=i.url.replace('../','./');
-      ahref.textContent=i.label
-      
-      ahref.className='object'
-      indexHtml.appendChild(ahref)
-
-    })
-
-n=LINKS.map((i)=>{
-   return {
-        label:i.label,
-        url:i.url.replace('../','./')
-    }
-})
-
-
-    window.LINKS=n
-    return
-  }
+      ahref.href=i.url.replace('../','./');ahref.textContent=i.label;ahref.className='object';
+      indexHtml.appendChild(ahref);
+    });n=LINKS.map((i)=>{return {label:i.label,url:i.url.replace('../','./')}});window.LINKS=n;return}
 
   const style = document.createElement('style');
   style.innerHTML = `
