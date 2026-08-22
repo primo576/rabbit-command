@@ -93,6 +93,8 @@ body{background:#111827;color:#e5e7eb}
   <button data-action="rebuildNode">重建節點</button>
   <button data-action="fullscreen">全螢幕</button>
   <button data-action="favorite">加入/取消收藏</button>
+  <button data-action="referrer">允許Referrer</button>
+  <button data-action="addSandBox">使用限制沙盒</button>
   <button data-action="delete">刪除</button>
 </div>
 </div>
@@ -140,7 +142,7 @@ function renderNode(n){
   if(!n.el){
     n.el=document.createElement('div');
     n.el.className='iframe-node';
-    n.el.innerHTML=`<div class="node-title"><span></span><button class="node-btn reload">↻</button><button class="node-btn full">□</button><button class="node-btn close">×</button></div><div class="node-content"><iframe loading="lazy"></iframe></div><div class="resize-handle"></div>`;
+    n.el.innerHTML=`<div class="node-title"><span></span><button class="node-btn reload">↻</button><button class="node-btn full">□</button><button class="node-btn close">×</button></div><div class="node-content"><iframe loading="lazy" referrerpolicy="no-referrer"></iframe></div><div class="resize-handle"></div>`;
     layer.appendChild(n.el);
     tiframe=n.el.querySelector('iframe');tiframe.src=n.src;
     if (!typeof n.proxy == 'undefined'||!n.proxy=='') {tiframe.src=`${n.proxy}${tiframe.src}`;}
@@ -303,6 +305,8 @@ menu.addEventListener('click',e=>{
   if(a==='rebuildNode')rebuildNode(selected);
   if(a==='fullscreen')toggleFullscreen(selected);
   if(a==='favorite'){selected.favorite=!selected.favorite;render()}
+  if(a==='referrer')selected.el.querySelector('iframe').removeAttribute('referrerPolicy');
+  if(a==='addSandBox')addSandBox(selected);
   if(a==='delete')removeNode(selected);
   hideMenu();
 });
@@ -452,6 +456,13 @@ function focusNode(node) {
     selected = node;
 
     render();
+}
+
+
+function addSandBox(selected){
+  f=selected.el.querySelector('iframe').sandbox='allow-scripts allow-same-origin'
+  if(selected.sandbox!==f)selected.sandbox=f
+  updatePanel()
 }
 
 ////自訂////
