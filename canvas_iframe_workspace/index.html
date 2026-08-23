@@ -41,6 +41,7 @@ body{background:#111827;color:#e5e7eb}
 .empty{color:#9ca3af;font-size:12px;line-height:1.5}
 .badge{font-size:10px;background:#2563eb;padding:2px 5px;border-radius:4px}
 .hide{display: none;}
+.blackbbackground{background-color: black;}
 @media (hover: none) and (pointer: coarse) {input, textarea, select {font-size: 16px;}
 .panel{max-height: 30dvh;
     overflow: auto;}
@@ -225,6 +226,30 @@ document.querySelector('.help').addEventListener('wheel',e=>{
 });
 
 
+let styleZoom=1
+var timerId 
+canvas.addEventListener('wheel', function (e) {
+  e.preventDefault(); // 阻止页面滚动
+   hideTargetMove('node-content','class',false,true);
+   if (timerId) {
+    clearTimeout(timerId);
+   }
+   
+  timerId= setTimeout(() => {
+  hideTargetMove('node-content','class',false,false);
+  }, 500);
+
+  if (e.deltaY < 0) {
+    styleZoom += 0.01; // 向上滚动放大
+    
+  } else {
+    styleZoom = Math.max(0.1, styleZoom - 0.01); // 向下滚动缩小，最小为 0.1
+  }
+  
+  iframeLayer.style.zoom = `${styleZoom}`;
+});
+
+
 
 function updatePanel(){
   if(document.getElementById('panel').classList.contains('hide'))return
@@ -329,7 +354,9 @@ document.getElementById('preset').onchange=e=>{if(e.target.value){
 //
 document.getElementById('zoomIn').onclick=()=>{camera.zoom=Math.min(3,camera.zoom*1.2);render()};
 document.getElementById('zoomOut').onclick=()=>{camera.zoom=Math.max(.3,camera.zoom*.8);render()};
-document.getElementById('reset').onclick=()=>{camera={x:0,y:0,zoom:1};render()};
+document.getElementById('reset').onclick=()=>{ hideTargetMove('node-content','class',false,true);iframeLayer.removeAttribute('style');camera={x:0,y:0,zoom:1};render(); timerId= setTimeout(() => {
+  hideTargetMove('node-content','class',false,false);
+  }, 500);styleZoom=1};
 document.getElementById('nodeProfile').onclick=()=>{document.getElementById('panel').classList.toggle('hide')};
 document.getElementById('save').onclick=()=>{localStorage.setItem('canvasIframeWorkspace',JSON.stringify({nodes:nodes.map(cleanNode),camera}));alert('已儲存')};
 document.getElementById('deletelocalStorage').onclick=()=>{if (confirm('確定要清空所有選取紀錄？'))localStorage.removeItem('canvasIframeWorkspace');};
@@ -402,11 +429,16 @@ function styleAddZoom(target,type,status) {
 
 }
 
-function hideTargetMove(target,type,status) {
+function hideTargetMove(target,type,status,all) {
     if (type=='class') {
       if (status) {
       status.classList.add('hide')  
-      }else{
+      }else if (all){
+    [...document.getElementsByClassName(target)].forEach((i)=>{
+   i.classList.add('hide')  
+   
+    })}
+      else{
     [...document.getElementsByClassName(target)].forEach((i)=>{
    i.classList.remove('hide')  
    
@@ -424,6 +456,10 @@ moveToiframe.addEventListener('pointerdown',e=>{
     moveToiframe.appendChild(el)
   })
 });
+
+function toggleClass(className,toggleClass){
+  [...document.getElementsByClassName(className)].forEach((i)=>{i.classList.toggle('toggleClass')})
+}
 
 
 
