@@ -127,7 +127,7 @@ function resizeCanvas(){
 addEventListener('resize',resizeCanvas);
 
 function w2s(x,y){return{x:x*camera.zoom+camera.x,y:y*camera.zoom+camera.y}}
-function s2w(x,y){return{x:(x-camera.x)/camera.zoom,y:(y-camera.y)/camera.zoom}}
+function s2w(x,y){return{x:(x-camera.x)/styleZoom,y:(y-camera.y)/styleZoom}}
 
 function renderCanvas(){
   const w=innerWidth,h=innerHeight;
@@ -159,7 +159,7 @@ function renderNode(n){
   const p=w2s(n.x,n.y);
   n.el.style.zIndex=n.z
   n.el.style.left=p.x+'px'; n.el.style.top=p.y+'px';
-  n.el.style.width=n.width*camera.zoom+'px'; n.el.style.height=n.height*camera.zoom+'px';
+  n.el.style.width=n.width+'px'; n.el.style.height=n.height+'px';
   n.el.classList.toggle('selected',selected===n);
   n.el.querySelector('.node-title span').textContent=(n.favorite?'★ ':'')+n.name;
 }
@@ -180,17 +180,19 @@ function startResize(e,n){
   if(e.button!==0)return;
   e.preventDefault();e.stopPropagation();selected=n;
   hideTargetMove('node-content','class',n.el.childNodes[1]);
-  console.log(n.el)
   resize={n,startX:e.clientX,startY:e.clientY,w:n.width,h:n.height};
 }
 addEventListener('pointermove',e=>{
   if(drag){
     const p=s2w(e.clientX,e.clientY);drag.n.x=p.x-drag.dx;drag.n.y=p.y-drag.dy;render();
   }else if(resize){
-    resize.n.width=Math.max(220,resize.w+(e.clientX-resize.startX)/camera.zoom);
-    resize.n.height=Math.max(150,resize.h+(e.clientY-resize.startY)/camera.zoom);render();
+    resize.n.width=Math.max(220,resize.w+(e.clientX-resize.startX)/styleZoom);
+    resize.n.height=Math.max(150,resize.h+(e.clientY-resize.startY)/styleZoom);render();
   }else if(pan){
-    camera.x+=e.clientX-pan.x;camera.y+=e.clientY-pan.y;pan.x=e.clientX;pan.y=e.clientY;render();
+    camera.x+=(e.clientX-pan.x)/styleZoom;
+    camera.y+=(e.clientY-pan.y)/styleZoom;
+    pan.x=e.clientX;
+    pan.y=e.clientY;render();
   }
 });
 addEventListener('pointerup',()=>{drag=null;resize=null;pan=null;hideTargetMove('node-content','class')});
@@ -247,6 +249,9 @@ canvas.addEventListener('wheel', function (e) {
   }
   
   iframeLayer.style.zoom = `${styleZoom}`;
+  ////
+  
+  ////
 });
 
 
