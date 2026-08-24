@@ -25,6 +25,7 @@
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
     { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
+    { label: 'Global DNS Checker-br', url: ' https://dnsmid.com/brazil/' , blank: true},
     { label: 'linux command', url: 'https://wangchujiang.com/linux-command/index.html' , blank: true},
     { label: 'whoisTool', url: 'https://selfcertificationhub.github.io/whois/whois' , blank: true},
     { label: '畫板', url: 'https://app.tryquickdraw.com/' , blank: true},

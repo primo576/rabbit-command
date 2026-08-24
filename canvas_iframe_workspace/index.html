@@ -106,14 +106,18 @@ const layer=document.getElementById('iframeLayer');
 const panel=document.getElementById('panelBody');
 const menu=document.getElementById('context');
 
+let count=0
 let camera={x:0,y:0,zoom:1};
 let selected=null, nodes=[];
 let pointer={x:0,y:0};
 let drag=null, pan=null, resize=null;
 
 const defaultNodes=[
- {id:crypto.randomUUID(),z:2,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
- {id:crypto.randomUUID(),z:1,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
+ // {id:crypto.randomUUID()||'b3',z:2,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
+ //{id:crypto.randomUUID()||'e2',z:1,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
+
+  {id:'b3',z:2,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
+ {id:'e2',z:1,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
 ];
 nodes=defaultNodes;
 
@@ -257,7 +261,7 @@ canvas.addEventListener('wheel', function (e) {
 
 
 function updatePanel(){
-  if(document.getElementById('panel').classList.contains('hide'))return
+  //if(document.getElementById('panel').classList.contains('hide')){selected=null; return}
   if(!selected){panel.innerHTML='<div class="empty">點選 iframe 節點以編輯屬性。</div>';return}
   panel.innerHTML=`
     <div class="field"><label>名稱</label><input id="pName" value="${esc(selected.name)}"></div>
@@ -388,12 +392,14 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 
 ////自訂////自訂////
 function optionDisplay(){
+  updatePanel()
   hideTarget('help','class')
   hideTarget('node-title','class')
   hideTarget('resize-handle','class')
   hideTarget('innerButton','id')
   hideTarget('panel','id')
   nodeContentTop()
+  
   
 }
 
