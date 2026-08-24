@@ -483,6 +483,7 @@ function render() {
    //////
 
    data.forEach((item, index) => {
+   
       //過濾表情標籤
       if (displayEmojiAnswer.checked) {
          if (item.emoji != searchEmoji.value) {
@@ -490,149 +491,61 @@ function render() {
          }
       }
 
-      if (displayNum.value.length>0) {
-        
-         
-         if (index!=displayNum.value) {
-
-            return
-         }
-      }
+      if (displayNum.value.length>0) {if (index!=displayNum.value) {return}}
       //過濾表情標籤
       const divTop = document.createElement('div');
       divTop.className = 'divTop'
-     
-      
-      const div = document.createElement('li');
-      div.className = 'item';
-      div.id = `item-${index}`;
-
-      const time = document.createElement('div');
-      time.className = 'time';
-      time.textContent = new Date(item.time).toLocaleString();
+      const div = document.createElement('li');div.className = 'item';div.id = `item-${index}`;
+      const time = document.createElement('div');time.className = 'time';time.textContent = new Date(item.time).toLocaleString();
 
       /*點擊輸入標題*/
-      const inputTitle = document.createElement('div');
+      const inputTitle = document.createElement('div');inputTitle.textContent = item.title || '點擊輸入';inputTitle.className = 'title';
 
-      inputTitle.textContent = item.title || '點擊輸入';
-      inputTitle.className = 'title';
-
-      if (!item.title) {
-         inputTitle.classList.add('co-gray')
-      }
+      if (!item.title) {inputTitle.classList.add('co-gray')}
 
       inputTitle.onclick = () => {
-         const input = document.createElement('input');
-
-         input.value = item.title || '點擊輸入';
-         input.className = 'titleInput';
-
+         const input = document.createElement('input');nput.value = item.title || '點擊輸入';input.className = 'titleInput';
          // 替換 div → input
-         inputTitle.replaceWith(input);
+         inputTitle.replaceWith(input);input.focus();input.select();
 
-         input.focus();
-         input.select();
-
-         const saveTitle = () => {
-            item.title = input.value;
-
-            inputTitle.textContent = input.value || '點擊輸入';
-
-            save();
-
-            // 換回 div
-            input.replaceWith(inputTitle);
+         const saveTitle = () => { item.title = input.value;
+            inputTitle.textContent = input.value || '點擊輸入';save();input.replaceWith(inputTitle);
          };
 
          // Enter 儲存
-         input.onkeydown = (e) => {
-            if (e.key === 'Enter') {
-               saveTitle();
-            }
-         };
-
-         // 點外面也儲存
-         input.onblur = saveTitle;
+         input.onkeydown = (e) => {if (e.key === 'Enter') {saveTitle();}};input.onblur = saveTitle;
       };
 
       /*點擊輸入標題*/
       /*點擊輸入表情*/
-      const inputEmoji = document.createElement('div');
-      reEmoji = randomObject(emoji)
-      inputEmoji.textContent = item.emoji || reEmoji;
-      inputEmoji.className = 'emoji';
-      if (!item.emoji) {
-         inputEmoji.classList.add('opacity')
-      }
+      const inputEmoji = document.createElement('div');reEmoji = randomObject(emoji);inputEmoji.textContent = item.emoji || reEmoji;inputEmoji.className = 'emoji';
+      if (!item.emoji) {inputEmoji.classList.add('opacity')}
 
       inputEmoji.onclick = () => {
-         const input = document.createElement('select');
-
-         input.value = item.emoji || inputEmoji.textContent;
-         input.className = 'emoji';
-
+         const input = document.createElement('select');input.value = item.emoji || inputEmoji.textContent;input.className = 'emoji';
 
          function addOption(str, a) {
-            const optionNull = document.createElement('option');
-
-
-            optionNull.value = str
-            if (a) {
-               str = 'N'
-            }
+            const optionNull = document.createElement('option');optionNull.value = str
+            if (a) {str = 'N'}
             optionNull.textContent = str
             input.appendChild(optionNull)
+         }addOption(inputEmoji.textContent);addOption('', 'N');
+
+         for (let index = 0; index < 30; index++) { const element = emoji[index];
+            if (index < 10) { addOption(element)} else {addOption(randomObject(emoji))}
          }
-
-         addOption(inputEmoji.textContent)
-         addOption('', 'N')
-
-         for (let index = 0; index < 30; index++) {
-            const element = emoji[index];
-            if (index < 10) {
-               addOption(element)
-            } else {
-               addOption(randomObject(emoji))
-
-            }
-
-         }
-
          // 替換 div → input
          inputEmoji.replaceWith(input);
-         //input.pointerdown();
-         //input.focus();
-         //input.select();
 
          const saveTitle = () => {
-
-            item.emoji = input.value;
-
-            inputEmoji.textContent = input.value || reEmoji;
+            item.emoji = input.value;inputEmoji.textContent = input.value || reEmoji;
             if (input.value == '') delete item.emoji
             save()
-
-
-            if (item.emoji) {
-               inputEmoji.classList.remove('opacity')
-            } else {
-               inputEmoji.classList.add('opacity')
-            }
-            // 換回 div
+            if (item.emoji) {inputEmoji.classList.remove('opacity')} else {inputEmoji.classList.add('opacity')}
             input.replaceWith(inputEmoji);
-            //setTimeout(() => render(), 1000);
-            //render()
          };
-
          // Enter 儲存
-         input.onchange = (e) => {
-
-            saveTitle();
-
-         };
-
-         // 點外面也儲存
-         input.onblur = saveTitle;
+         input.onchange = (e) => { saveTitle();};input.onblur = saveTitle;
       };
 
       /*點擊輸入標題*/
@@ -640,55 +553,29 @@ function render() {
 
       const textarea = document.createElement('textarea');
       textarea.className = 'content';
-      if (item.whiteSpaceUnset) {
-         textarea.classList.add('whiteSpaceUnset');
-      }
+      if (item.whiteSpaceUnset) {textarea.classList.add('whiteSpaceUnset');}
       textarea.value = item.text;
 
       textarea.oninput = () => {
          item.text = textarea.value;
-         save();
-
-         renderBars();
-         renderUsage();
-         if (item.expanded) {
-            auto_grow(textarea);
-         }
+         save(); renderBars(); renderUsage();
+         if (item.expanded) {auto_grow(textarea); }
       };
 //基礎textarea區塊
       const toggleBtn = document.createElement('button');
       toggleBtn.textContent = item.expanded ? '收起' : '展開';
       toggleBtn.className = 'buttomStyle1'
-      toggleBtn.onclick = () => {
-         item.expanded = !item.expanded;
-         save();
-         render();
-      };
+      toggleBtn.onclick = () => {item.expanded = !item.expanded;save();render();};
 
       const testIMGlinkBtn = document.createElement('button');
-      testIMGlinkBtn.textContent = item.linkToIMG ? '收起IMG' : '顯示IMG';
-      testIMGlinkBtn.className = 'buttomStyle1'
-      testIMGlinkBtn.onclick = () => {
-         item.linkToIMG = !item.linkToIMG;
-         //save();
-         render();
-      };
+      testIMGlinkBtn.textContent = item.linkToIMG ? '收起IMG' : '顯示IMG';testIMGlinkBtn.className = 'buttomStyle1'
+      testIMGlinkBtn.onclick = () => {item.linkToIMG = !item.linkToIMG;render();};
 
-      if (item.expanded) {
-         textarea.classList.add('fixArea');
-
-         // setTimeout(() => {auto_grow(textarea);}, 0);
-      }
+      if (item.expanded) {textarea.classList.add('fixArea');}
       ////切割行
       const toggleBtnToCut = document.createElement('button');
-      toggleBtnToCut.textContent = item.toCutConut ? '原文' : '切割';
-      toggleBtnToCut.className = 'buttomStyle1'
-      toggleBtnToCut.onclick = () => {
-         item.toCutConut = !item.toCutConut;
-
-         //save();
-         render();
-      };
+      toggleBtnToCut.textContent = item.toCutConut ? '原文' : '切割';toggleBtnToCut.className = 'buttomStyle1'
+      toggleBtnToCut.onclick = () => {item.toCutConut = !item.toCutConut;render();};
       if (item.toCutConut) {
          per = 0
          const lines = textarea.value.split(delimiter)
@@ -1313,6 +1200,7 @@ function render() {
       }
       divTop.appendChild(div);
       list.appendChild(divTop);
+      item.el=divTop
       oclass.push(inputTitle, time)
 
 
