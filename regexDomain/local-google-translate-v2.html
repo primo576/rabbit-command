@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Translate — Local Tool</title>
+<style>
+:root{--bg:#fff;--surface:#fff;--text:#202124;--muted:#5f6368;--border:#dadce0;--hover:#f1f3f4;--blue:#1a73e8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans TC","Microsoft JhengHei",sans-serif}
+body.dark{--bg:#202124;--surface:#292a2d;--text:#e8eaed;--muted:#bdc1c6;--border:#5f6368;--hover:#3c4043;--blue:#8ab4f8}
+button,select,textarea{font:inherit}.app{max-width:1180px;margin:auto;padding:20px}
+header{height:54px;display:flex;align-items:center;justify-content:space-between}.brand{font-size:22px;font-weight:600}.brand span{color:var(--blue)}
+.icon{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;font-size:18px}.icon:hover,.secondary:hover{background:var(--hover)}
+.langbar{display:grid;grid-template-columns:1fr 56px 1fr;align-items:center;border:1px solid var(--border);border-bottom:0;border-radius:16px 16px 0 0;background:var(--surface);padding:7px 12px}
+.lang-select{width:100%;max-width:260px;border:0;outline:0;background:transparent;color:var(--text);font-size:15px;font-weight:600;padding:10px 8px;cursor:pointer}.right-lang{justify-self:start}.swap{justify-self:center}
+.workspace{display:grid;grid-template-columns:1fr 1fr}.panel{position:relative;min-height:390px;background:var(--surface);border:1px solid var(--border)}
+.left{border-radius:0 0 0 16px;border-right:0}.right{border-radius:0 0 16px 0}
+textarea{display:block;width:100%;height:390px;resize:none;border:0;outline:0;background:transparent;color:var(--text);padding:24px 24px 75px;font-size:23px;line-height:1.55}textarea::placeholder{color:#9aa0a6}
+.output{height:390px;overflow:auto;padding:24px 24px 70px;font-size:23px;line-height:1.55;white-space:pre-wrap;word-break:break-word}.output.empty{color:#9aa0a6}
+.bottom{position:absolute;left:16px;right:16px;bottom:14px;display:flex;align-items:center;gap:4px}
+.primary{border:0;background:var(--blue);color:white;border-radius:20px;padding:10px 20px;cursor:pointer;font-weight:600}.primary:hover{filter:brightness(.94)}
+.secondary{border:0;background:transparent;color:var(--muted);border-radius:20px;padding:9px 13px;cursor:pointer}.counter{margin-left:auto;color:var(--muted);font-size:12px}
+.status{font-size:12px;color:var(--muted);margin:14px 3px}.history{margin-top:28px;border:1px solid var(--border);border-radius:16px;background:var(--surface);overflow:hidden}
+.history-head{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center}.history-head button{margin-left:auto}
+.history-list{max-height:330px;overflow:auto}.history-item{padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer}.history-item:hover{background:var(--hover)}
+.history-source{font-size:14px;margin-bottom:5px}.history-result{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty-history{padding:24px;color:var(--muted);font-size:13px}
+#ggoogle_translate_element{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}.goog-te-banner-frame,.skiptranslates{display:null!important}body{top:0!important}
+@media(max-width:760px){.app{padding:14px}.workspace{grid-template-columns:1fr}.left{border-right:1px solid var(--border);border-radius:0}.right{border-radius:0 0 16px 16px}.panel,textarea,.output{min-height:300px;height:300px}textarea,.output{font-size:19px}}
+.hide{display: none;}
+.heiover{    height: 25px;
+    overflow: auto;}
+.skiptranslate{bottom:0;top: unset;}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><span>G</span> Translate</div><div><button class="icon" id="themeBtn" title="深色模式">◐</button><button class="icon" id="clearHistoryBtn" title="清除歷史">⌫</button></div></header>
+<main>
+<div class="langbar">
+
+<select id="sourceLang" class="lang-select"><option value="auto">自動偵測</option><option value="zh-TW">中文（繁體）</option><option value="zh-CN">中文（簡體）</option><option value="en">英文</option><option value="ja">日文</option><option value="ko">韓文</option><option value="fr">法文</option><option value="de">德文</option><option value="es">西班牙文</option><option value="it">義大利文</option><option value="pt">葡萄牙文</option><option value="ru">俄文</option><option value="th">泰文</option><option value="vi">越南文</option><option value="id">印尼文</option></select>
+<button class="icon swap" id="swapBtn" title="交換語言">⇄</button>
+<div class="heiover" id="google_translate_element"></div>
+<select id="targetLang" class="lang-select hide"><option value="zh-TW">中文（繁體）</option><option value="en">英文</option><option value="ja">日文</option><option value="ko">韓文</option><option value="zh-CN">中文（簡體）</option><option value="fr">法文</option><option value="de">德文</option><option value="es">西班牙文</option><option value="it">義大利文</option><option value="pt">葡萄牙文</option><option value="ru">俄文</option><option value="th">泰文</option><option value="vi">越南文</option><option value="id">印尼文</option></select>
+</div>
+<div class="workspace">
+<section class="panel left"><textarea id="sourceText" maxlength="5000" placeholder="輸入文字"></textarea><div class="bottom"><button class="primary" id="translateBtn">翻譯</button><button class="secondary" id="clearBtn">清除</button><button class="secondary" id="statusBtn">⚙️</button><span class="counter" id="counter">0 / 5000</span></div></section>
+<section class="panel right"><div id="output" class="output empty">翻譯結果會顯示在這裡</div><div class="bottom"><button class="icon" id="copyBtn" title="複製">⧉</button><button class="icon" id="speakBtn" title="朗讀">🔊</button><button class="icon" id="stopSpeakBtn" title="停止朗讀">■</button></div></section>
+</div>
+<div class="status" id="status">Google Translate Element：等待載入</div>
+<section class="history"><div class="history-head"><strong>翻譯記錄</strong><button class="secondary" id="clearAllBtn">清除全部</button></div><div id="historyList" class="history-list"></div></section>
+</main>
+
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let history=JSON.parse(localStorage.getItem("localTranslateHistory")||"[]"),gtReady=false;
+function googleTranslateElementInit(targetlanguage='en'){new google.translate.TranslateElement({pageLanguage:targetlanguage,includedLanguages:"en,zh-TW,zh-CN,ja,ko,fr,de,es,it,pt,ru,th,vi,id"},"google_translate_element");gtReady=true;$("status").textContent="Google Translate Element：已載入"}
+function updateCounter(){$("counter").textContent=`${$("sourceText").value.length} / 5000`}
+function setGoogleTarget(lang){const c=document.querySelector(".goog-te-combo");if(!c)return false;c.value=lang;c.dispatchEvent(new Event("change",{bubbles:true}));return true}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderHistory(){const b=$("historyList");if(!history.length){b.innerHTML='<div class="empty-history">尚無翻譯記錄</div>';return}b.innerHTML=history.map((x,i)=>`<div class="history-item" data-i="${i}"><div class="history-source">${escapeHtml(x.src)}</div><div class="history-result">${escapeHtml(x.res)}</div></div>`).join("");b.querySelectorAll(".history-item").forEach(e=>e.onclick=()=>{let x=history[+e.dataset.i];$("sourceText").value=x.src;$("sourceLang").value=x.from;$("targetLang").value=x.to;updateCounter();$("output").textContent=x.res;$("output").classList.remove("empty");$("status").textContent="已載入歷史翻譯"})}
+function saveHistory(src,res){history.unshift({src,res,from:$("sourceLang").value,to:$("targetLang").value,time:Date.now()});history=history.slice(0,30);localStorage.setItem("localTranslateHistory",JSON.stringify(history));renderHistory()}
+async function translate(){const text=$("sourceText").value.trim();if(!text)return;
+if(!gtReady){$("status").textContent="Google Translate 尚未完成載入";return}
+const target=$("targetLang").value;
+$("output").textContent=text;$("output").classList.remove("empty");
+$("status").textContent="翻譯中…";
+//if(!setGoogleTarget(target)){$("status").textContent="Google Translate 元件尚未準備完成";return}
+let tries=0,timer=setInterval(()=>{let now=$("output").innerText.trim();
+if(now&&now!==text){clearInterval(timer);
+    $("status").textContent="翻譯完成";saveHistory(text,now)}if(++tries>=30){clearInterval(timer);if(now===text)$("status").textContent="Google Translate Element 沒有更新結果，請稍候再試"}},300)}
+
+$("sourceText").addEventListener("input",updateCounter);$("translateBtn").onclick=translate;
+$("clearBtn").onclick=()=>{$("sourceText").value="";updateCounter();$("output").textContent="翻譯結果會顯示在這裡";$("output").classList.add("empty");$("status").textContent="就緒";$("sourceText").focus()};
+$("copyBtn").onclick=async()=>{if($("output").classList.contains("empty"))return;await navigator.clipboard.writeText($("output").innerText);$("status").textContent="已複製翻譯結果"};
+$("speakBtn").onclick=()=>{let t=$("output").classList.contains("empty")?"":$("output").innerText;if(!t)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang=$("targetLang").value;speechSynthesis.speak(u)};
+$("stopSpeakBtn").onclick=()=>speechSynthesis.cancel();
+$("statusBtn").onclick=()=>$(':1.container').classList.toggle('hide');
+$("swapBtn").onclick=()=>{let a=$("sourceLang").value,b=$("targetLang").value;$("sourceLang").value=b;$("targetLang").value=a==="auto"?"en":a;let out=$("output").classList.contains("empty")?"":$("output").innerText;if(out){$("sourceText").value=out;updateCounter();$("output").textContent="翻譯結果會顯示在這裡";$("output").classList.add("empty")}};
+function clearHistory(){history=[];localStorage.removeItem("localTranslateHistory");renderHistory()}
+$("clearAllBtn").onclick=clearHistory;$("clearHistoryBtn").onclick=clearHistory;
+$("themeBtn").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("translateTheme",document.body.classList.contains("dark")?"dark":"light")};
+if(localStorage.getItem("translateTheme")==="dark")document.body.classList.add("dark");
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();translate()}});
+renderHistory();updateCounter();
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

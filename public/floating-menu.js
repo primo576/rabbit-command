@@ -18,7 +18,7 @@
     { label: 'regex搜索文本', url: '../regexDomain/searchRegex.html' },
     { label: '找list不同', url: '../regexDomain/findListDifference.html' },
     { label: 'url多開', url: '../regexDomain/openUrls.html' },
-    { label: 'google_translate_element', url: '../regexDomain/google_translate_element.html' },
+    { label: 'google翻譯', url: '../regexDomain/google_translate_element.html' },
     { label: 'jenkins-curl', url: '../jenkins-curl/index.html' },
     { label: 'clock', url: '../clock/index.html' },
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
