@@ -21,7 +21,6 @@
     { label: 'google_translate_element', url: '../regexDomain/google_translate_element.html' },
     { label: 'jenkins-curl', url: '../jenkins-curl/index.html' },
     { label: 'clock', url: '../clock/index.html' },
-    
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
