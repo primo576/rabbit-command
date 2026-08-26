@@ -1,0 +1,205 @@
+
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Translate</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f8fafd;color:#202124;font-family:Arial,"Noto Sans TC",sans-serif}
+.app{max-width:1100px;margin:0 auto;padding:3px 5px 12px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.brand{font-size:22px;font-weight:600;letter-spacing:-.3px}
+.badge{font-size:12px;color:#5f6368;background:#fff;border:1px solid #dadce0;border-radius:20px;padding:7px 11px}
+.toolbar{background:#fff;border:1px solid #dadce0;border-radius:18px 18px 0 0;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.lang{font-size:15px;font-weight:500;color:#3c4043}
+.swap{margin-left:auto;border:0;background:transparent;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer}
+.swap:hover{background:#f1f3f4}
+.cards{display:grid;grid-template-columns:1fr 1fr}
+.card{background:#fff;border:1px solid #dadce0;min-height:350px;position:relative}
+.card:first-child{border-radius:0 0 0 18px;border-right:0}
+.card:last-child{border-radius:0 0 18px 0}
+textarea{width:100%;height:350px;border:0;outline:0;resize:none;padding:24px;font-size:22px;line-height:1.55;color:#202124;background:transparent}
+textarea::placeholder{color:#9aa0a6}
+.result{min-height:350px;padding:24px;font-size:22px;line-height:1.55;white-space:pre-wrap;overflow:auto}
+.empty{color:#9aa0a6}
+.actions{position:absolute;bottom:14px;left:18px;right:18px;display:flex;align-items:center;gap:8px}
+button.primary{border:0;background:#1a73e8;color:white;border-radius:20px;padding:10px 18px;font-size:14px;cursor:pointer}
+button.primary:hover{background:#1769d2}
+button.icon{border:0;background:transparent;color:#5f6368;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:17px}
+button.icon:hover{background:#f1f3f4}
+.count{margin-left:auto;color:#9aa0a6;font-size:12px}
+#google_translate_element{margin-top:0px}
+.info{margin-top:18px;color:#5f6368;font-size:13px;line-height:1.6}
+.goog-te-gadget{font-family:inherit!important;font-size:13px!important}
+.goog-te-gadget-simple{border:1px solid #dadce0!important;border-radius:10px!important;padding:9px 12px!important;background:#fff!important}
+@media(max-width:760px){
+ .cards{grid-template-columns:1fr}
+ .card:first-child{border-right:1px solid #dadce0;border-radius:0}
+ .card:last-child{border-radius:0 0 18px 18px}
+ textarea,.result{height:280px;min-height:280px;font-size:19px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand">Translate</div>
+    <div id="google_translate_element"></div>
+  </div>
+
+  <div class="toolbar" translate="no">
+    <span id="sourceLang" class="lang">自動偵測</span>
+    <button class="swap" id="swapBtn" title="交換內容">⇄</button>
+    <span id="targetLang" class="lang">中文</span>
+  </div>
+
+  <div class="cards">
+    <section class="card" translate="no">
+      <textarea id="source" placeholder="輸入文字"></textarea>
+      <div class="actions">
+        <button class="primary" id="translateBtn">翻譯</button>
+        <button class="icon" id="clearBtn" title="清除">×</button>
+        <span class="count" id="count">0</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div id="result" class="result empty" translate="yes">翻譯結果會顯示在這裡</div>
+      <div class="actions" translate="no">
+        <button class="icon" id="copyBtn" title="複製">⧉</button>
+        <button class="icon" id="speakBtn" title="朗讀">🔊</button>
+      </div>
+    </section>
+  </div>
+
+  
+
+</div>
+
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'zh-TW',
+    includedLanguages: 'en,zh-TW,zh-CN,ja,ko,fr,de,es,it,pt,ru,th,vi,id',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+    autoDisplay: false
+  }, 'google_translate_element');
+
+  setTimeout(syncTargetLanguage, 500);
+}
+
+const source = document.getElementById('source');
+const result = document.getElementById('result');
+const count = document.getElementById('count');
+
+source.addEventListener('input', () => {
+  count.textContent = source.value.length;
+});
+
+////
+    let timerId=null
+    source.addEventListener('input',e=>{
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+   
+        timerId= setTimeout(() => {
+        translateResult();
+        }, 1000);
+    })
+////
+
+function renderResult(text) {
+  result.textContent = text || '翻譯結果會顯示在這裡';
+  result.classList.toggle('empty', !text);
+}
+
+function translateResult() {
+  const text = source.value.trim();
+  if (!text) return renderResult('');
+
+  /*
+   * TranslateElement 翻譯的是頁面上的文字節點。
+   * 因此把使用者輸入內容放進 result 後，再觸發 Google Translate
+   * 的語言切換事件，讓它重新處理這個節點。
+   */
+  renderResult(text);
+
+  const combo = document.querySelector('.goog-te-combo');
+  if (!combo) {
+    //alert('Google Translate 尚未載入，請確認網路連線後再試。');
+    //return;
+  }
+
+  combo.dispatchEvent(new Event('change'));
+  setTimeout(() => {
+    result.classList.remove('empty');
+  }, 800);
+}
+
+function syncTargetLanguage() {
+  const combo = document.querySelector('.goog-te-combo');
+  if (!combo) return;
+  const selected = combo.options[combo.selectedIndex];
+  if (selected && selected.textContent) {
+    document.getElementById('targetLang').textContent = selected.textContent;
+  }
+}
+
+document.getElementById('translateBtn').addEventListener('click', translateResult);
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  source.value = '';
+  count.textContent = '0';
+  renderResult('');
+  source.focus();
+});
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const text = result.classList.contains('empty') ? '' : result.innerText;
+  if (!text) return;
+  await navigator.clipboard.writeText(text);
+});
+
+document.getElementById('speakBtn').addEventListener('click', () => {
+  const text = result.classList.contains('empty') ? '' : result.innerText;
+  if (!text || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+});
+
+document.getElementById('swapBtn').addEventListener('click', () => {
+  const translated = result.classList.contains('empty') ? '' : result.innerText;
+  if (!translated) return;
+  source.value = translated;
+  count.textContent = source.value.length;
+  renderResult('');
+  document.getElementById('sourceLang').textContent =
+    document.getElementById('targetLang').textContent;
+  document.getElementById('targetLang').textContent = '自動偵測';
+});
+
+document.addEventListener('change', e => {
+  if (e.target.classList && e.target.classList.contains('goog-te-combo')) {
+    syncTargetLanguage();
+    setTimeout(() => {
+      const text = source.value.trim();
+      if (text) {
+        renderResult(text);
+        e.target.dispatchEvent(new Event('change'));
+      }
+    }, 100);
+  }
+});
+</script>
+
+
+
+<script type="text/javascript">
+function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE,autoDisplay: false, includedLanguages: ''}, 'google_translate_element');}
+</script><script type="text/javascript" src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

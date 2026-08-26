@@ -1001,6 +1001,21 @@ LINUX_Awk_TEMPLATE_CONFIG:[
 
 GIT_BASIC_TEMPLATE_CONFIG :[
   {
+    label: '再舊版本改動之後合併分支',
+    value: 'git status',
+    risk: 'medium',
+    desc: `建立分支推送後 切換到主要分支 在和目標分支合併 並推送
+    git status
+    git checkout -b test
+    git add .
+    git commit -m "retern and fix bug"
+    git push
+    git checkout main
+    git merge test
+    git push
+    `
+  },
+  {
     label: '查看目前狀態',
     value: 'git status',
     risk: 'safe',

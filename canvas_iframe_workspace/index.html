@@ -113,12 +113,11 @@ let pointer={x:0,y:0};
 let drag=null, pan=null, resize=null;
 
 const defaultNodes=[
- // {id:crypto.randomUUID()||'b3',z:2,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
- //{id:crypto.randomUUID()||'e2',z:1,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
-
   {id:'b3',z:2,x:100,y:100,width:420,height:300,name:'Example',src:'about:blank',favorite:false},
  {id:'e2',z:1,x:570,y:150,width:420,height:300,name:'Wikipedia',src:'about:blank',favorite:false}
 ];
+
+
 nodes=defaultNodes;
 
 function resizeCanvas(){
@@ -147,7 +146,7 @@ function renderNode(n){
   if(!n.el){
     n.el=document.createElement('div');
     n.el.className='iframe-node';
-    n.el.innerHTML=`<div class="node-title"><span></span><button class="node-btn reload">↻</button><button class="node-btn full">□</button><button class="node-btn close">×</button></div><div class="node-content"><iframe loading="lazy" referrerpolicy="no-referrer"></iframe></div><div class="resize-handle"></div>`;
+    n.el.innerHTML=`<div class="node-title"><span></span><button class="node-btn reload">↻</button><button class="node-btn full">□</button><button class="node-btn close">×</button></div><div class="node-content"><iframe name=${n.id} loading="lazy" referrerpolicy="no-referrer"></iframe></div><div class="resize-handle"></div>`;
     layer.appendChild(n.el);
     tiframe=n.el.querySelector('iframe');tiframe.src=n.src;
     if (!typeof n.proxy == 'undefined'||!n.proxy=='') {tiframe.src=`${n.proxy}${tiframe.src}`;}

@@ -18,8 +18,10 @@
     { label: 'regex搜索文本', url: '../regexDomain/searchRegex.html' },
     { label: '找list不同', url: '../regexDomain/findListDifference.html' },
     { label: 'url多開', url: '../regexDomain/openUrls.html' },
+    { label: 'google_translate_element', url: '../regexDomain/google_translate_element.html' },
     { label: 'jenkins-curl', url: '../jenkins-curl/index.html' },
     { label: 'clock', url: '../clock/index.html' },
+    
     { label: '轉置文本', url: 'https://lzltool.com/Tools/TextTranspose', blank: true},
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
@@ -30,6 +32,7 @@
     { label: 'whoisTool', url: 'https://selfcertificationhub.github.io/whois/whois' , blank: true},
     { label: '畫板', url: 'https://app.tryquickdraw.com/' , blank: true},
     { label: 'kubectl-commands-documents', url: 'https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands' , blank: true},
+    { label: 'nginx-conf-core-documents', url: 'https://nginx.org/en/docs/http/ngx_http_core_module.html'},
     { label: 'html formatter', url: 'https://www.freeformatter.com/html-formatter.html' , blank: true},
     { label: 'cs beautifier', url: 'https://www.freeformatter.com/css-beautifier.html' , blank: true},
     { label: 'js beautifier', url: 'https://www.freeformatter.com/javascript-beautifier.html' , blank: true},
