@@ -25,6 +25,7 @@
     { label: '替換文本', url: 'https://lzltool.com/Tools/TextReplace', blank: true },
     { label: '文本比對1', url: 'https://tonydx.github.io/frontEndDiffHelper/' , blank: true},
     { label: '文本比對2', url: 'https://chizkiyahu.github.io/TextDiff/' , blank: true},
+    { label: '查ip地區', url: 'https://www.browserscan.net/tc/ipcheck' , blank: true},
     { label: 'Global DNS Checker', url: 'https://dnsmid.com/' , blank: true},
     { label: 'Global DNS Checker-br', url: ' https://dnsmid.com/brazil/' , blank: true},
     { label: 'linux command', url: 'https://wangchujiang.com/linux-command/index.html' , blank: true},

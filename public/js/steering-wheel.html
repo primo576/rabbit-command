@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>引用方向盤插件範例</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 40px;
+            background-color: #f7f7f7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>我的網頁主體內容</h1>
+    <p>方向盤插件會自動生成在右下角，不會破壞這個畫面的排版。</p>
+    
+    <!-- 顯示從插件即時傳回的角度 -->
+    <h2>即時接收角度：<span id="angleValue">0</span>°</h2>
+
+    <!-- 1. 引入剛剛封裝好的 JS 檔案 -->
+    <script src="steering-wheel.js"></script>
+
+    <!-- 2. 初始化插件 -->
+    <script>
+        // 最簡單的初始化方式（全部使用預設值）：
+        // new FloatingSteeringWheel();
+
+        // 進階初始化（自訂外觀與監聽旋轉角度）：
+        const myWheel = new FloatingSteeringWheel({
+            emoji: '🛞',           // 可更換成 '☸️' 或 '⎈'
+            size: 140,            // 白色外圈大小改為 140px
+            emojiSize: 100,       // 方向盤本身大小改為 100px
+            bottom: '30px',       // 距離底部 30px
+            right: '30px',        // 距離右側 30px
+            autoReturn: true,     // 放開後自動彈回正面 (若設為 false 則會停在原位)
+            
+            // 當使用者在轉動方向盤時，這個函式會即時收到轉動的「角度」
+            onRotate: function(angle) {
+                document.getElementById('angleValue').textContent = angle;
+                
+                // 您可以在這裡加入其他邏輯，例如：
+                // if (angle > 90) { console.log('右轉過頭囉！'); }
+            }
+        });
+    </script>
+</body>
+</html>

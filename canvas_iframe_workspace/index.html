@@ -34,7 +34,7 @@ body{background:#111827;color:#e5e7eb}
 .actions{display:flex;gap:6px;margin-top:10px}
 .actions button{flex:1;height:32px;border:0;border-radius:5px;background:#374151;color:#fff;cursor:pointer}
 .actions button:hover{background:#4b5563}
-.help{left:16px;bottom:16px;padding:8px 11px;border-radius:6px;font-size:11px;color:#9ca3af}
+.help{left:16px;bottom:16px;padding:8px 11px;border-radius:6px;font-size:11px;color:#9ca3af;height: 30px;overflow: auto;}
 .context{position:fixed;display:none;z-index:1000;min-width:180px;background:#1f2937;border:1px solid #4b5563;border-radius:7px;padding:5px;box-shadow:0 10px 30px #0008}
 .context button{display:block;width:100%;text-align:left;border:0;background:none;color:#fff;padding:8px;border-radius:4px;cursor:pointer}
 .context button:hover{background:#374151}
@@ -42,8 +42,12 @@ body{background:#111827;color:#e5e7eb}
 .badge{font-size:10px;background:#2563eb;padding:2px 5px;border-radius:4px}
 .hide{display: none;}
 .blackbbackground{background-color: black;}
+.optionContainer{
+      max-height: 30vh;
+    overflow: auto;
+}
 @media (hover: none) and (pointer: coarse) {input, textarea, select {font-size: 16px;}
-.panel{max-height: 30dvh;
+.panelf{max-height: 30dvh;
     overflow: auto;}
 }
 
@@ -57,6 +61,7 @@ body{background:#111827;color:#e5e7eb}
 <div class="toolbar">
   <button id="openToolbar" onclick="optionDisplay()">></button>
     <div id="innerButton">
+       
       <button id="add">＋ iframe</button>
       <button id="zoomIn">＋</button>
       <button id="zoomOut">−</button>
@@ -84,8 +89,9 @@ body{background:#111827;color:#e5e7eb}
   <div id="panelBody" class="empty">點選 iframe 節點以編輯屬性。</div>
 </div>
 
-<div class="help">
+<div class="help"> 
   左鍵拖曳標題列＝移動　｜　右下角＝縮放　｜　中鍵/空白處拖曳/在>上滾動＝移動畫布　｜　滾輪＝縮放畫布　｜　Delete＝刪除
+  <div>即時接收角度：<span id="angleValue">0</span>°</div>
 </div>
 
 <div class="context" id="context">
@@ -151,6 +157,7 @@ function renderNode(n){
     tiframe=n.el.querySelector('iframe');tiframe.src=n.src;
     if (!typeof n.proxy == 'undefined'||!n.proxy=='') {tiframe.src=`${n.proxy}${tiframe.src}`;}
     if (!typeof n.sandbox == 'undefined'||!n.sandbox=='') {tiframe.sandbox=n.sandbox;}
+    if (!typeof n.background == 'undefined'||!n.background=='') {n.el.style.background=n.background;}
     n.el.querySelector('.node-title').addEventListener('pointerdown',e=>startDrag(e,n));
     n.el.querySelector('.resize-handle').addEventListener('pointerdown',e=>startResize(e,n));
     n.el.querySelector('.reload').onclick=e=>{e.stopPropagation();n.el.querySelector('iframe').src=n.src};
@@ -164,6 +171,7 @@ function renderNode(n){
   n.el.style.left=p.x+'px'; n.el.style.top=p.y+'px';
   n.el.style.width=n.width+'px'; n.el.style.height=n.height+'px';
   n.el.classList.toggle('selected',selected===n);
+  
   n.el.querySelector('.node-title span').textContent=(n.favorite?'★ ':'')+n.name;
 }
 function render(){
@@ -263,9 +271,11 @@ function updatePanel(){
   //if(document.getElementById('panel').classList.contains('hide')){selected=null; return}
   if(!selected){panel.innerHTML='<div class="empty">點選 iframe 節點以編輯屬性。</div>';return}
   panel.innerHTML=`
+  <div class="optionContainer">
     <div class="field"><label>名稱</label><input id="pName" value="${esc(selected.name)}"></div>
     <div class="field"><label>URL</label><input id="pSrc" value="${esc(selected.src)}"></div>
     <div class="field"><label>sandbox</label><input id="pSandbox" value="${selected.sandbox||''}"></div>
+    <div class="field"><label>background</label><input id="pBackground" value="${selected.background||''}"></div>
     <div class="field"><label>proxy</label><input id="pProxy" value="${selected.proxy||''}"></div>
     <div class="row">
       <div class="field"><label>X</label><input id="pX" type="number" value="${Math.round(selected.x)}"></div>
@@ -280,6 +290,7 @@ function updatePanel(){
       <div class="field"><label>分類</label><input id="pCategory" value="${esc(selected.category||'')}"></div>
      <div class="field"><label>Z</label><input id="pZ" type="number" value="${Math.round(selected.z)}"></div>
       </div>
+       </div>
     <div class="actions">
       <button id="apply">套用</button><button id="fav">${selected.favorite?'取消收藏':'收藏'}</button><button id="rebuild">重建</button><button id="del">刪除</button>
     </div>`;
@@ -294,15 +305,20 @@ function applyPanel(){
   selected.src=document.getElementById('pSrc').value;
   selected.sandbox=document.getElementById('pSandbox').value;
   selected.proxy=document.getElementById('pProxy').value;
+  selected.background=document.getElementById('pBackground').value;
   selected.x=Number(document.getElementById('pX').value)||0;
   selected.y=Number(document.getElementById('pY').value)||0;
   selected.z=Number(document.getElementById('pZ').value)||0;
   selected.width=Math.max(220,Number(document.getElementById('pW').value)||420);
   selected.height=Math.max(150,Number(document.getElementById('pH').value)||300);
   selected.category=document.getElementById('pCategory').value;
+
   const f=selected.el.querySelector('iframe');
   if(f.src!==selected.src)f.src=selected.src;
   if(f.sandbox!==selected.sandbox){f.sandbox=selected.sandbox;if(f.sandbox.value==''){f.removeAttribute('sandbox')}}
+  
+  const s=selected.el.style;
+  if(s.background!==selected.background){s.background=selected.background;if(s.background.value==''){s.removeAttribute('background')}}
   
   render();
 }
@@ -533,5 +549,88 @@ function addSandBox(selected){
   })
   //preset.appendChild(document.createElement('option'))
  </script>
+
+   <script src="../public/js/steering-wheel.js"></script>
+      <script>
+        // 最簡單的初始化方式（全部使用預設值）：
+        // new FloatingSteeringWheel();
+
+        // 進階初始化（自訂外觀與監聽旋轉角度）：
+        const myWheel = new FloatingSteeringWheel({
+            emoji: '⬆️',           // 可更換成 '☸️' 或 '⎈'
+            size: 140,            // 白色外圈大小改為 140px
+            emojiSize: 100,       // 方向盤本身大小改為 100px
+            bottom: '30px',       // 距離底部 30px
+            right: '30px',        // 距離右側 30px
+            autoReturn: true,     // 放開後自動彈回正面 (若設為 false 則會停在原位)
+            display:'none',
+            
+            // 當使用者在轉動方向盤時，這個函式會即時收到轉動的「角度」
+            onRotate: function(angle) {
+                document.getElementById('angleValue').textContent = angle;
+                angleCamera(angle)
+              
+                
+                // 您可以在這裡加入其他邏輯，例如：
+                // if (angle > 90) { console.log('右轉過頭囉！'); }
+             
+                //camera.y=camera.y+window.__steeringwheel_MENU__.deltaY;
+                //camera.x=camera.x+window.__steeringwheel_MENU__.deltaX;
+                //render();
+            
+            }
+        });
+
+
+      ////
+
+      function angleCamera(angle){
+              if (angle < -5) { camera.x=camera.x+10}
+              //else if (angle < 60) { camera.y=camera.y+5;camera.x=camera.x-5}
+               else if (angle < 90) { camera.y=camera.y+10}
+               else if(angle < 180){camera.x=camera.x-10}
+               else if(angle < 280){camera.y=camera.y-10}
+                render()
+      }
+/*
+      document.getElementById('1:steering-wheel').addEventListener('pointermove',e=>{
+        angleCamera(angleValue.textContent);
+     
+});
+*/
+/*
+      // 1. 選取要監聽的 p 元素
+const pElement = document.getElementById('angleValue')
+
+// 2. 建立 MutationObserver 實例並傳入回調函數
+const observer = new MutationObserver((mutationsList, observer) => {
+    for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            console.log(pElement.textContent,'p 元素的子節點（文字或內容）被改變了！');
+          angleCamera(pElement.textContent);
+        } else if (mutation.type === 'attributes') {
+            console.log(`p 元素的屬性 "${mutation.attributeName}" 被修改了！`);
+        }
+    }
+});
+
+// 3. 設定監聽選項
+const config = { 
+    childList: true,     // 監聽子節點的變動（如文字內容改變）
+    attributes: true,    // 監聽屬性的變動（如 class 或 style 改變）
+    characterData: true  // 監聽文字內容本身的變動
+};
+
+// 4. 開始啟動監聽
+observer.observe(pElement, config);
+
+// 若未來不需要監聽時，可停止觀察
+// observer.disconnect();
+*/
+
+      ////
+
+    </script>
+
 </body>
 </html>
