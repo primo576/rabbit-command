@@ -197,8 +197,8 @@ addEventListener('pointermove',e=>{
   if(drag){
     const p=s2w(e.clientX,e.clientY);drag.n.x=p.x-drag.dx;drag.n.y=p.y-drag.dy;render();
   }else if(resize){
-    resize.n.width=Math.max(220,resize.w+(e.clientX-resize.startX)/styleZoom);
-    resize.n.height=Math.max(150,resize.h+(e.clientY-resize.startY)/styleZoom);render();
+    resize.n.width=Math.max(10,resize.w+(e.clientX-resize.startX)/styleZoom);
+    resize.n.height=Math.max(10,resize.h+(e.clientY-resize.startY)/styleZoom);render();
   }else if(pan){
     camera.x+=(e.clientX-pan.x)/styleZoom;
     camera.y+=(e.clientY-pan.y)/styleZoom;

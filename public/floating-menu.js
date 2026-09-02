@@ -6,6 +6,7 @@
     { label: 'rabbitCommand', url: '../rabbit-command/index.html' },
     { label: 'lookDNS', url: '../regexDomain/lookDNS.html' },
     { label: '剪貼簿', url: '../clipboard_local_storage/index.html' },
+    { label: '圖片剪貼簿', url: '../img-note/imgNote-v1.html' },
     { label: 'calc', url: '../Web-Calculator/web-calculator.html' },
     { label: 'AB表域名比對', url: '../regexDomain/abTableComparison.html' },
     { label: 'iframe Dashboard', url: '../iframe/index.html' },
