@@ -7,7 +7,7 @@
 <style>
 :root{color-scheme:dark;--bg:#111318;--panel:#191c23;--panel2:#20242d;--border:#303641;--text:#eef1f5;--muted:#9da5b2;--accent:#6ea8fe;--danger:#ff6b6b}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{height:100vh;display:flex;flex-direction:column}
+.app{height:unset;display:flex;flex-direction:column}
 header{height:58px;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--panel)}
 .logo{font-size:18px;font-weight:700}.count{color:var(--muted)}
 .spacer{flex:1}button{border:1px solid var(--border);background:var(--panel2);color:var(--text);border-radius:7px;padding:7px 11px;cursor:pointer}button:hover{border-color:#4d5665}button.danger:hover{border-color:var(--danger);color:#ff9b9b}
@@ -15,7 +15,7 @@ header{height:58px;display:flex;align-items:center;gap:12px;padding:0 16px;borde
 .drop.over{border-color:var(--accent);background:#171d29;color:var(--text)}
 .grid{padding:0 14px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;overflow:auto}
 .empty{grid-column:1/-1;text-align:center;padding:55px;color:var(--muted)}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;position:relative}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:auto;position:relative}
 .thumb{height:210px;background:#0c0e12;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .thumb img{max-width:100%;max-height:100%;object-fit:contain}
 .meta{padding:10px 11px}.time{font-size:13px}.details{font-size:12px;color:var(--muted);margin-top:4px}.actions{display:flex;gap:6px;margin-top:9px}.actions button{font-size:12px;padding:5px 8px}
@@ -26,6 +26,15 @@ header{height:58px;display:flex;align-items:center;gap:12px;padding:0 16px;borde
 input[type=file]{display:none}
 .scale{    position: absolute;
     bottom: 50px;    z-index: 9999;}
+#previewText{   position: absolute;
+    bottom: 10px;
+    overflow: auto;
+    max-height: 35px;
+    z-index: 9999;
+    background: #00000070;
+  text-align: center;
+}
+
 @media(max-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}.thumb{height:160px}}
 </style>
 </head>
@@ -33,15 +42,15 @@ input[type=file]{display:none}
 <div class="app">
 <header>
   <div class="logo">imgNote</div><div class="count" id="count">0 images</div><div class="spacer"></div><div class="drop" id="drop">貼上圖片（Ctrl / ⌘ + V）或將檔案拖曳到這裡</div>
-  <label><button type="button" onclick="fileInput.click()">＋ Add</button><input id="fileInput" type="file" accept="image/*" multiple></label>
+  <label><button onclick="pasteImage()">paste</button><button type="button" onclick="fileInput.click()">＋ Add</button><input id="fileInput" type="file" accept="image/*" multiple></label>
   <button class="danger" id="clearBtn">Clear All</button>
 </header>
 
 <main class="grid" id="grid"></main>
 </div>
-<div class="overlay" id="overlay"><button class="close" id="close">✕</button><div class="scale"><p>
+<div class="overlay" id="overlay"><button class="close" id="close">✕</button><div id="previewText"></div><div class="scale"><p>
                               <input type="range" min="100" max="500" value="100" id="slider">
-                           </p></div><div class="preview"><img id="previewImg"></div></div>
+                           </p></div><div class="preview"><img id="previewImg"></div>
 <script>
 const DB_NAME='imgNoteDB', STORE='images', DB_VERSION=1;
 let db, items=[];
@@ -82,7 +91,7 @@ function render(){
    <div class="actions"><button class="copy">Copy</button><button class="download">Download</button><button class="delete">Delete</button></div></div>`;
   card.querySelector('.note').value=x.note||'';
   card.querySelector('.note').addEventListener('change',async e=>{x.note=e.target.value;await put(x)});
-  card.querySelector('.thumb').onclick=()=>{ $('#previewImg').src=url;$('#overlay').classList.add('show') };
+  card.querySelector('.thumb').onclick=()=>{ $('#previewImg').src=url;$('#previewText').textContent=x.note;$('#overlay').classList.add('show') };
   card.querySelector('.pin').onclick=async()=>{x.pinned=!x.pinned;await put(x);load()};
   card.querySelector('.delete').onclick=async()=>{await remove(x.id);load()};
   card.querySelector('.copy').onclick=async()=>{try{await navigator.clipboard.write([new ClipboardItem({[x.blob.type]:x.blob})]);}catch{alert('瀏覽器不允許直接複製此圖片，請改用 Download。')}};
@@ -110,6 +119,33 @@ const slider = document.getElementById('slider');
 slider.addEventListener('input', (e) => {
    document.documentElement.style.setProperty('--imgWidth', e.target.value + '%');
 });
+
+
+
+
+async function pasteImage() {
+    try {
+        const items = await navigator.clipboard.read();
+        console.log(items)
+
+        for (const item of items) {
+            const imageType = item.types.find(type => type.startsWith('image/'));
+
+            if (!imageType) continue;
+
+            const blob = await item.getType(imageType);
+
+
+            await addBlob(blob);
+        }
+    } catch (err) {
+        console.error('無法讀取剪貼簿:', err);
+    }
+}
+
+
+
+//
 </script>
 </body>
 </html>
